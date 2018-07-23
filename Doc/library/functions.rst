@@ -1283,7 +1283,7 @@ are always available.  They are listed here in alphabetical order.
 
           @property
           def x(self):
-              """I'm the 'x' property."""
+              """나는 'x' 프로퍼티입니다."""
               return self._x
 
           @x.setter
@@ -1517,7 +1517,7 @@ are always available.  They are listed here in alphabetical order.
 
       class C(B):
           def method(self, arg):
-              super().method(arg)    # This does the same thing as:
+              super().method(arg)    # 이는 다음과 같은 일을 합니다:
                                      # super(C, self).method(arg)
 
    Note that :func:`super` is implemented as part of the binding process for
