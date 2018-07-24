@@ -917,10 +917,6 @@ Some examples of formatted string literals::
    >>> f"{number:#0x}"  # 정수 포맷 지정자 사용
    '0x400'
 
-.. admonition:: flowdas
-
-   원문에서는 ``'January 27, 2017'`` 가 출력된다고 나와있으나, 이는 오류입니다. ``'Jan 27, 2017'`` 가 실제 결과입니다.
-
 A consequence of sharing the same syntax as regular string literals is
 that characters in the replacement fields must not conflict with the
 quoting used in the outer formatted string literal::
