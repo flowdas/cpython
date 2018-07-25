@@ -91,6 +91,7 @@ htmlhelp_basename = 'python' + release.replace('.', '')
 # Split the index
 html_split_index = True
 
+html_copy_source = False
 
 # Options for LaTeX output
 # ------------------------
