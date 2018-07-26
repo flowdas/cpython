@@ -20,6 +20,13 @@ is represented by objects or by relations between objects. (In a sense, and in
 conformance to Von Neumann's model of a "stored program computer," code is also
 represented by objects.)
 
+.. admonition:: flowdas
+
+   폰 노이만 구조 이후의 하버드 구조와 대비시켜 볼 수도 있겠습니다.
+   폰 노이만 구조가 데이터와 코드를 같은 공간에 내장하는 반면, 하버드 구조에서는 데이터와 코드를 별도의
+   공간에 내장합니다. 이 것이 오히려 현대의 컴퓨터에 더 가깝다고 볼 수 있습니다. 파이썬은 코드 조차도 그
+   형태가 분명한 객체로 다루기 때문에, 노이만 구조에 가까운 가상 머신을 제공한다고 본다는 뜻으로 해석할 수 있습니다.
+
 .. index::
    builtin: id
    builtin: type
@@ -47,6 +54,21 @@ type.  The :func:`type` function returns an object's type (which is an object
 itself).  Like its identity, an object's :dfn:`type` is also unchangeable.
 [#]_
 
+.. admonition:: flowdas
+
+   객체의 형 역시 객체라면, 그 객체의 형은 무엇인가? 이런 식으로 꼬리를 물고 올라갈 경우 "스스로 존재하는 자" 가
+   필요합니다. 즉 자신의 형이 자기 자신인 존재가 필요하다는 뜻입니다. 이 것이 :class:`type` 입니다::
+
+       >>> type(type) is type
+       True
+
+.. admonition:: flowdas
+   객체의 형은 제한적이나마 변경될 수 있습니다. 예를 들어 인스턴스의 :attr:`__class__` 어트리뷰트는 인스턴스
+
+   객체의 형(이 경우는 클래스가 됩니다)을 가리키는데, 대입이 가능합니다. 아무 값이나 대입할 수는 없지만,
+   다른 클래스를 대입할 수 있습니다. 변경 이후에는 :func:`type` 함수도 새 클래스를 돌려주고, 다른 부분에서도
+   새 클래스의 인스턴스 인 것처럼 동작합니다. 하지만 각주에서 권하는 것처럼 극히 예외적인 경우로 다뤄야할 것입니다.
+
 The *value* of some objects can change.  Objects whose value can
 change are said to be *mutable*; objects whose value is unchangeable once they
 are created are called *immutable*. (The value of an immutable container object
@@ -68,6 +90,13 @@ collection or omit it altogether --- it is a matter of implementation quality
 how garbage collection is implemented, as long as no objects are collected that
 are still reachable.
 
+.. admonition:: flowdas
+
+   :keyword:`del` 키워드는 객체에 대한 참조를 지우는 것이지 객체를 명시적으로 파괴하는 것이 아닙니다.
+   CPython 의 경우 참조를 지운 결과 카운트가 0 으로 떨어지면 즉시 수거되겠지만, 다른 곳에서
+   참조가 되고 있는 경우 카운트가 0 으로 떨어지지 않기 때문에 수거되지 않습니다.
+   다른 참조들을 모두 제거하기 전에, 객체를 강제로 파괴할 수 있는 방법은 없습니다.
+
 .. impl-detail::
 
    CPython currently uses a reference-counting scheme with (optional) delayed
@@ -78,6 +107,19 @@ are still reachable.
    Other implementations act differently and CPython may change.
    Do not depend on immediate finalization of objects when they become
    unreachable (so you should always close files explicitly).
+
+   .. admonition:: flowdas
+
+      :mod:`gc` 모듈은 순환적 가비지 수거에 관해서만 관여합니다. CPython 의 경우 참조 횟수 계산은
+      언제나 일어나는 것이고, 중지 시킬 방법 같은 것은 없습니다.
+
+   .. admonition:: flowdas
+
+      순환적 가비지 수거는 성능에 영향을 줍니다. (사실 대부분의 언어에서 가비지 수거는 늘 문제가 되는
+      부분입니다.) 만약 가비지들 간의 순환 참조가 발생하지 않거나, 관리 가능한 수준으로 유지할 수
+      있다면 아예 순환적 가비지 수거를 꺼버리는 것이 성능을 개선하는 경우가 있습니다.
+      :func:`gc.disable` 로 끌 수 있습니다.
+
 
 Note that the use of the implementation's tracing or debugging facilities may
 keep objects alive that would normally be collectable. Also note that catching
@@ -91,6 +133,14 @@ such objects also provide an explicit way to release the external resource,
 usually a :meth:`close` method. Programs are strongly recommended to explicitly
 close such objects.  The ':keyword:`try`...\ :keyword:`finally`' statement
 and the ':keyword:`with`' statement provide convenient ways to do this.
+
+.. admonition:: flowdas
+
+   :meth:`close` 메서드를 제공하는 대부분의 객체들은, 컨텍스트 관리자 프로토콜을 지원하기 때문에
+   ':keyword:`with`' 문 만으로 쉽고 안전하게 관리할 수 있습니다.
+   하지만 :meth:`close` 메서드만 지원하고 컨텍스트 관리자 프로토콜을 지원하지 않는다면,
+   ':keyword:`try`...\ :keyword:`finally`' 문 보다는
+   :func:`contextlib.closing` 과 ':keyword:`with`' 문을 사용하는 것을 권합니다.
 
 .. index:: single: container
 
@@ -113,6 +163,12 @@ with the value one, depending on the implementation, but after ``c = []; d =
 created empty lists. (Note that ``c = d = []`` assigns the same object to both
 ``c`` and ``d``.)
 
+.. admonition:: flowdas
+
+   CPython 의 경우, ``a = 1; b = 1`` 후에, ``a`` 와 ``b`` 는 동일한 객체가 됩니다.
+   성능 개선을 위해 -5 에서 256 사이의 정수를 캐싱하기 때문입니다. 중요한 것은, 이런 세부 사항을
+   기억하는 것이 아니라, 이런 문제 때문에 불변형에 대해서 :keyword:`is` 연산자를 사용할 때
+   조심해야한다는 것입니다.
 
 .. _types:
 
@@ -163,6 +219,89 @@ NotImplemented
    :ref:`implementing-the-arithmetic-operations`
    for more details.
 
+   .. admonition:: flowdas
+
+      숫자 메서드란, 숫자 형 또는 숫자를 흉내내는 형에서 이항 산술 연산(binary arithmetic operation)
+      (``+``, ``-``, ``*``, ``@``, ``/``, ``//``, ``%``, :func:`divmod`, :func:`pow`,
+      ``**``, ``<<``, ``>>``, ``&``, ``^``, ``|``) 의 기능을 제공하는 역할을 하는 다음과 같은
+      메서드들을 뜻합니다.
+
+      * :meth:`__add__`
+      * :meth:`__sub__`
+      * :meth:`__mul__`
+      * :meth:`__matmul__`
+      * :meth:`__truediv__`
+      * :meth:`__floordiv__`
+      * :meth:`__mod__`
+      * :meth:`__divmod__`
+      * :meth:`__pow__`
+      * :meth:`__lshift__`
+      * :meth:`__rshift__`
+      * :meth:`__and__`
+      * :meth:`__xor__`
+      * :meth:`__or__`
+
+      이 메서드들이 ``NotImplemented`` 를 돌려주면 해당 구현이 존재하지 않는 것으로 보고 뒤집힌 연산을
+      시도합니다. 뒤집힌 연산은 위에 나열한 메서드들의 이름에 ``r`` 접두어를 붙인 것들입니다.
+
+      예를들어 ``x + y`` 라는 표현식이 있을 때, ``x`` 가 :meth:`__add__` 를 정의하고 있다면 먼저
+      ``x.__add__(y)`` 를 시도합니다. 정의 되어 있지 않거나 ``NotImplemented`` 를 돌려주면,
+      ``y.__radd__(x)`` 를 시도합니다. 이렇게 하는 이유는 ``x`` 와 ``y`` 의 형이 다를 수 있기
+      때문입니다.(실제로 ``x`` 와 ``y`` 의 형이 같으면 :meth:`__radd__` 는 사용되지 않습니다.)
+
+      가령 분수를 표현하는 형을 하나 추가했고, 객체 ``y`` 를 만들었다고 합시다. 당연히 분수는 정수와 더할 수
+      있을 것이기 때문에, ``y + x`` 라는 표현이 정수가 더해진 새 분수를 돌려주도록 :meth:`__add__` 를
+      정의해줄 수 있습니다. 그런데 ``x + y`` 라는 표현도 같은 결과를 돌려주어야 하지만, 내장된 정수형이 새로
+      만든 분수형 ``y`` 와 더하는 방법을 알리가 없습니다. 이 때 정수형은 ``NotImplemented`` 를 돌려줍니다.
+      분수형에 :meth:`__radd__` 를 정의해 두었다면, 이 표현도 같은 결과를 줄 수 있습니다.
+
+      **숫자 메서드를 구현할 때는, 앞으로 추가될 형들과의 호환을 위해, 형 검사를 수행하고 모르는 형이 올 경우
+      NotImplemeted 를 돌려주도록 코딩하는 것이 좋습니다.**
+
+      뒤집힌 연산에서도 ``NotImplemented`` 를 돌려줄 수 있는데, 이 경우는 더이상 대안을 찾지 않고 최종적인
+      :exc:`TypeError` 를 일으킵니다.
+
+   .. admonition:: flowdas
+
+      숫자 메서드에는, 앞의 두 유형 외에 증분 대입 연산자를 처리하는데 사용되는 것들이 있습니다.
+      접두어 ``i`` 를 붙여서 나타냅니다. 예를 들어 :meth:`__iadd__` 는 ``+=`` 연산을 제공합니다.
+      (:func:`divmod` 연산은 대응하는 증분 대입이 없기 때문에 ``__idivmod__`` 는 존재하지 않습니다.)
+
+      증분 대입 연산은 그 성격상 대응하는 뒤집힌 연산이 없습니다. 대신에 ``x += y`` 라는 문장을 ``x = x + y``
+      라는 문장으로 변환해서 시도합니다. 때문에 ``x`` 에 :meth:`__iadd__` 가 정의되지 않았거나
+      ``NotImplemented`` 를 돌려주면, ``x = x + y`` 를 시도하게 됩니다.
+
+   .. admonition:: flowdas
+
+      증분 대입 연산 메서드는, 가변형의 경우 자신의 값을 수정한 후 ``self`` 를 돌려주는 것이 관례이고,
+      이 경우 아이덴티티의 변경(새로운 객체가 만들어진다는 의미)은 이루어지지 않습니다. 하지만 ``x = x + y``
+      형으로 변환되는 경우, 아이덴티티가 바뀔 수 있음에 주의해야 합니다. 불변형인 경우는, 아이덴티티의 변경을
+      수반하는 것이 자연스럽기 때문에 혼란을 일으킬 가능성이 적습니다.
+
+      간혹 일으키기 쉬운 실수는 ``NotImplemented`` 와 이름이 비슷한 :exc:`NotImplementedError`
+      (추상 메서드임을 가리키는데 사용하는 예외입니다) 를 돌려주는 것입니다. 이 경우 :exc:`TypeError`
+      예외를 일으키지 않고 좌변이 :exc:`NotImplementedError` 로 치환되게 됩니다.
+
+   .. admonition:: flowdas
+
+      비교 메서드란, 두 값을 비교하는데 사용되는 비교 연산자(comparison operator)
+      (``<``, ``<=``, ``==``, ``!=``, ``>``, ``>=``) 의 기능을 제공하는 역할을 하는, 다음과 같은
+      메서드들을 뜻합니다.
+
+      * :meth:`__lt__`
+      * :meth:`__le__`
+      * :meth:`__eq__`
+      * :meth:`__ne__`
+      * :meth:`__gt__`
+      * :meth:`__ge__`
+
+      3.0 이전의 파이썬에서는 값들 간의 대소 관계를 정수로 표현하는 ``__cmp__`` 메서드를 지원했고, 이를 비교
+      메서드라고 불렀습니다. 하지만 대소 관계(ordering)가 정의될 수 없는 경우도, 동등 관계(equality)는 정의될
+      수 있는 경우가 있고, 두 경우 모두 지원되는 경우도 동등 관계가 대소 관계에 비해 적은 계산이 필요한 경우가 많아서,
+      각 비교 연산을 별개의 메서드로 지원하는 방법이 새로 도입되었습니다. 그 전의 ``__cmp__`` 와 구분하기 위해 이
+      것들을 rich comparison 이라고 부릅니다. 하지만 파이썬 3.0 부터는 ``__cmp__`` 가 지원되지 않고, 좋은
+      번역어를 발견할 수도 없어서, 그냥 비교 메서드라고 부르기로 합니다. 앞으로 비교라는 단어는 rich comparison
+      을 가리키는 것으로 보면 됩니다.
 
 Ellipsis
    .. index::
@@ -218,6 +357,39 @@ Ellipsis
       The rules for integer representation are intended to give the most meaningful
       interpretation of shift and mask operations involving negative integers.
 
+      .. admonition:: flowdas
+
+         제약 없는 범위의 숫자를 지원한다고는 하지만 사실은 :data:`sys.maxsize` 에 의해 제약이 가해집니다.
+         그러나, :data:`sys.maxsize` 가 충분히 크기 때문에, 이 제약에 도달하기 전에 메모리 한계에 도달하게됩니다.
+
+      .. admonition:: flowdas
+
+         2의 보수는 어떤 숫자를 큰 2의 거듭제곱수에서 뺀 값을 뜻합니다. 가령 8비트 공간에서 숫자 1의 2의 보수는
+         ``2**8 - 1 == 255`` 가 됩니다. 음수를 표현할 때 2의 보수를 사용한다는 것은, (계속 8비트 공간을 예로
+         들자면) -3 을 표현할 때, 그 양의 숫자 3(``0b0000_0011``) 의 2의 보수 253(``0b1111_1101``) 으로
+         표현한다는 뜻입니다. 이 값은 양의 숫자의 비트를 반전 시킨 후(``0b11111100``)에 1을 더한 값과 같습니다.
+
+         이 논리를 무한한 크기의 숫자로 확장하기위해, 양의 숫자 3을 비트 0 이 왼쪽에 무한히 붙어있다고
+         (``0b0000...0000_0011``) 상상해봅시다. ``...`` 자리가 모두 0으로 채워져 있는 숫자입니다. 이제 비트를
+         반전시키고 1을 더하면 ``0b1111...1111_1101`` 이 됩니다. ``...`` 자리는 모두 1로 채워진 것으로 바뀝니다.
+         이 개념 모델이 구현될 때, 그 방법은 구현마다 다를 수 있지만, 부호 비트(양수는 0, 음수는 1)를 유지하고, 꼭 필요한
+         크기의 정수 배열에 값을 저장한다는 점에서는 동일합니다. 그리고는 "무한" 에 해당하는 부분은 부호 비트와 동일한
+         비트로 채워져있다고 보는 것입니다. 더 큰 자리수가 필요할 때 이 가정을 물리적인 비트로 만듭니다.
+
+      .. admonition:: flowdas
+
+         시프트(shift) 연산은 비트를 왼쪽이나 오른쪽으로 지정한 개수만큼 미는 것인데, 늘 부호가 유지됩니다.
+         어떤 숫자가 나올지는 앞에서 설명한 개념 모델을 떠올리면 쉽게 판단할 수 있습니다.
+
+         ``x << n`` 은 ``x * pow(2,n)`` 과 같고, ``x >> n`` 은 ``x // pow(2,n)`` 과 같습니다.
+
+      .. admonition:: flowdas
+
+         마스크(mask) 연산은 ``&``, ``|``, ``^`` 연산자를 사용하는 연산을 뜻하는데, 정수의 경우 비트열로 변환한 후
+         비트별로 AND, OR, XOR 연산을 수행하는 것을 뜻합니다. 이 경우 부호 비트끼리 AND, OR, XOR 를 수행해 보면
+         결과의 부호를 쉽게 파악할 수 있습니다. 개념 모델의 "무한" 부분은 이 값의 반복이 됩니다. 나머지 비트들은 어렵지
+         않게 파악할 수 있습니다.
+
    :class:`numbers.Real` (:class:`float`)
       .. index::
          object: floating point
@@ -232,6 +404,20 @@ Ellipsis
       memory usage that are usually the reason for using these are dwarfed by the
       overhead of using objects in Python, so there is no reason to complicate the
       language with two kinds of floating point numbers.
+
+      .. admonition:: flowdas
+
+         허락되는 값의 범위는 :data:`sys.float_info` 에서 제공됩니다.
+
+      .. admonition:: flowdas
+
+         대부분의 경우 IEEE 754 를 따르고 있습니다. 이 경우 :class:`float` 는 64비트로 표현됩니다.
+
+      .. admonition:: flowdas
+         대부분의 플랫폼에서, 오버플로우를 일으키면, 예외를 일으키지 않고 :const:`math.inf` 나 -:const:`math.inf`
+
+         를 돌려줍니다. 이런 동작은 표준 라이브러리의 fpectl 모듈을 통해 일부 변경할 수 있지만, 보통 fpectl 모듈이
+         제거된 상태로 배포되는 경우가 많고, 파이썬 3.7 부터는 이 모듈이 아예 삭제되었습니다.
 
    :class:`numbers.Complex` (:class:`complex`)
       .. index::
@@ -266,6 +452,17 @@ Sequences
    Some sequences also support "extended slicing" with a third "step" parameter:
    ``a[i:j:k]`` selects all items of *a* with index *x* where ``x = i + n*k``, *n*
    ``>=`` ``0`` and *i* ``<=`` *x* ``<`` *j*.
+
+   .. admonition:: flowdas
+
+      마치 확장 슬라이싱을 지원하지 않는 시퀀스가 존재하는 것처럼 표현되었지만, 사실 파이썬에 내장된 시퀀스들은
+      모두 확장 시퀀스를 지원합니다. 지원하지 않을 가능성이 있는 것들은 사용자 정의 시퀀스들 뿐입니다.
+
+   .. admonition:: flowdas
+
+      원래 확장 슬라이싱은 수치 계산용 라이브러리(NumPy 의 조상뻘 되는 것)를 만드는 그룹의 요청으로 들어온 기능
+      (가령 전치행렬(transposed matrix)은 스텝을 조작하는 것 만으로도 표현 가능합니다)이고, 그 당시에는
+      파이썬의 내장 시퀀스들이 오히려 확장 시퀀스를 지원하지 않고 있었습니다.
 
    Sequences are distinguished according to their mutability:
 
@@ -372,10 +569,42 @@ Set types
    and computing mathematical operations such as intersection, union, difference,
    and symmetric difference.
 
+   .. admonition:: flowdas
+
+      이터레이트한다는 것은, 인덱싱할 수는 없어도, 집합이 갖고 있는 원소들을 중복 없고 빠짐 없이 하나씩
+      꺼내볼 수 있다는 뜻입니다.
+
    For set elements, the same immutability rules apply as for dictionary keys. Note
    that numeric types obey the normal rules for numeric comparison: if two numbers
    compare equal (e.g., ``1`` and ``1.0``), only one of them can be contained in a
    set.
+
+   .. admonition:: flowdas
+
+      딕셔너리 키와 동일한 불변성 규칙이라 함은 해시가능성(hashability)을 뜻합니다. 객체가
+      :meth:`__hash__` 메서드와 :meth:`__eq__` 메서드를 제공할 때 해시가능하다고 합니다.
+      또한 두 메서드의 구현에는 두 개의 제약 조건이 더 붙는데, :meth:`__hash__` 는 항상 같은 값을
+      제공해야 하고, :meth:`__eq__` 가 ``True`` 를 돌려주면 언제나 두 객체의 :meth:`__hash__`
+      도 동일한 값을 제공해야 한다는 것입니다. 이 때문에 대체로 해시 가능성은 불변성을 포함하는 경향이
+      있지만 언어에서 강제하는 것은 아닙니다. 가령 내장 불변형들이 해시 가능하고, 가변 내장 컨테이너들이
+      해시 가능하지 않다는 사실은 이 관례를 따르고 있지만, 사용자 정의형들은 가변성의 여부와 관계없이
+      기본적으로 해시 가능합니다. 이는 사용자 정의형들의 :meth:`__hash__` 와 :meth:`__eq__`
+      기본 구현이 값은 무시하고 아이덴티티만 고려하기 때문입니다.
+
+   .. admonition:: flowdas
+      내장 불변 컨테이너가 무조건 적으로 해시 가능하지는 않습니다. 저장된 값들 역시 해시 가능해야 합니다.
+
+      가령 ``()`` 와 ``(1, 'a')`` 는 해시 가능하지만, ``(1, ['a'])`` 는 해시 가능하지 않습니다.
+      이는 불변성과 해시 가능성이 다른 조건임을 보여주는 한 예입니다.
+
+   .. admonition:: flowdas
+
+      집합과 딕셔너리의 키에서 해시가능성을 요구하는 이유는, 둘 다 해시테이블(hashtable) 기반의 자료
+      구조인데, 해시값이 변경될 경우 해시테이블을 재배치할 수 있는 메커니즘이 없기 때문입니다.(있어봐야
+      부담만 커지고 실익이 없기 때문입니다.) 내장 불변 컨테이너들은 값 기반의 깊은 해싱(deep hashing)을
+      사용하는데, 이 조건이 모든 경우에 필요한 것은 아니고, 단지 :meth:`__hash__` 가 언제나 같은 값을
+      주어야 하고, :meth:`__eq__` 와 일관성이 있어야 하는데, 내장 불변형 컨테이너들은 :meth:`__eq__`
+      에서 이미 깊은 비교(deep comparison)를 제공하고 있기 때문입니다.
 
    There are currently two intrinsic set types:
 
@@ -385,6 +614,11 @@ Set types
       These represent a mutable set. They are created by the built-in :func:`set`
       constructor and can be modified afterwards by several methods, such as
       :meth:`~set.add`.
+
+      .. admonition:: flowdas
+
+         중괄호 ``{}`` 를 쓰는 집합 리터럴을 사용해서 만들 수도 있습니다. 하지만 이 방법으로 빈 집합을
+         만들 수는 없습니다.
 
    Frozen sets
       .. index:: object: frozenset
@@ -541,6 +775,78 @@ Callable types
       Additional information about a function's definition can be retrieved from its
       code object; see the description of internal types below.
 
+      .. admonition:: flowdas
+
+         REPR 환경에서 정의된 경우 보통 :attr:`__module__` 은 ``None`` 입니다.
+
+      .. admonition:: flowdas
+
+         다른 함수 내에서 정의되는 함수가, 전역도 지역도 아닌 변수를 사용하는 경우가 있습니다. 이 변수들을 자유 변수(free variable)라고 하는데, 이 때 이 변수들의 값이 셀(cell) 이라는 내부 객체에 보관됩니다. :attr:`__closure__` 는 이 셀들의 목록을 튜플로 제공합니다. 예를 들면::
+
+             >>> def counter():
+             ...     n = 0
+             ...     def tick():
+             ...         nonlocal n
+             ...         n += 1
+             ...         return n
+             ...     return tick
+             ...
+             >>> c = counter()
+             >>> counter.__closure__ is None
+             True
+             >>> c.__closure__
+             (<cell at 0x103e51b28: int object at 0x1009dcc60>,)
+             >>> c.__closure__[0].cell_contents
+             0
+             >>> c()
+             1
+             >>> c.__closure__[0].cell_contents
+             1
+
+      .. admonition:: flowdas
+
+         모듈의 전역 함수로 정의되지 않은 함수들에 접근하기 위해서는, 다른 객체들을 거쳐야 할 수 있습니다. 가령 앞에 소개한 ``tick`` 도 그렇고, 클래스의 메서드로 정의되는 함수들도 그렇습니다. :attr:`~definition.__qualname__` 은 함수에 접근하는데 필요한 이름들을 (모듈명은 제외하고) 모두 제공합니다. 반면 :attr:`~definition.__name__` 은 함수의 이름만을 제공합니다. 앞의 예를 사용하면::
+
+             >>> counter.__name__
+             'counter'
+             >>> counter.__qualname__
+             'counter'
+             >>> c.__name__
+             'tick'
+             >>> c.__qualname__
+             'counter.<locals>.tick'
+             >>> class X:
+             ...     def f(self): pass
+             ...
+             >>> X.f.__name__
+             'f'
+             >>> X.f.__qualname__
+             'X.f'
+
+      .. admonition:: flowdas
+
+         또 다른 예를 하나 들어보겠습니다::
+
+             >>> def f(n: int = 5, *args, kp=None) -> int:
+             ...     return n
+             ...
+             >>> f.__annotations__
+             {'n': <class 'int'>, 'return': <class 'int'>}
+             >>> f.__defaults__
+             (5,)
+             >>> f.__kwdefaults__
+             {'kp': None}
+
+         :attr:`__annotations__` 는 형 정보가 지정된 인자들과 반환값의 형 정보를 제공합니다. :attr:`__defaults__` 는 위치가 할당된 인자들의 기본 값들을 제공합니다. 튜플의 길이는 위치가 할당된 인자들의 개수와 일치합니다. 예에서 ``args`` 는 기본값을 가지는 것이 불가능하기 때문에  :attr:`__defaults__` 에 할당되는 자리도 없습니다. ``*args`` 뒤에 오는 인자들은 위치가 지정되지 않고, 오직 키워드 형태로만 전달될 수 있습니다. 이 것들의 기본 값은 :attr:`__kwdefaults__` 에 딕셔너리 형태로 제공됩니다.
+
+         이 값들은 단순한 정보가 아니고, 실제로 함수가 실행중에 사용하고 있는 값입니다. 때문에, 바꾸면 영향을 받습니다::
+             >>> f()
+
+             5
+             >>> f.__defaults__ = (9,)
+             >>> f()
+             9
+
    Instance methods
       .. index::
          object: method
@@ -563,12 +869,76 @@ Callable types
       method name (same as ``__func__.__name__``); :attr:`__module__` is the
       name of the module the method was defined in, or ``None`` if unavailable.
 
+      .. admonition:: flowdas
+
+         예를 들면::
+
+             >>> class C:
+             ...     def f(self): return self
+             ...
+             >>> i = C()
+             >>> i.f.__self__ is i
+             True
+             >>> i.f.__func__ is C.f # C.f 는 일반 사용자 정의 함수입니다.
+             True
+             >>> i.f.__name__ == i.f.__func__.__name__
+             True
+             >>> i.f.__func__.__name__ = 'g' # 기반 함수의 어트리뷰트는 쓰기가능합니다
+             >>> C.f.__name__ == 'g'
+             True
+             >>> i.f.__name__ == 'g' # 인스턴스 메서드는 기반 함수의 특수 어트리뷰트를 반영합니다
+             True
+             >>> i.f.__name__ = 'f'  # 인스턴스 메서드의 특수 어트리뷰트는 읽기전용입니다
+             Traceback (most recent call last):
+               ...
+             AttributeError: 'method' object has no attribute '__name__'
+
       Methods also support accessing (but not setting) the arbitrary function
       attributes on the underlying function object.
+
+      .. admonition:: flowdas
+
+         앞의 예에서 계속됩니다::
+
+             >>> C.f.sample = True # 함수 어트리뷰트
+             >>> i.f.sample        # 함수 어트리뷰트는 인스턴스 메서드에도 따라옵니다
+             True
+             >>> i.f.sample = False # 하지만 인스턴스 메서드의 어트리뷰트에 쓸 수는 없습니다
+             Traceback (most recent call last):
+               ...
+             AttributeError: 'method' object has no attribute 'sample'
 
       User-defined method objects may be created when getting an attribute of a
       class (perhaps via an instance of that class), if that attribute is a
       user-defined function object or a class method object.
+
+      .. admonition:: flowdas
+
+         예를 들면::
+
+             >>> class C:
+             ...     def f(self):
+             ...         return self
+             ...     @classmethod
+             ...     def g(cls):
+             ...         return cls
+             ...     @staticmethod
+             ...     def h():
+             ...         pass
+             ...
+             >>> i = C()
+             >>> i.f is not C.f # 인스턴스 메서드는 새로 만들어지는 객체입니다
+             True
+             >>> i.g is not C.g # 클래스 메서드도 새로 만들어집니다
+             True
+             >>> i.h is not C.h # 하지만 스태틱 메서드는 새로 만들어지지 않습니다
+             False
+             >>> C.f is C.f # 클래스틀 통하면 사용자 정의 함수는 새로 만들어지지 않습니다
+             True
+             >>> C.h is C.h # 스태틱 메서드도 마찬가지입니다
+             True
+             >>> C.g is C.g # 하지만 클래스 메서드는 클래스를 통해 읽을 때도 새로 만들어집니다
+             True
 
       When an instance method object is created by retrieving a user-defined
       function object from a class via one of its instances, its
@@ -576,16 +946,64 @@ Callable types
       to be bound.  The new method's :attr:`__func__` attribute is the original
       function object.
 
+      .. admonition:: flowdas
+
+         예를 들면::
+
+             >>> class C:
+             ...     def f(self): return self
+             ...
+             >>> i = C()
+             >>> i.f    # 인스턴스 메서드를 bound method 라고 부릅니다
+             <bound method C.f of <C object at 0x104f809b0>>
+             >>> i.f.__self__ is i # __self__ 는 연결된(bound) 인스턴스입니다
+             True
+             >>> i.f.__func__ is C.f # __func__ 는 원래의 함수 객체입니다
+             True
+
       When a user-defined method object is created by retrieving another method
       object from a class or instance, the behaviour is the same as for a
       function object, except that the :attr:`__func__` attribute of the new
       instance is not the original method object but its :attr:`__func__`
       attribute.
 
+      .. admonition:: flowdas
+
+         예를 들면::
+
+             >>> class C:
+             ...     def f(self):
+             ...         return self
+             ...     @classmethod
+             ...     def g(cls):
+             ...         return cls
+             ...     @staticmethod
+             ...     def h():
+             ...         pass
+             ...
+             >>> i = C()
+             >>> C.g is not C.g # 클래스 메서드는 클래스로 접근해도 새로 만들어집니다
+             True
+             >>> C.g # 클래스 메서드 역시 결합된 메서드입니다
+             <bound method C.g of <class 'C'>>
+             >>> C.g.__func__ # __func__ 는 일반 사용자 정의 함수 객체입니다
+             <function C.g at 0x10c4dc488>
+             >>> i.g.__func__ # 인스턴스 메서드의 __func__ 는 클래스 메서드 객체의 __func__ 로 연결됩니다
+             <function C.g at 0x10c4dc488>
+
       When an instance method object is created by retrieving a class method
       object from a class or instance, its :attr:`__self__` attribute is the
       class itself, and its :attr:`__func__` attribute is the function object
       underlying the class method.
+
+      .. admonition:: flowdas
+
+         앞의 예에서 계속됩니다::
+
+             >>> C.g.__self__ is C # 클래스 메서드의 __self__ 는 클래스입니다
+             True
+             >>> i.g.__self__ is C # 클래스 메서드로부터 만들어지는 인스턴스 메서드의 __self__ 역시 클래스입니다
+             True
 
       When an instance method object is called, the underlying function
       (:attr:`__func__`) is called, inserting the class instance
@@ -594,10 +1012,30 @@ Callable types
       :meth:`f`, and ``x`` is an instance of :class:`C`, calling ``x.f(1)`` is
       equivalent to calling ``C.f(x, 1)``.
 
+      .. admonition:: flowdas
+
+         앞의 예에서 계속됩니다::
+
+             >>> i.f() is i.     # 첫번째 인자로 __self__ 가 전달됩니다
+             True
+             >>> i.f() is C.f(i) # i.f() 와 C.f(i) 는 같은 결과를 줍니다.
+             True
+             >>> i.g() is C.     # 클래스 메서드는 __self__ 가 클래스입니다
+             True
+             >>> i.g() is C.g(). # 클래스 메서드는 i.g() 와 C.g() 가 같은 결과를 줍니다. C.g 도 결합된 메서드입니다
+             True
+
       When an instance method object is derived from a class method object, the
       "class instance" stored in :attr:`__self__` will actually be the class
       itself, so that calling either ``x.f(1)`` or ``C.f(1)`` is equivalent to
       calling ``f(C,1)`` where ``f`` is the underlying function.
+
+      .. admonition:: flowdas
+
+         앞의 예에서 계속됩니다::
+             >>> i.g() is i.g.__func__(C) # 클래스 메서드로 부터 온 인스턴스 메서드를 호출하는 것은 기반 함수에 클래스를 전달해서 호출하는 것과 같습니다.
+
+             True
 
       Note that the transformation from function object to instance method
       object happens each time the attribute is retrieved from the instance.  In
@@ -609,6 +1047,31 @@ Callable types
       which are attributes of a class instance are not converted to bound
       methods; this *only* happens when the function is an attribute of the
       class.
+
+      .. admonition:: flowdas
+
+         앞의 예에서 계속됩니다::
+
+             >>> i.f is not i.f # 인스턴스 메서드는 읽을 때마다 새로 만들어집니다.
+             True
+             >>> f = i.f # 인스턴스 메서드를 지역 변수에 저장해서 사용하면 성능을 개선할 수 있습니다
+             >>> f() is i
+             True
+             >>> import timeit
+             >>> timeit('i.f()', globals=locals())
+             0.136665727943182
+             >>> timeit('f()', globals=locals())
+             0.09192681103013456
+             >>> C.p = lambda self: self # 클래스 어트리뷰트로 사용자 정의 함수를 넣으면 메서드를 정의한 것과 같은 결과를 줍니다.
+             >>> i.p() is i # 마찬가지 변환이 일어납니다.
+             True
+             >>> def q(): pass
+             ...
+             >>> i.q = q     # 인스턴스 어트리뷰트로 사용자 정의 함수를 넣으면
+             >>> i.q is q    # 변환이 일어나지 않습니다
+             True
+             >>> i.q() is None # 따라서 __self__ 도 전달되지 않습니다.
+             True
 
    Generator functions
       .. index::
@@ -624,6 +1087,19 @@ Callable types
       :keyword:`return` statement or falls off the end, a :exc:`StopIteration`
       exception is raised and the iterator will have reached the end of the set of
       values to be returned.
+
+      .. admonition:: flowdas
+
+         이터레이터 프로토콜 이라는 것인데, :meth:`iterator.__next__` 메서드를 직접 호출하기 보다는
+         다음과 같은 네가지 방법을 많이 사용합니다.
+
+         * :class:`list`, :class:`tuple`, :class:`set` 등 이터레이터를 받아들이는 컨테이너들의 생성자로 전달해서 변환
+         * :keyword:`for` 문
+         * ``yield from`` 문
+         * :func:`next` 내장 함수
+
+         :func:`next` 내장 함수를 사용하는 경우는 :exc:`StopIteration` 을 직접 처리해야 하고,
+         나머지 경우는 그러지 않아도 됩니다.
 
    Coroutine functions
       .. index::
@@ -687,6 +1163,16 @@ Callable types
       override :meth:`__new__`.  The arguments of the call are passed to
       :meth:`__new__` and, in the typical case, to :meth:`__init__` to
       initialize the new instance.
+
+      .. admonition:: flowdas
+
+         :meth:`__new__` 는 인스턴스 객체를 만드는데 사용되고, :meth:`__init__` 는 그 객체를
+         초기화하는데 사용됩니다. 일반적으로는 :meth:`__new__` 를 재정의하지 않는데, 이 경우 새 인스턴스가
+         만들어집니다. 하지만 특별한 목적으로 이를 재정의할 수 있습니다. 가령 클래스의 인스턴스가 오직 하나만
+         만들어지게 하고 싶다거나, 예전에 반납한 인스턴스들을 재활용 하고 싶다거나 하는 경우입니다. 이런 경우
+         언제나 새 인스턴스가 만들어진다고 보장할 수는 없고, 두 번 초기화될 가능성이 있기 때문에
+         :meth:`__init__` 를 호출할지 여부를 결정하는 규칙이 존재합니다.
+         자세한 내용은 :ref:`customization` 섹션에 나옵니다.
 
    Class Instances
       Instances of arbitrary classes can be made callable by defining a
@@ -775,6 +1261,18 @@ Custom classes
    object. See section :ref:`descriptors` for another way in which attributes
    retrieved from a class may differ from those actually contained in its
    :attr:`~object.__dict__`.
+
+   .. admonition:: flowdas
+
+      "스태틱 메서드 객체가 감싸고 있는 객체"는 기반 함수를 뜻합니다. 즉 원래 함수가 스태틱 메서드
+      객체라는 껍데기를 벗고 그대로 제공됩니다. 그럼에도 불구하고 껍데기를 씌워두는 것은 인스턴스를 통해
+      어트리뷰트를 참조할 경우 때문입니다. 껍데기를 씌워두지 않으면 일반적인 인스턴스 메서드로 변환되기
+      때문에, 이를 막고자, 스태틱 메서드라는 껍데기를 씌워둔 후에, 클래스나 인스턴스 어느쪽이건
+      어트리뷰트에 접근하면 껍데기를 벗겨서 돌려줍니다.
+
+      이런 변환 없이 클래스 어트리뷰트에 저장된 원본(클래스 메서드는 클래스 메서드 인스턴스, 스태틱
+      메서드는 스태틱 메서드 인스턴스)을 조회하려면, 클래스의 :attr:`~object.__dict__`
+      어트리뷰트에서 꺼내면 됩니다. 다만 이 곳에는 부모 클래스가 제공하는 어트리뷰트는 들어있지 않습니다.
 
    .. index:: triple: class; attribute; assignment
 
@@ -1163,17 +1661,43 @@ Basic customization
    with appropriate arguments and then modifying the newly-created instance
    as necessary before returning it.
 
+   .. admonition:: flowdas
+
+      적절한 인자를 전달한다는 것은 ``super().__new__()`` 가 받을 수 있는 인자를 전달한다는 뜻이지,
+      :meth:`__new__` 로 전달된 모든 인자를 전달한다는 뜻이 아닙니다. :meth:`__new__` 를 재정의 하는
+      클래스는 그 성격상 아무것도 계승하고 있지 않을(즉 :class:`object` 만 계승할) 가능성이 많습니다.
+      이 때는 :meth:`object.__new__` 가 호출되는데, 이 메쏘드는 *cls* 외에는 아무것도 받지 않습니다.
+
    If :meth:`__new__` returns an instance of *cls*, then the new instance's
    :meth:`__init__` method will be invoked like ``__init__(self[, ...])``, where
    *self* is the new instance and the remaining arguments are the same as were
    passed to :meth:`__new__`.
 
+   .. admonition:: flowdas
+
+      *cls* 의 인스턴스라 함은, *cls* 의 서브클래스들의 인스턴스도 포함합니다.
+
+   .. admonition:: flowdas
+
+      만약 새로 인스턴스를 만들지 않고, 이미 존재하는 인스턴스를 돌려주려고 한다면, :meth:`__init__` 가
+      두 번 호출될 수 있습니다.
+
    If :meth:`__new__` does not return an instance of *cls*, then the new instance's
    :meth:`__init__` method will not be invoked.
+
+   .. admonition:: flowdas
+
+      :meth:`__new__` 가 ``None`` 을 돌려주면, 클래스 호출 자체의 결과가 ``None`` 이 됩니다.
+      때문에 클래스만으로도 팩토리 함수처럼 동작하도록 만들 수 있습니다.
 
    :meth:`__new__` is intended mainly to allow subclasses of immutable types (like
    int, str, or tuple) to customize instance creation.  It is also commonly
    overridden in custom metaclasses in order to customize class creation.
+
+   .. admonition:: flowdas
+
+      불변형은 일단 만들어진 후에는 수정할 수 없기 때문에, :meth:`__init__` 에서 커스터마이즈 하기가
+      곤란합니다.
 
 
 .. method:: object.__init__(self[, ...])
@@ -1186,6 +1710,162 @@ Basic customization
    method, the derived class's :meth:`__init__` method, if any, must explicitly
    call it to ensure proper initialization of the base class part of the
    instance; for example: ``super().__init__([args...])``.
+
+   .. admonition:: flowdas
+
+      :meth:`object.__init__` 가 정의되어 있기 때문에, 이 규칙은 사실상 모든 :meth:`__init__`
+      는 항상 ``super().__init__([args...])`` 를 호출해야 한다는 뜻이됩니다. 예를 들어봅시다.
+      세 개의 클래스가 다음과 같은 다중 계승 구조를 이루고 있습니다::
+
+          >>> class B1:
+          ...     def __init__(self):
+          ...         print('B1')
+          ...
+          >>> class B2:
+          ...     def __init__(self):
+          ...         print('B2')
+          ...
+          >>> class D(B1, B2):
+          ...     def __init__(self):
+          ...         print('D')
+          ...         super().__init__()
+          ...
+          >>> D()
+          D
+          B1
+          <D object at 0x10c70ff28>
+
+      B1 과 B2 가 이 규칙을 무시하고, ``super().__init__()`` 를 호출하지 않았습니다.
+      :meth:`object.__init__` 는 별다른 일을 하지 않기 때문에, B1 과 B2 자체를 사용하는데는 문제를
+      일으키지 않습니다. 하지만 이들을 다중 계승하는 다른 클래스에서 문제가 발생합니다. 이 경우
+      ``B2.__init__()`` 가 호출되지 않음을 볼 수 있습니다.
+
+      ``D.__init__()`` 에서 ``super().__init__()`` 대신에 ``B1.__init__()`` 와
+      ``B2.__init__()`` 를 차례대로 호출하면 되지 않겠는가 하고 생각할 수도 있지만, 이는 다른 문제를
+      만들게 되는데, 다음에 설명합니다. 이제 B1 과 B2 를 올바르게 구성해봅시다::
+
+          >>> class B1:
+          ...     def __init__(self):
+          ...         print('B1')
+          ...         super().__init__()
+          ...
+          >>> class B2:
+          ...     def __init__(self):
+          ...         print('B2')
+          ...         super().__init__()
+          ...
+          >>> class D(B1, B2):
+          ...     def __init__(self):
+          ...         print('D')
+          ...         super().__init__()
+          ...
+          >>> D()
+          D
+          B1
+          B2
+          <D object at 0x10c72a2b0>
+
+      ``D.__init__()`` 를 바꾸지 않았는데도, ``B2.__init__()`` 가 호출됨을 확인할 수 있습니다.
+      약간은 마술같은 일이 벌어졌는데, 모두 :func:`super` 때문에 일어나는 일입니다. :func:`super` 는
+      다음에 설명합니다.
+
+   .. admonition:: flowdas
+
+      다중 계승에서 발생하는 진짜 문제는 소위 다이아몬드 계승이라는 것입니다. 가령 위의 예에서 B1 과 B2 가
+      같은 클래스 B 를 또 계승하고 있는 것입니다. 이 때 ``B.__init__()`` 가 정확히 한번만 호출되어야
+      합니다. 예를 들어봅시다::
+
+          >>> class B:
+          ...     def __init__(self):
+          ...         print('B')
+          ...         super().__init__()
+          ...
+          >>> class B1(B):
+          ...     def __init__(self):
+          ...         print('B1')
+          ...         super().__init__()
+          ...
+          >>> class B2(B):
+          ...     def __init__(self):
+          ...         print('B2')
+          ...         super().__init__()
+          ...
+          >>> class D(B1, B2):
+          ...     def __init__(self):
+          ...         print('D')
+          ...         super().__init__()
+          ...
+          >>> D()
+          D
+          B1
+          B2
+          B
+          <D object at 0x10c509208>
+
+      보시다시피, 언제나 ``super().__init__()`` 를 한번 호출한다는 규칙을 따르는 한 문제가 발생하지
+      않습니다. 하지만 만약 ``D.__init__()`` 가 :func:`super` 를 사용하지 않고, ``B1.__init__()``
+      와 ``B2.__init__()`` 를 직접호출 하면 이런일이 발생합니다::
+
+          >>> class D(B1, B2):
+          ... def __init__(self):
+          ...     print('D')
+          ...     B1.__init__(self)
+          ...     B2.__init__(self)
+          ...
+          >>> D()
+          D
+          B1
+          B2
+          B
+          B2
+          B
+          <D object at 0x10c509160>
+
+      ``B.__init__()`` 뿐만 아니라 ``B2.__init__()`` 도 두 번씩 호출되고 있습니다.
+      첫번째 ``B2.__init__()`` 는 ``B1.__init__()`` 가 호출한 것인데 :func:`super` 의 동작
+      원리 때문입니다. (이 역시 마술같은 일이지만, 이번에는 흑마술입니다.) 이처럼 다중 계승에서 :func:`super`
+      가 제공하는 메커니즘은 모든 클래스가 :func:`super` 를 사용하는 경우에만 올바로 동작합니다.
+
+      그러면 아예 :func:`super` 를 사용하지 않는다면? 그럴 경우는 ``B2.__init__()`` 가 두 번 호출되지는
+      않겠지만, ``B.__init__()`` 가 두 번 호출되는 것은 피할 수 없습니다.
+
+   .. admonition:: flowdas
+
+      :func:`super` 는 이런 문제를 풀기 위한 특별한 메커니즘을 제공합니다. :func:`super` 는 다양한
+      방법으로 사용될 수 있지만, 지금의 경우에 국한한다면, 이런 일이 일어납니다.
+
+      :func:`super` 는 현재의 인스턴스(``self``) 의 :attr:`__mro__` 어트리뷰트를 살핍니다.
+      이 값은 어떤 :meth:`__init__` 가 실행되고 있는지에 관계 없이 (같은 ``self`` 가 전달되기 때문에)
+      같습니다. 또 한가지 살피는 것은 지금 :meth:`__init__` 를 제공하는 클래스입니다. 즉 ``D.__init__()``
+      에서 호출되는 :func:`super` 는 ``self`` 와 ``D`` 를 파악합니다.
+
+      이제 ``self.__mro__`` 에서 ``D`` 를 검색해서 그 위치를 기억합니다. 이제 ``super().__init__()`` 를
+      호출하면, 먼저 ``super()`` 로부터 ``__init__`` 라는 이름의 어트리뷰트를 요청해야하는데, ``super()``
+      는 ``self.__mro__`` 에서 현재 위치 다음에 나오는 클래스들 중에서 ``__init__`` 를 제공하는 클래스를
+      찾아서 줍니다. ``self.__mro__`` 의 끝에는 항상 :class:`object` 가 들어있기 때문에 늘
+      :meth:`object.__init__` 로 끝납니다.
+
+      이 메커니즘을 잘 따져보면, 언제나 한 방향으로만 검색하기 때문에 ``self.__mro__`` 에 클래스가 두 번 등장하지
+      않는 이상, 한 클래스의 :meth:`__init__` 가 두 번 호출될 일은 없습니다.
+
+      보통, 클래스를 정의할 때 이 순서가 결정됩니다. 이 순서를 MRO (method resolution order) 라고 부르는데,
+      베이스 클래스들의 계승 순서들을 따져서, 중복되지 않고 일관성있는 순서를 결정합니다. 인스턴스나 클래스의
+      어트리뷰트를 검색할 때도 같은 순서에 따라 검색합니다.
+
+   .. admonition:: flowdas
+
+      그런데 한 가지 문제가 남아있습니다. ``super().__init__()`` 에 어떤 인자를 전달할 것인가 하는 문제입니다.
+      이 것이 문제가 되는 이유는, 어떤 클래스의 :meth:`__init__` 가 호출되는지 정확히 알기 어렵기 때문입니다.
+      가령 위의 예에서 ``B1.__init__()`` 에 포함된 ``super().__init__()`` 는 ``B2.__init__()`` 를
+      호출하게 됩니다. 그런데 B1 을 작성하는 프로그래머는 B 에 대해서만 파악했을 뿐, B2 에 대해서는 들어본 일이
+      없을 수도 있습니다. B2 는 D 를 만드는 프로그래머가 새로 추가했을 수 있습니다. 그렇다면 B1 을 작성할
+      당시에는 ``B2.__init__()`` 가 어떤 인자를 필요로 하는지 알 길이 없습니다.
+
+      이 문제는 일관성있는 관례를 정하는 것 외에는 풀 길이 없는 문제입니다. 그 관례라 함은, 모두 같은 형식의 인자를
+      받아야 한다는 것입니다. 이는 설계의 문제인데, 클래스 계승 구조 전체에서 일관되게 사용될 수 있는 정책을 마련해야
+      합니다. 자주 사용되는 정책은, 아예 인자를 받지 않는 것과, 키워드 인자들만 받고 지원하지 않는 인자들은 모두
+      무시하는 것입니다. 결국 다승 계승 구조는 전체 적인 사전 설계가 필요한 작업이고, 특히 :meth:`__init__` 가
+      정의된 클래스들을 사전 설계없이 다중 계승 구조에 병합하는 것은 문제를 일으킬 수 있습니다.
 
    Because :meth:`__new__` and :meth:`__init__` work together in constructing
    objects (:meth:`__new__` to create it, and :meth:`__init__` to customize it),
@@ -1215,6 +1895,36 @@ Basic customization
 
    It is not guaranteed that :meth:`__del__` methods are called for objects
    that still exist when the interpreter exits.
+
+   .. admonition:: flowdas
+
+      :meth:`__del__` 이 인스턴스의 파괴를 지연시키는 경우, CPython 3.4 이후로 :meth:`__del__`
+      은 오직 한번만 호출됩니다. 파괴의 지연은 가능하지만 지연된 객체가 다시 파괴될 때는 :meth:`__del__`
+      이 호출되지 않습니다. 자세한 내용은 :pep:`442` 를 참고하세요.
+
+   .. admonition:: flowdas
+
+      :meth:`__del__` 이 인스턴스의 파괴를 지연시키는 예를 들어보자면 이렇습니다::
+
+          >>> class X:
+          ...     def __del__(self):
+          ...         print('X.__del__')
+          ...         global x
+          ...         x = self
+          ...
+          >>> x = X()
+          >>> del x
+          X.__del__
+          >>> del x
+          >>> del x
+          Traceback (most recent call last):
+            ...
+          NameError: name 'x' is not defined
+
+      첫 번째 ``del x`` 에서 ``X.__del__()`` 이 호출되는데, 전역 변수 ``x`` 에 자신을 대입하기
+      때문에, 참조 회수가 0 이 되지 않도록 만듭니다. 때문에 실제로는 파괴되지 않고 살아있게 됩니다.
+      그래서 두 번째 ``del x`` 역시 정상 동작하고, 이 때 파괴가 실제로 일어나지만, ``X.__del__()`` 은
+      호출되지 않습니다. 이제 실제로 파괴되었기 때문에, 세번째 ``del x`` 는 예외를 일으키게 됩니다.
 
    .. note::
 
@@ -1359,12 +2069,39 @@ Basic customization
    context (e.g., in the condition of an ``if`` statement), Python will call
    :func:`bool` on the value to determine if the result is true or false.
 
+   .. admonition:: flowdas
+      이 메쏘드가 어떤 형의 값이건 돌려줄 수 있도록 한 애초의 이유는, 벡터나 행렬과 같은 것들을 다루는 확장
+
+      모듈들을 지원하기 위해서입니다. 이런 모듈들에서 벡터간의 비교는 역시 항목들간의 비교값으로 구성된 벡터를
+      만들어냅니다. 하지만 이런 이런 용도로만 제한되지는 않습니다.
+
    By default, :meth:`__ne__` delegates to :meth:`__eq__` and
    inverts the result unless it is ``NotImplemented``.  There are no other
    implied relationships among the comparison operators, for example,
    the truth of ``(x<y or x==y)`` does not imply ``x<=y``.
    To automatically generate ordering operations from a single root operation,
    see :func:`functools.total_ordering`.
+
+   .. admonition:: flowdas
+
+      :meth:`__ne__` 를 구현하지 않아도 :meth:`__eq__` 만 구현되어 있으면 ``x==y`` 뿐만 아니라
+      ``x!=y`` 역시 자동 지원되고, 그 값은 ``!(x==y)`` 가 된다는 뜻입니다. :meth:`__ne__` 를 직접
+      구현한다면, 이 관계가 꼭 성립할 필요는 없습니다.
+
+      하지만 그 반대는 지원하지 않습니다. :meth:`__eq__` 를 정의하지 않고, :meth:`__ne__` 만 정의하는
+      경우, 여전히 ``x==y`` 가 지원되지만, 이 경우는 두 객체의 아이덴티티를 비교하는 기본 구현이 사용되는
+      것이지, ``!(x!=y)`` 로 변환된 것이 아닙니다.
+
+   .. admonition:: flowdas
+
+      :func:`functools.total_ordering` 은 데코레이터로 사용되는데, 클래스에 이 데코레이터를 적용하면
+      :meth:`__lt__`, :meth:`__le__`, :meth:`__gt__`, :meth:`__ge__` 중에서 새로 정의한 것
+      하나를 골라 기본 연산으로 삼고, 빠진 것들을 기본 연산과 ``==``, ``!=``, :keyword:`not`,
+      :keyword:`and`, :keyword:`or` 를 사용한 구현들로 채워넣습니다.
+
+      일반적으로 :meth:`__eq__` 와 :meth:`__lt__` 만 정의합니다. 이 때 객체들의 모든 값은 일관성있게
+      대소 비교(totally ordered)가 가능하게 됩니다. :func:`functools.total_ordering` 이
+      :meth:`__eq__` 나 :meth:`__lt__` 를 만들지는 않습니다.
 
    See the paragraph on :meth:`__hash__` for
    some important notes on creating :term:`hashable` objects which support
@@ -1380,6 +2117,19 @@ Basic customization
    the reflected method of the right operand has priority, otherwise
    the left operand's method has priority.  Virtual subclassing is
    not considered.
+
+   .. admonition:: flowdas
+
+      두 피연산자 중 어느 하나의 형이 다른 하나의 형과 서브 클래스 관계에 있으면, 서브 클래스 쪽이 우선권을
+      가져서, 처음 부터 뒤집힌 연산이 먼저 시도된다는 뜻입니다.
+
+      이 규칙은 뒤집힌 버전이 따로 제공되는 산술 연산자에서도 적용됩니다.
+
+   .. admonition:: flowdas
+      가상 서브클래싱(virtual subclassing) 이란, 소위 추상 베이스 클래스(ABC - Abstract Base
+
+      Class)에서 사용되는 것인데, 클래스 정의에서 베이스 클래스를 정의하는 대신, ABC 의
+      :meth:`abc.ABCMeta.register` 메서드를 사용해서 계승 관계를 정의해 주는 것을 뜻합니다.
 
 .. method:: object.__hash__(self)
 
@@ -1417,6 +2167,15 @@ Basic customization
    immutable (if the object's hash value changes, it will be in the wrong hash
    bucket).
 
+   .. admonition:: flowdas
+
+      두 객체가 같다고 비교될 경우 :meth:`__hash__` 역시 같은 값을 주어야 한다는 조건과, 해시형
+      컬렉션들이 요구하는 키의 해시값이 불변이라는 조건을 합치면, 일단 해시형 컬렉션에서 키로 사용되기
+      위해서는 :meth:`__eq__` 기준으로 불변이어야 한다는 뜻이됩니다. 이 때문에 가변형 객체에서
+      :meth:`__eq__` 를 정의하는 경우, :meth:`__hash__` 를 정의하지 말라고 하는 것입니다.
+      일단 :meth:`__eq__` 가 정의되면 :meth:`__hash__` 의 기본 구현이 제거되기 때문에,
+      해시형 컬렉션에서 사용할 수 없는 상태가 됩니다.
+
    User-defined classes have :meth:`__eq__` and :meth:`__hash__` methods
    by default; with them, all objects compare unequal (except with themselves)
    and ``x.__hash__()`` returns an appropriate value such that ``x == y``
@@ -1428,6 +2187,13 @@ Basic customization
    raise an appropriate :exc:`TypeError` when a program attempts to retrieve
    their hash value, and will also be correctly identified as unhashable when
    checking ``isinstance(obj, collections.abc.Hashable)``.
+
+   .. admonition:: flowdas
+
+      :meth:`__eq__` 를 재정의하고 :meth:`__hash__` 를 정의하지 않는 클래스에 대해
+      :meth:`__hash__` 를 ``None`` 으로 설정하는 것은, 개별 클래스 정의마다 일어나는 일입니다.
+      부모 클래스의 정의가 어떠한지는 상관없습니다. :meth:`__eq__` 를 정의하지 않으면
+      :meth:`__hash__` 는 부모클래스로 부터 계승됩니다.
 
    If a class that overrides :meth:`__eq__` needs to retain the implementation
    of :meth:`__hash__` from a parent class, the interpreter must be told this
@@ -1504,6 +2270,20 @@ access (use of, assignment to, or deletion of ``x.name``) for class instances.
    :meth:`__getattribute__` method below for a way to actually get total control
    over attribute access.
 
+   .. admonition:: flowdas
+
+      이미 존재하는 어트리뷰트의 경우, 대입할 때는 :meth:`__setattr__` 가 호출되는데, 읽을 때는
+      :meth:`__getattr__` 가 호출되지 않습니다.
+
+      :meth:`__setattr__` 가 기능을 구현할 때는 다른 어트리뷰트를 대입하지 않고도 가능합니다.
+      가령 :meth:`__setattr__` 는 :attr:`__dict__` 에 직접 값을 넣을 수 있는데,
+      :attr:`__dict__` 의 내용을 바꾸는 것일뿐, :attr:`__dict__` 라는 어트리뷰트 자체를 변경하는
+      것은 아닙니다. 이 때문에 :meth:`__setattr__` 이 다시 :meth:`__setattr__` 을 재귀적으로
+      호출하는 의도하지 않은 상황을 피할 수 있습니다.
+
+      하지만 어트리뷰트를 읽지 않고 :meth:`__getattr__` 을 구현하는 것은, 특별한 경우라면 모를까
+      일반적으로 가능한 일은 아닙니다. 물론 예외 규칙을 도입하면 됩니다. 그 가장 간단한 예외 규칙 하나가,
+      이미 있는 어트리뷰트에 대해서는 :meth:`__getattr__` 를 호출하지 않는다는 것입니다.
 
 .. method:: object.__getattribute__(self, name)
 
@@ -1614,6 +2394,29 @@ dictionary for one of its parents).  In the examples below, "the attribute"
 refers to the attribute whose name is the key of the property in the owner
 class' :attr:`~object.__dict__`.
 
+.. admonition:: flowdas
+
+   이런 상황을 뜻합니다::
+
+       class Descriptor:
+           def __get__(self, instance, owner):
+               ...
+           def __set__(self, instance, value):
+               ...
+           def __delete__(self, instance):
+               ...
+           def __set_name__(self, owner, name):
+               ...
+
+       class Owner:
+           attribute = Descriptor()
+
+       instance = Owner()
+
+   ``Descriptor`` 를 디스크립터 클래스라고 부르고, ``Owner`` 를 소유자 클래스라고 부릅니다.
+   디스크립터 클래스의 인스턴스가 소유자 클래스의 클래스 어트리뷰트로 들어간다는 것이 중요합니다.
+   이럴 때 ``Owner.attribute`` 나 ``instance.attribute`` 표현식을 계산하려고 하면
+   ``Descriptor.__get__()`` 이 끼어들게 됩니다.
 
 .. method:: object.__get__(self, instance, owner)
 
@@ -1624,16 +2427,32 @@ class' :attr:`~object.__dict__`.
    should return the (computed) attribute value or raise an :exc:`AttributeError`
    exception.
 
+   .. admonition:: flowdas
+
+      위의 예에서 ``instance.attribute`` 는 ``Descriptor.__get__(self, instance, Owner)``
+      가 호출되도록 하고, ``Owner.attribute`` 는 ``Descriptor.__get__(self, None, Owner)``
+      이 호출되도록 한다는 뜻입니다. ``self`` 로는 ``Owner.__dict__['attribute']`` 가 전달됩니다.
+
 
 .. method:: object.__set__(self, instance, value)
 
    Called to set the attribute on an instance *instance* of the owner class to a
    new value, *value*.
 
+   .. admonition:: flowdas
+
+      위의 예에서 ``instance.attribute = value`` 하는 경우입니다. :meth:`__get__` 과 달리
+      클래스 어트리뷰트의 대입 ``Owner.attribute = value`` 는 디스크립터를 호출하지 않습니다.
+
 
 .. method:: object.__delete__(self, instance)
 
    Called to delete the attribute on an instance *instance* of the owner class.
+
+   .. admonition:: flowdas
+
+      위의 예에서 ``del instance.attribute`` 하는 경우입니다. :meth:`__get__` 과 달리 클래스
+      어트리뷰트의 삭제 ``del Owner.attribute`` 는 디스크립터를 호출하지 않습니다.
 
 
 .. method:: object.__set_name__(self, owner, name)
@@ -1643,6 +2462,18 @@ class' :attr:`~object.__dict__`.
 
    .. versionadded:: 3.6
 
+   .. admonition:: flowdas
+
+      위의 예에서, ``Owner`` 클래스가 정의될 때,
+      ``Descriptor.__set_name__(self, Owner, 'attribute')`` 가 호출됩니다.
+   .. admonition:: flowdas
+
+
+      디스크립터는 자신이 어떤 이름의 클래스 어트리뷰트로 등록되었는지를 알면 유용한 경우가 많습니다. 가령
+      디스크립터는 데이터베이스 ORM 에서 컬럼을 표현할 때 자주 사용되는데, 자신이 어떤 이름의 컬럼에 매핑되어
+      있는지 알아야, 자신이 테이블의 어떤 컬럼에 매핑되는지 파악할 수 있습니다. 3.6 이전의 버전에서는 이 메서드가
+      제공되지 않았기 때문에 좀 더 복잡한 다른 방법(가령 메타클래스)으로 이 이름을 알아내곤 했습니다.
+
 
 The attribute :attr:`__objclass__` is interpreted by the :mod:`inspect` module
 as specifying the class where this object was defined (setting this
@@ -1650,6 +2481,11 @@ appropriately can assist in runtime introspection of dynamic class attributes).
 For callables, it may indicate that an instance of the given type (or a
 subclass) is expected or required as the first positional argument (for example,
 CPython sets this attribute for unbound methods that are implemented in C).
+
+.. admonition:: flowdas
+
+   디스크립터 메서드의 경우 어트리뷰트 :attr:`__objclass__` 를 :mod:`inspect` 모듈이 조사하기는
+   하지만, 그리 쓸모있는 역할을 하고 있지는 못합니다.
 
 
 .. _descriptor-invocation:
@@ -1757,6 +2593,38 @@ Notes on using *__slots__*
   cannot be used to set default values for instance variables defined by
   *__slots__*; otherwise, the class attribute would overwrite the descriptor
   assignment.
+
+  .. admonition:: flowdas
+
+     클래스 정의에서 *__slots__* 로 정의된 인스턴스 변수와 같은 이름의 클래스 어트리뷰트를 제공하면
+     예외를 일으킵니다. 하지만 클래스 어트리뷰트는 클래스 정의 밖에서도 제공할 수 있는데, 이 때
+     디스크립터가 제거되게 됩니다. 예를 들어::
+
+         >>> class X:
+         ...     __slots__ = ('value',)
+         ...     def __init__(self, value=None):
+         ...         if value:
+         ...             self.value = value
+         ...
+         >>> x = X()
+         >>> x.value # 선언은 되었으나, self.value 에 아직 값이 대입되지 않았습니다.
+         Traceback (most recent call last):
+             ...
+         AttributeError: value
+         >>> X.value # 클래스 어트리뷰트는 디스크립터입니다.
+         <member 'value' of 'X' objects>
+         >>> x.value = 2 # 값을 대입할 수는 있습니다.
+         >>> x.value # 이제 예외가 발생하지 않습니다.
+         2
+         >>> X.value = 1 # 기본 값으로 사용되도록 클래스 어트리뷰트를 설정하려고 하지만, 결과적으로 디스크립터를 제거하게됩니다.
+         >>> X.value
+         1
+         >>> x.value # 디스크립터가 제거되어, 아까 설정한 값도 읽을 수 없게됩니다.
+         1
+         >>> x.value = 2 # 값을 다시 대입할 수도 없게됩니다.
+         Traceback (most recent call last):
+             ...
+         AttributeError: 'X' object attribute 'value' is read-only
 
 * The action of a *__slots__* declaration is not limited to the class
   where it is defined.  *__slots__* declared in parents are available in
@@ -1941,6 +2809,52 @@ defined inside the class still cannot see names defined at the class scope.
 Class variables must be accessed through the first parameter of instance or
 class methods, or through the implicit lexically scoped ``__class__`` reference
 described in the next section.
+
+.. admonition:: flowdas
+
+   메서드에서 클래스 어트리뷰트를 직접 참조할 수 없다는 뜻입니다. 하지만 *self*, *cls*,
+   ``__class__`` 를 통하는 것 외에도, 클래스 객체에 대한 직접적인 참조를 통해 접근할 수 있습니다.
+   예를 들어::
+
+       class X:
+           value = 'X'
+
+           def f(self):
+               print('type(self) is', type(self).value)
+               print('__class__ is', __class__.value)
+               print('X is', X.value)
+
+           @classmethod
+           def g(cls):
+               print('cls is', cls.value)
+               print('__class__ is', __class__.value)
+               print('X is', X.value)
+
+           @staticmethod
+           def h():
+               print('__class__ is', __class__.value)
+               print('X is', X.value)
+
+   클래스 ``X`` 에 대한 직접적인 참조는, 클래스 정의가 함수 내부에서 이루어져도 가능한데, 메서드가
+   함수의 자유 변수들을 볼 수 있다는 규칙 때문입니다. ``__class__`` 의 주 용도는, :func:`super`
+   에 인자를 주지 않을 경우(즉 ``super()`` 라고 쓸 경우), 현재 메서드가 정의된 클래스를 찾는 것입니다.
+   이 때문에 ``__class__`` 는 ``type(self)`` 나 *cls* 보다는 ``X`` 를 사용할 때 처럼
+   동작합니다. 가령::
+
+       >>> class Y(X):
+       ...     value = 'Y'
+       ...
+       >>> Y().f()
+       type(self) is Y
+       __class__ is X
+       X is X
+       >>> Y.g()
+       cls is Y
+       __class__ is X
+       X is X
+       >>> Y.h()
+       __class__ is X
+       X is X
 
 .. _class-object-creation:
 
@@ -2162,6 +3076,11 @@ through the container; for mappings, :meth:`__iter__` should be the same as
 
    and so forth.  Missing slice items are always filled in with ``None``.
 
+   .. admonition:: flowdas
+
+      "다음에 나오는 세 메서드들" 은 :meth:`__getitem__`, :meth:`__setitem__`,
+      :meth:`__delitem__` 를 의미합니다.
+
 
 .. method:: object.__getitem__(self, key)
 
@@ -2178,6 +3097,23 @@ through the container; for mappings, :meth:`__iter__` should be the same as
 
       :keyword:`for` loops expect that an :exc:`IndexError` will be raised for illegal
       indexes to allow proper detection of the end of the sequence.
+
+      .. admonition:: flowdas
+         :keyword:`for` 루프는, 객체가 :meth:`__iter__` 를 정의하지 않을 경우, 0 부터 시작해서
+
+         하나씩 증가하는 정수를 사용해서 차례대로 :meth:`__getitem__` 을 호출합니다.
+         :exc:`IndexError` 가 발생할 때까지 이 과정을 계속 진행합니다. 이 때 :exc:`IndexError`
+         는 :keyword:`for` 루프의 종료 신호로 사용될 뿐, 루프 바깥으로 확산되지 않습니다.
+
+
+.. method:: object.__missing__(self, key)
+
+   Called by :class:`dict`\ .\ :meth:`__getitem__` to implement ``self[key]`` for dict subclasses
+   when key is not in the dictionary.
+
+   .. admonition:: flowdas
+
+      :class:`dict` 가 이 메서드를 미리 정의하고 있지는 않습니다. 서브 클래스가 정의한다면 호출한다는 뜻입니다.
 
 
 .. method:: object.__setitem__(self, key, value)
@@ -2358,6 +3294,30 @@ left undefined.
    :ref:`faq-augmented-assignment-tuple-error`), but this behavior is in fact
    part of the data model.
 
+   .. admonition:: flowdas
+
+      :ref:`faq-augmented-assignment-tuple-error` 는 이런 상황을 예시하고 있습니다::
+
+          >>> a_tuple = (['foo'], 'bar')
+          >>> a_tuple[0] += ['item']
+          Traceback (most recent call last):
+            ...
+          TypeError: 'tuple' object does not support item assignment
+
+      이 에러는 ``a_tuple[0] += ['item']`` 을 동등한 표현인
+      ``a_tuple[0] = a_tuple[0].__iadd__(['item'])`` 로 풀어 써 보면 당연한 결과입니다.
+      대입문의 우변을 계산하는데는 문제가 없지만, 튜플의 항목에 대입하려는 순간 에러가 발생합니다.
+      이 사실 자체는 튜플이 불변객체이기 때문에 이상할 것이 없습니다.
+
+      하지만 진짜 문제는 증분 대입문이 원자적이지 않다는 사실입니다. 원자적이지 않다는 것은 오류가
+      발생해서 실패했음에도 불구하고, 실행 전과 비교할 때 뭔가 달라졌다는 뜻입니다. 우변의 표현은
+      성공하는데, 이 때 실행된 것은 ``list.__iadd__()`` 입니다. 이 메서드는 자기 자신을 변경한
+      후에 ``self`` 를 돌려줍니다. 그 결과, 비록 튜플을 변경하려는 시도는 실패하지만, 이미 튜플안에
+      들어있던 리스트는 변경된 상태로 남게 됩니다::
+
+          >>> a_tuple
+          (['foo', 'item'], 'bar')
+
 
 .. method:: object.__neg__(self)
             object.__pos__(self)
@@ -2391,6 +3351,11 @@ left undefined.
    slicing, or in the built-in :func:`bin`, :func:`hex` and :func:`oct`
    functions). Presence of this method indicates that the numeric object is
    an integer type.  Must return an integer.
+
+   .. admonition:: flowdas
+
+      가령 ``x[y:]`` 라는 표현이 있을 때 ``y`` 가 정수형이 아니면
+      ``x[y.__index__():]`` 와 같은 표현으로 변환된다는 뜻입니다.
 
    .. note::
 
@@ -2499,6 +3464,22 @@ itself::
      File "<stdin>", line 1, in <module>
    TypeError: descriptor '__hash__' of 'int' object needs an argument
 
+.. admonition:: flowdas
+
+   구문 분석 단계를 무사히 통과하기 위해서, 숫자 리터럴 ``1`` 과 ``.`` 사이에 공백이 삽입되었습니다.
+   그렇지 않으면 ``.`` 이 숫자 리터럴의 일부로 판단되어 :exc:`SyntaxError` 가 발생합니다.
+
+.. admonition:: flowdas
+
+   ``int.__hash__()`` 는 클래스 메서드가 아닌 일반 메서드입니다. 따라서 일반적인 메서드 호출 규칙을
+   따르고, ``self`` 에 해당하는 인자를 필요로 합니다. 이렇게 모든 객체에 공통적으로 적용되는 메서드들은,
+   한가지 유형을 공유해야 하기 때문에, ``1 .__hash__()`` 에서는 일반 메서드 호출 규칙을 따르고,
+   ``int.__hash__()`` 에서는 클래스 메서드 호출 규칙을 따르는 식으로 처리하려면, 메서드 호출 규칙이
+   너무 복잡해집니다. 때문에 메서드 호출 규칙은 손대지 않고 :func:`hash` 가 항상 대상 객체의 형에 정의된
+   ``__hash__()`` 를 사용하는 것으로 딜레마를 해결합니다. 따라서 ``hash(1)`` 은 ``int.__hash__()``
+   를 사용하고, ``hash(int)`` 는 ``type.__hash__()`` 를 사용합니다.
+   (:class:`type` 은 :class:`int` 형의 메타클래스입니다.)
+
 Incorrectly attempting to invoke an unbound method of a class in this way is
 sometimes referred to as 'metaclass confusion', and is avoided by bypassing
 the instance when looking up special methods::
@@ -2554,6 +3535,10 @@ Awaitable Objects
 An :term:`awaitable` object generally implements an :meth:`__await__` method.
 :term:`Coroutine` objects returned from :keyword:`async def` functions
 are awaitable.
+
+.. admonition:: flowdas
+
+   어웨이터블 객체란 :keyword:`await` 표현식에 사용될 수 있는 객체를 뜻합니다.
 
 .. note::
 
@@ -2646,6 +3631,12 @@ Asynchronous iterators can be used in an :keyword:`async for` statement.
    Must return an *awaitable* resulting in a next value of the iterator.  Should
    raise a :exc:`StopAsyncIteration` error when the iteration is over.
 
+   .. admonition:: flowdas
+
+      다음에 나오는 예에서 드러나듯이, :meth:`__anext__` 를 ``async def`` 로 구현하는 경우,
+      코루틴이 만들어지기 때문에 항상 어웨이터블을 돌려줍니다. 이 경우, 메서드의 :keyword:`return`
+      문에서 이터레이터의 다음 값을 제공하면 됩니다.
+
 An example of an asynchronous iterable object::
 
     class Reader:
@@ -2672,6 +3663,10 @@ An example of an asynchronous iterable object::
    asynchronous iterator object.  Returning anything else
    will result in a :exc:`TypeError` error.
 
+.. admonition:: flowdas
+
+   CPython 3.5.0 과 3.5.1 에서만 이 호환성 문제가 발생하는데, 이 버전들에서는 ``__aiter__``
+   가 ``async def`` 로 정의되었었습니다.
 
 .. _async-context-managers:
 
