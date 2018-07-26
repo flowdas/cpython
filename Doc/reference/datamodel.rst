@@ -3141,6 +3141,10 @@ through the container; for mappings, :meth:`__iter__` should be the same as
    Called by :class:`dict`\ .\ :meth:`__getitem__` to implement ``self[key]`` for dict subclasses
    when key is not in the dictionary.
 
+   .. admonition:: flowdas
+
+      :class:`dict` 가 이 메서드를 미리 정의하고 있지는 않습니다. 서브 클래스가 정의한다면 호출한다는 뜻입니다.
+
 
 .. method:: object.__iter__(self)
 
