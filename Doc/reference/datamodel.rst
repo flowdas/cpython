@@ -3106,6 +3106,10 @@ through the container; for mappings, :meth:`__iter__` should be the same as
          :exc:`IndexError` 가 발생할 때까지 이 과정을 계속 진행합니다. 이 때 :exc:`IndexError`
          는 :keyword:`for` 루프의 종료 신호로 사용될 뿐, 루프 바깥으로 확산되지 않습니다.
 
+   .. admonition:: flowdas
+
+      :class:`dict` 가 이 메서드를 미리 정의하고 있지는 않습니다. 서브 클래스가 정의한다면 호출한다는 뜻입니다.
+
 
 .. method:: object.__setitem__(self, key, value)
 
