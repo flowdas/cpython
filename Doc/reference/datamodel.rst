@@ -63,8 +63,8 @@ itself).  Like its identity, an object's :dfn:`type` is also unchangeable.
        True
 
 .. admonition:: flowdas
-   객체의 형은 제한적이나마 변경될 수 있습니다. 예를 들어 인스턴스의 :attr:`__class__` 어트리뷰트는 인스턴스
 
+   객체의 형은 제한적이나마 변경될 수 있습니다. 예를 들어 인스턴스의 :attr:`__class__` 어트리뷰트는 인스턴스
    객체의 형(이 경우는 클래스가 됩니다)을 가리키는데, 대입이 가능합니다. 아무 값이나 대입할 수는 없지만,
    다른 클래스를 대입할 수 있습니다. 변경 이후에는 :func:`type` 함수도 새 클래스를 돌려주고, 다른 부분에서도
    새 클래스의 인스턴스 인 것처럼 동작합니다. 하지만 각주에서 권하는 것처럼 극히 예외적인 경우로 다뤄야할 것입니다.
@@ -414,8 +414,8 @@ Ellipsis
          대부분의 경우 IEEE 754 를 따르고 있습니다. 이 경우 :class:`float` 는 64비트로 표현됩니다.
 
       .. admonition:: flowdas
-         대부분의 플랫폼에서, 오버플로우를 일으키면, 예외를 일으키지 않고 :const:`math.inf` 나 -:const:`math.inf`
 
+         대부분의 플랫폼에서, 오버플로우를 일으키면, 예외를 일으키지 않고 :const:`math.inf` 나 -:const:`math.inf`
          를 돌려줍니다. 이런 동작은 표준 라이브러리의 fpectl 모듈을 통해 일부 변경할 수 있지만, 보통 fpectl 모듈이
          제거된 상태로 배포되는 경우가 많고, 파이썬 3.7 부터는 이 모듈이 아예 삭제되었습니다.
 
@@ -592,8 +592,8 @@ Set types
       기본 구현이 값은 무시하고 아이덴티티만 고려하기 때문입니다.
 
    .. admonition:: flowdas
-      내장 불변 컨테이너가 무조건 적으로 해시 가능하지는 않습니다. 저장된 값들 역시 해시 가능해야 합니다.
 
+      내장 불변 컨테이너가 무조건 적으로 해시 가능하지는 않습니다. 저장된 값들 역시 해시 가능해야 합니다.
       가령 ``()`` 와 ``(1, 'a')`` 는 해시 가능하지만, ``(1, ['a'])`` 는 해시 가능하지 않습니다.
       이는 불변성과 해시 가능성이 다른 조건임을 보여주는 한 예입니다.
 
@@ -840,8 +840,8 @@ Callable types
          :attr:`__annotations__` 는 형 정보가 지정된 인자들과 반환값의 형 정보를 제공합니다. :attr:`__defaults__` 는 위치가 할당된 인자들의 기본 값들을 제공합니다. 튜플의 길이는 위치가 할당된 인자들의 개수와 일치합니다. 예에서 ``args`` 는 기본값을 가지는 것이 불가능하기 때문에  :attr:`__defaults__` 에 할당되는 자리도 없습니다. ``*args`` 뒤에 오는 인자들은 위치가 지정되지 않고, 오직 키워드 형태로만 전달될 수 있습니다. 이 것들의 기본 값은 :attr:`__kwdefaults__` 에 딕셔너리 형태로 제공됩니다.
 
          이 값들은 단순한 정보가 아니고, 실제로 함수가 실행중에 사용하고 있는 값입니다. 때문에, 바꾸면 영향을 받습니다::
-             >>> f()
 
+             >>> f()
              5
              >>> f.__defaults__ = (9,)
              >>> f()
@@ -1033,8 +1033,8 @@ Callable types
       .. admonition:: flowdas
 
          앞의 예에서 계속됩니다::
-             >>> i.g() is i.g.__func__(C) # 클래스 메서드로 부터 온 인스턴스 메서드를 호출하는 것은 기반 함수에 클래스를 전달해서 호출하는 것과 같습니다.
 
+             >>> i.g() is i.g.__func__(C) # 클래스 메서드로 부터 온 인스턴스 메서드를 호출하는 것은 기반 함수에 클래스를 전달해서 호출하는 것과 같습니다.
              True
 
       Note that the transformation from function object to instance method
@@ -2070,8 +2070,8 @@ Basic customization
    :func:`bool` on the value to determine if the result is true or false.
 
    .. admonition:: flowdas
-      이 메쏘드가 어떤 형의 값이건 돌려줄 수 있도록 한 애초의 이유는, 벡터나 행렬과 같은 것들을 다루는 확장
 
+      이 메서드가 어떤 형의 값이건 돌려줄 수 있도록 한 애초의 이유는, 벡터나 행렬과 같은 것들을 다루는 확장
       모듈들을 지원하기 위해서입니다. 이런 모듈들에서 벡터간의 비교는 역시 항목들간의 비교값으로 구성된 벡터를
       만들어냅니다. 하지만 이런 이런 용도로만 제한되지는 않습니다.
 
@@ -2126,8 +2126,8 @@ Basic customization
       이 규칙은 뒤집힌 버전이 따로 제공되는 산술 연산자에서도 적용됩니다.
 
    .. admonition:: flowdas
-      가상 서브클래싱(virtual subclassing) 이란, 소위 추상 베이스 클래스(ABC - Abstract Base
 
+      가상 서브클래싱(virtual subclassing) 이란, 소위 추상 베이스 클래스(ABC - Abstract Base
       Class)에서 사용되는 것인데, 클래스 정의에서 베이스 클래스를 정의하는 대신, ABC 의
       :meth:`abc.ABCMeta.register` 메서드를 사용해서 계승 관계를 정의해 주는 것을 뜻합니다.
 
@@ -2466,8 +2466,8 @@ class' :attr:`~object.__dict__`.
 
       위의 예에서, ``Owner`` 클래스가 정의될 때,
       ``Descriptor.__set_name__(self, Owner, 'attribute')`` 가 호출됩니다.
-   .. admonition:: flowdas
 
+   .. admonition:: flowdas
 
       디스크립터는 자신이 어떤 이름의 클래스 어트리뷰트로 등록되었는지를 알면 유용한 경우가 많습니다. 가령
       디스크립터는 데이터베이스 ORM 에서 컬럼을 표현할 때 자주 사용되는데, 자신이 어떤 이름의 컬럼에 매핑되어
@@ -3101,8 +3101,8 @@ through the container; for mappings, :meth:`__iter__` should be the same as
       indexes to allow proper detection of the end of the sequence.
 
       .. admonition:: flowdas
-         :keyword:`for` 루프는, 객체가 :meth:`__iter__` 를 정의하지 않을 경우, 0 부터 시작해서
 
+         :keyword:`for` 루프는, 객체가 :meth:`__iter__` 를 정의하지 않을 경우, 0 부터 시작해서
          하나씩 증가하는 정수를 사용해서 차례대로 :meth:`__getitem__` 을 호출합니다.
          :exc:`IndexError` 가 발생할 때까지 이 과정을 계속 진행합니다. 이 때 :exc:`IndexError`
          는 :keyword:`for` 루프의 종료 신호로 사용될 뿐, 루프 바깥으로 확산되지 않습니다.
