@@ -136,6 +136,16 @@ square brackets, is recursively defined as follows.
     the starred target.  A list of the remaining items in the iterable is then
     assigned to the starred target (the list can be empty).
 
+    .. admonition:: flowdas
+
+       * 스타드 타깃은 오직 하나만 사용할 수 있습니다.
+
+       * 스타드 타깃은 아직 연결되지 않은 이름일 수 있습니다.
+
+       * 스타드 타깃은 우변의 객체가 무엇이건, 항상 리스트가 대입됩니다.
+
+       * 우변이 타깃의 수보다 하나 작을 수 있는 이유는, 스타드 타깃에 빈 리스트가 대입될 수 있기 때문입니다.
+
   * Else: The object must be an iterable with the same number of items as there
     are targets in the target list, and the items are assigned, from left to
     right, to the corresponding targets.
@@ -178,12 +188,17 @@ Assignment of an object to a single target is recursively defined as follows.
   assignment::
 
      class Cls:
-         x = 3             # class variable
+         x = 3             # 클래스 변수
      inst = Cls()
-     inst.x = inst.x + 1   # writes inst.x as 4 leaving Cls.x as 3
+     inst.x = inst.x + 1   # inst.x 에 4 를 쓰고 Cls.x 는 3 으로 남겨둡니다
 
   This description does not necessarily apply to descriptor attributes, such as
   properties created with :func:`property`.
+
+  .. admonition:: flowdas
+
+     디스크립터 어트리뷰트는 기본적으로 클래스 어트리뷰트인데, 인스턴스를 통해 액세스할 때나 대입할 때 모두
+     디스크립터의 메서드가 호출됩니다. 이 때 보통 디스크립터는 인스턴스 어트리뷰트를 만들지 않습니다.
 
   .. index::
      pair: subscription; assignment
@@ -232,6 +247,21 @@ Assignment of an object to a single target is recursively defined as follows.
   from the length of the assigned sequence, thus changing the length of the
   target sequence, if the target sequence allows it.
 
+  .. admonition:: flowdas
+
+     대입되는 객체가 타깃과 같은 형의 시퀀스일 필요는 없습니다. 이터러블이기만 하면 됩니다.
+
+  .. admonition:: flowdas
+
+     “경곗값들을 0과 시퀀스의 길이나 그 사이에 들어가는 값이 되도록 자릅니다” 의 뜻은, 하한 값이 0 보다
+     작으면 0 으로 바꾸고, 상한 값이 시퀀스의 길이보다 크다면 시퀀스의 길이로 바꾼다는 뜻입니다. 이는 정수
+     서브스크립트를 다루는 방식과 약간 달라보일 수 있습니다. 가령 길이 10 인 시퀀스 ``a`` 가 있을
+     때 ``a[-11]`` 이나 ``a[11]`` 은 :exc:`IndexError` 를 일으키는 반면, ``a[-11:11]``
+     은 ``a[0:10]`` 과 같게 취급됩니다.
+     음수값을 경계로 사용할 때는, 이렇게 자르기 전에 시퀀스의 길이를 더하는 것을 먼저 수행합니다.
+     따라서 ``a[-1:11]`` 은 ``a[0:10]`` 이 아니라 ``a[9:10]`` 으로 해석됩니다.
+
+
 .. impl-detail::
 
    In the current implementation, the syntax for targets is taken to be the same
@@ -246,7 +276,7 @@ the following program prints ``[0, 2]``::
 
    x = [0, 1]
    i = 0
-   i, x[i] = 1, 2         # i is updated, then x[i] is updated
+   i, x[i] = 1, 2         # i 가 갱신된 다음에, x[i] 가 갱신됩니다
    print(x)
 
 
@@ -288,6 +318,10 @@ operation and an assignment statement:
 
 (See section :ref:`primaries` for the syntax definitions of the last three
 symbols.)
+
+.. admonition:: flowdas
+
+   "마지막 세 기호" 는 *attributeref*, *subscription*, *slicing* 를 뜻합니다.
 
 An augmented assignment evaluates the target (which, unlike normal assignment
 statements, cannot be an unpacking) and the expression list, performs the binary
@@ -347,6 +381,10 @@ in class or module scope, but not stored.
 
 If a name is annotated in a function scope, then this name is local for
 that scope. Annotations are never evaluated and stored in function scopes.
+
+.. admonition:: flowdas
+
+   함수 스코프에서 우변을 생략하고 단순히 어노테이션만 하면, 지역 변수의 선언과 같은 효과를 줍니다.
 
 If the right hand side is present, an annotated
 assignment performs the actual assignment before evaluating annotations
@@ -409,6 +447,10 @@ as part of the stack trace.
 Assignments to :const:`__debug__` are illegal.  The value for the built-in variable
 is determined when the interpreter starts.
 
+.. admonition:: flowdas
+
+   ``builtins.__debug__ = False`` 를 하면 :exc:`SyntaxError` 가 발생합니다. 키워드로 대입하려
+   한다는 에러 메시지가 나오는데, 그냥 하는 소리고 :const:`__debug__` 이 키워드는 아닙니다.
 
 .. _pass:
 
@@ -427,9 +469,9 @@ The :keyword:`!pass` statement
 It is useful as a placeholder when a statement is required syntactically, but no
 code needs to be executed, for example::
 
-   def f(arg): pass    # a function that does nothing (yet)
+   def f(arg): pass    # (아직은) 아무것도 하지 않는 함수
 
-   class C: pass       # a class with no methods (yet)
+   class C: pass       # (아직은) 메서드가 없는 클래스
 
 
 .. _del:
@@ -486,6 +528,11 @@ The :keyword:`!return` statement
 
 :keyword:`return` may only occur syntactically nested in a function definition,
 not within a nested class definition.
+
+.. admonition:: flowdas
+
+   함수 정의 에서만 :keyword:`return` 문을 사용할 수 있다는 뜻입니다. 클래스 정의의 문법 규칙을 보면
+   그런 제약을 표현하고 있지 않기 때문에 덧붙이는 말입니다.
 
 If an expression list is present, it is evaluated, else ``None`` is substituted.
 
@@ -647,6 +694,15 @@ and information about handling exceptions is in section :ref:`try`.
     The ``__suppress_context__`` attribute to suppress automatic display of the
     exception context.
 
+    .. admonition:: flowdas
+
+       예외 문맥이란 예외 인스턴스에 :attr:`__context__` 어트리뷰트로 제공되는 예외 인스턴스를
+       뜻하는데, :attr:`__cause__` 와 비슷한 역할을 합니다. 차이점은 :attr:`__cause__` 의
+       경우 ``None`` 으로 설정할 수 있지만, :attr:`__context__` 의 경우는 그렇지 않다는
+       것입니다. 보통 :keyword:`from` 절을 사용해서 :attr:`__cause__` 를
+       설정하면 ``__suppress_context__`` 도 ``True`` 로 설정합니다. :attr:`__cause__`
+       는 예외를 출력하는데 사용되고, :attr:`__context__` 는 인트로스펙션에 사용됩니다.
+
 .. _break:
 
 The :keyword:`!break` statement
@@ -787,11 +843,11 @@ The :keyword:`from` form uses a slightly more complex process:
 
 Examples::
 
-   import foo                 # foo imported and bound locally
-   import foo.bar.baz         # foo.bar.baz imported, foo bound locally
-   import foo.bar.baz as fbb  # foo.bar.baz imported and bound as fbb
-   from foo.bar import baz    # foo.bar.baz imported and bound as baz
-   from foo import attr       # foo imported and foo.attr bound as attr
+   import foo                 # foo 가 임포트되고 지역적으로 연결됩니다
+   import foo.bar.baz         # foo.bar.baz 가 임포트되고, foo 가 지역적으로 연결됩니다
+   import foo.bar.baz as fbb  # foo.bar.baz 가 임포트되고 fbb 로 연결됩니다
+   from foo.bar import baz    # foo.bar.baz 가 임포트되고 baz 로 연결됩니다
+   from foo import attr       # foo 가 임포트되고 foo.attr 이 attr 로 연결됩니다
 
 .. index:: single: * (asterisk); import statement
 
