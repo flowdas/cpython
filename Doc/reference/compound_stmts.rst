@@ -775,6 +775,12 @@ coroutine function bodies.
    와 ``async`` 를 그 밖의 다른 곳에서는 키워드가 아닌 일반 식별자로 쓸 수 있다는 뜻인데,
    이는 파이썬 3.6 까지만 그렇고, 3.7 부터는 카워드로 변경되었습니다.
 
+.. admonition:: flowdas
+
+   “코루틴의 바디에서, ``await`` 와 ``async`` 식별자는 예약 키워드가 된다” 는 뜻은, ``await``
+   와 ``async`` 를 그 밖의 다른 곳에서는 키워드가 아닌 일반 식별자로 쓸 수 있다는 뜻인데,
+   이는 파이썬 3.6 까지만 그렇고, 3.7 부터는 카워드로 변경되었습니다.
+
 Functions defined with ``async def`` syntax are always coroutine functions,
 even if they do not contain ``await`` or ``async`` keywords.
 
