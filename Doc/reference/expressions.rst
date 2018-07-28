@@ -418,10 +418,10 @@ expression in a function's body causes that function to be a generator,
 and using it in an :keyword:`async def` function's body causes that
 coroutine function to be an asynchronous generator. For example::
 
-    def gen():  # defines a generator function
+    def gen():  # 제너레이터 함수를 정의합니다
         yield 123
 
-    async def agen(): # defines an asynchronous generator function
+    async def agen(): # 비동기 제너레이터 함수를 정의합니다
         yield 123
 
 Due to their side effects on the containing scope, ``yield`` expressions
@@ -1398,6 +1398,19 @@ different identities results in inequality.  A motivation for this default
 behavior is the desire that all objects should be reflexive (i.e. ``x is y``
 implies ``x == y``).
 
+.. admonition:: flowdas
+
+   수학에서 자기 자신에 대해 항상 성립하는 관계를 반사관계(reflexive relation)라고 합니다.
+   “같다” 라는 관계가 이 경우에 해당합니다. 본문의 내용은 “어떤 객체건 자기 자신과는 항상 같다” 라는
+   관계를 유지하고 싶다는 뜻입니다. 이런 기본 관계를 유지한다는 것은, 객체들이 “같다” 라는 개념을
+   지나치게 자유롭게 해석하는 것을 피하고 싶다는 뜻이기도 합니다. 이 때문에 :class:`object` 는
+   동등 비교를 기본 구현하고 있습니다. 하지만 순서를 비교하는 것에 대해서는 :class:`object` 에
+   기본 구현을 제공할 만큼의, 널리 적용될 수 있고, 받아들여지는 강력한 개념이 존재하지 않는다고 보고
+   있습니다. 이런 방식은 비단 파이썬 뿐만 아니라 대부분의 언어에서 따르고있는 방식입니다.
+
+   파이썬에서 ``==`` 에 대해서는 반사성을 유지하려고 하고 있지만, 역시 반사성이 적용될 수
+   있는 ``<=`` 나 ``>=`` 에 대해서는 그렇지 않습니다.
+
 A default order comparison (``<``, ``>``, ``<=``, and ``>=``) is not provided;
 an attempt raises :exc:`TypeError`.  A motivation for this default behavior is
 the lack of a similar invariant as for equality.
@@ -1423,6 +1436,13 @@ built-in types.
   A counter-intuitive implication is that not-a-number values are not equal to
   themselves.  For example, if ``x = float('NaN')``, ``3 < x``, ``x < 3``, ``x
   == x``, ``x != x`` are all false.  This behavior is compliant with IEEE 754.
+
+  .. admonition:: flowdas
+
+     하지만 ``3 != float('NaN')`` 나 ``float('NaN') != float('NaN')`` 는 ``True`` 입니다.
+
+     즉, :const:`float('NaN')` 은 자기 자신을 포함한 모든 숫자와 같지도 않고 작거나 크지도
+     않습니다만, 다르기는 합니다.
 
 * Binary sequences (instances of :class:`bytes` or :class:`bytearray`) can be
   compared within and across their types.  They compare lexicographically using
@@ -1457,9 +1477,9 @@ built-in types.
     >>> nan is nan
     True
     >>> nan == nan
-    False                 <-- the defined non-reflexive behavior of NaN
+    False                 <-- 정의된 NaN 의 비 반사적인 동작
     >>> [nan] == [nan]
-    True                  <-- list enforces reflexivity and tests identity first
+    True                  <-- 리스트는 반사성을 강제하고 아이덴티티를 먼저 검사합니다
 
   Lexicographical comparison between built-in collections works as follows:
 
@@ -1490,6 +1510,13 @@ built-in types.
   another).  Accordingly, sets are not appropriate arguments for functions
   which depend on total ordering (for example, :func:`min`, :func:`max`, and
   :func:`sorted` produce undefined results given a list of sets as inputs).
+
+  .. admonition:: flowdas
+
+     전순서(total order) 관계는, 값들을 하나의 직선상에 배치할 수 있는 경우를 뜻합니다. 이 경우,
+     어떤 두 값을 선택하더라도 대소 관계가 분명히 성립합니다. 하지만 두 숫자의 대소 관계가 때로 정의될
+     수는 있지만 항상 그런 것은 아닌 경우가 있고, 집합의 부분집합 관계가 이런 경우에 해당합니다.
+     이렇게 부분적으로 대소 관계를 정의할 수 있을 때 부분순서(partial order) 라고 부릅니다.
 
   Comparison of sets enforces reflexivity of its elements.
 
@@ -1878,6 +1905,22 @@ precedence and have a left-to-right chaining feature as described in the
    descriptors, you may notice seemingly unusual behaviour in certain uses of
    the :keyword:`is` operator, like those involving comparisons between instance
    methods, or constants.  Check their documentation for more info.
+
+   .. admonition:: flowdas
+
+      파이썬은 더는 사용되지 않는 객체들을 감지하는 메커니즘을 갖고 있을 수 있고, 실제로 CPython 에서는
+      그런 메커니즘이 활성화된 상태로 시작합니다. 이를 자동 가비지 수거라고 부릅니다. 또한 메모리 할당을
+      최적화하기 위해, 더는 사용되지 않는 객체들이 점유하고 있던 메모리를 재 활용을 위해 임시 보관하는 장소를
+      갖고 있습니다. 이 공간을 자유 목록(free lists)이라고 부릅니다. 객체의 아이덴티티는 객체가 저장되는
+      메모리 공간의 주소에 기반하기 때문에, 메모리의 재사용은 :keyword:`is` 연산자에 영향을 줄 수 있습니다.
+
+      또한 인스턴스 메서드나 프로퍼티등은 디스크립터를 통해 구현되는데, 이들은 겉보기에는 고정된 객체처럼 보여도,
+      액세스할 때마다 디스크립터의 메서드가 호출되고 있고, 경우에 따라서는 새로운 객체가 매번 만들어질 수도 있습니다.
+      따라서 :keyword:`is` 연산자가 예상과 달리 ``False`` 를 줄 수 있습니다.
+
+      프로퍼티 뿐만 아니라, 리터럴이 만드는 객체들은 그 값에 따라 캐싱 될 수도 있습니다. 때문에 똑 같은 방식의
+      리터럴인데 어떤 값일 경우는 :keyword:`is` 가 ``True`` 를 주고, 다른 값들은 ``False`` 를 주는
+      상황을 만날 수 있습니다.
 
 .. [#] The ``%`` operator is also used for string formatting; the same
    precedence applies.
