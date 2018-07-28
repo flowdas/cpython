@@ -70,6 +70,12 @@ keyword that cannot start a statement, thus there are no ambiguities (the
 'dangling :keyword:`else`' problem is solved in Python by requiring nested
 :keyword:`if` statements to be indented).
 
+.. admonition:: flowdas
+
+   '매달린(dangling) :keyword:`else`' 문제는, :keyword:`if` 문이 중첩될 때, 뒤 따르는
+   :keyword:`else` 가 어떤 :keyword:`if` 와 결합하는지 모호함이 발생할 수 있다는 것입니다.
+   많은 언어들에서는 괄호를 사용한 구조를 통해 모호함을 제거하는 반면, 파이썬에서는 들여쓰기로 해결합니다.
+
 The formatting of the grammar rules in the following sections places each clause
 on a separate line for clarity.
 
@@ -180,9 +186,9 @@ those made in the suite of the for-loop::
 
    for i in range(10):
        print(i)
-       i = 5             # this will not affect the for-loop
-                         # because i will be overwritten with the next
-                         # index in the range
+       i = 5             # 이렇게 해도 범위내의 다음 인덱스로
+                         # 덮어쓰기 때문에 for-루프에
+                         # 영향을 주지 않습니다
 
 
 .. index::
@@ -214,6 +220,12 @@ returns the list ``[0, 1, 2]``.
 
       for x in a[:]:
           if x < 0: a.remove(x)
+
+   .. admonition:: flowdas
+
+      본문에서 언급하고 있는 카운터는 for-루프가 유지하는 것이 아닙니다. 이 카운터를 유지하는 것은
+      시퀀스의 이터레이터입니다. 때문에 for-루프 자체의 문제가 아니라 시퀀스의 이터레이터가 갖고 있는
+      문제입니다.
 
 
 .. _try:
@@ -336,6 +348,12 @@ statement, the saved exception is discarded::
    ...
    >>> f()
    42
+
+.. admonition:: flowdas
+
+   :keyword:`finally` 절에서 :keyword:`return` 이나 :keyword:`break` 가
+   실행되면 :keyword:`try` 문은 어떤 예외도 확산시키지 않습니다. 예외가 :keyword:`try`
+   스위트에서 발생하건, :keyword:`except` 절의 표현식의 값을 구할 때 발생하건 마찬가지입니다.
 
 The exception information is not available to the program during execution of
 the :keyword:`finally` clause.
@@ -565,6 +583,11 @@ new empty mapping of the same type.  Parameters after "``*``" or
 "``*identifier``" are keyword-only parameters and may only be passed
 used keyword arguments.
 
+.. admonition:: flowdas
+
+   "``**identifier``" 형태는 순서있는 매핑입니다. 즉 키워드 인자들이 주어진 순서가 보존됩니다.
+   현재 구현에서는 :class:`dict` 가 넘어오는데, :class:`dict` 는 순서있는 매핑입니다.
+
 .. index::
    pair: function; annotations
    single: ->; function annotations
@@ -669,6 +692,15 @@ in the new class's ``__dict__``.  Note that this is reliable only right
 after the class is created and only for classes that were defined using
 the definition syntax.
 
+.. admonition:: flowdas
+
+   클래스 어트리뷰트의 순서가 ``__dict__`` 에 보존되는 것 역시, :class:`dict` 가 삽입순서를
+   보존한다는 것에 의존합니다. 하지만 이 보존 상태는 클래스가 만들어지는 직후에만 보장될 뿐, 그 이후의
+   어느 시점엔가 ``__dict__`` 가 애초의 순서를 보존하지 않는 상태로 바뀔 수도 있음을 시사하고 있습니다.
+   이 직후라는 것은 보통 :meth:`object.__init_subclass__` 가 호출되는 시점이나, 그 근처를
+   뜻합니다. 또한 클래스 정의 문법을 사용하지 않는 경우에는 이 순서의 보존이 보장되지 않는다고 말하고 있는데,
+   클래스 정의 문법을 사용하지 않는다는 것은 메타클래스를 사용해서 동적으로 클래스를 만드는 경우입니다.
+
 Class creation can be customized heavily using :ref:`metaclasses <metaclasses>`.
 
 .. index::
@@ -736,6 +768,12 @@ Execution of Python coroutines can be suspended and resumed at many points
 ``async`` identifiers become reserved keywords; :keyword:`await` expressions,
 :keyword:`async for` and :keyword:`async with` can only be used in
 coroutine function bodies.
+
+.. admonition:: flowdas
+
+   “코루틴의 바디에서, ``await`` 와 ``async`` 식별자는 예약 키워드가 된다” 는 뜻은, ``await``
+   와 ``async`` 를 그 밖의 다른 곳에서는 키워드가 아닌 일반 식별자로 쓸 수 있다는 뜻인데,
+   이는 파이썬 3.6 까지만 그렇고, 3.7 부터는 카워드로 변경되었습니다.
 
 Functions defined with ``async def`` syntax are always coroutine functions,
 even if they do not contain ``await`` or ``async`` keywords.
