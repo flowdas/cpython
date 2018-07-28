@@ -225,6 +225,14 @@ for modules.  The :term:`import path` is a list of locations that may
 name file system paths or zip files.  It can also be extended to search
 for any locatable resource, such as those identified by URLs.
 
+.. admonition:: flowdas
+
+   프로즌 모듈(frozen module)이란, 파이썬 배포판에 포함되는 ``freeze.py`` 라는 도구가 만들어내는
+   실행 파일에 포함된 모듈들을 뜻합니다. ``freeze.py`` 는 파이썬 배포판에서 예제 형식으로 코드가
+   제공되는데, 파이썬 스크립트를, 파이썬이 설치되어 있지 않은 다른 컴퓨터에서 실행할 수 있는 독립 실행
+   파일로 변환하는 기능을 제공합니다. 이때 스크립트가 사용하고 있는 모듈들을 찾아서 실행파일에 내장 시키는
+   전략을 사용하는데, 이 내장된 모듈들을 프로즌 모듈이라고 부릅니다.
+
 The import machinery is extensible, so new finders can be added to extend the
 range and scope of module searching.
 
@@ -337,23 +345,23 @@ of what happens during the loading portion of import::
 
     module = None
     if spec.loader is not None and hasattr(spec.loader, 'create_module'):
-        # It is assumed 'exec_module' will also be defined on the loader.
+        # 'exec_module'도 loader에 정의되어 있다고 가정합니다.
         module = spec.loader.create_module(spec)
     if module is None:
         module = ModuleType(spec.name)
-    # The import-related module attributes get set here:
+    # 임포트 관련 모듈 어트리뷰트들은 여기에서 설정됩니다:
     _init_module_attrs(spec, module)
 
     if spec.loader is None:
         if spec.submodule_search_locations is not None:
-            # namespace package
+            # 이름 공간 패키지
             sys.modules[spec.name] = module
         else:
-            # unsupported
+            # 지원되지 않습니다
             raise ImportError
     elif not hasattr(spec.loader, 'exec_module'):
         module = spec.loader.load_module(spec.name)
-        # Set __loader__ and __package__ if missing.
+        # 없으면 __loader__ 와 __package__ 를 설정합니다.
     else:
         sys.modules[spec.name] = module
         try:
@@ -400,6 +408,47 @@ Note the following details:
    loaders.  These were previously performed by the
    :meth:`importlib.abc.Loader.load_module` method.
 
+.. admonition:: flowdas
+
+   순환적인 모듈 임포트가 가능합니다. 가령 다음과 같이 패키지가 구성되어 있다고 합시다::
+
+       cyclic/
+           __init__.py
+           foo.py
+
+   ``cyclic/__init__.py`` 파일을 이렇게 구성합니다::
+
+       class Base:
+           pass
+
+       from .foo import *
+
+   ``cyclic/foo.py`` 파일을 이렇게 구성합니다::
+
+       from cyclic import *
+
+       class Derived(Base):
+           pass
+
+   이제::
+
+       >>> import cyclic
+       >>> cyclic.Derived
+       <class 'cyclic.foo.Derived'>
+
+   ``import cyclic`` 은 ``cyclic/__init__.py`` 를 로드하는데, ``from .foo import *``
+   문장 때문에 ``cyclic/foo.py`` 역시 로드 하게 됩니다. 이제 다시 ``from cyclic import *``
+   문장을 만나게 되는데, 이 때는 이미 ``cyclic`` 이 :data:`sys.modules` 에 들어있는 상태이기
+   때문에, 이 문장이 즉시 성공하게 됩니다. 다만 이 때 ``cyclic`` 모듈은 아직 모듈 로딩이 완료되지는
+   않은 상태입니다 (정확히는 모듈이 실행되고 있는 중입니다). 때문에, ``cyclic`` 이 제공하는 모든
+   이름들이 채워져있지는 않습니다. 그 시점까지 실행된 결과만 채워져있는 상태입니다. 이 때문에 서브 모듈에서
+   사용할 ``Base`` 클래스를 ``from .foo import *`` 문장 앞에 배치한 것입니다.
+   이런 배치는 임포트 문이 모듈의 처음에 나오지 않기 때문에, 파이썬의 코딩 관행(:pep:`8`)에 어긋납니다.
+   하지만 ``__init__.py`` 에서 서브 모듈들이 사용할 공통 객체들을 제공하려고 할 경우는 어쩔 수 없는
+   선택입니다. 순환적 임포트의 예를 들기위한 것일 뿐입니다. 가능하다면 서브 모듈들이 사용할 공통 객체들을
+   별도의 서브 모듈로 제공하는 것이 자연스럽습니다.
+
+
 Loaders
 -------
 
@@ -436,6 +485,13 @@ import machinery will create the new module itself.
    The :meth:`~importlib.abc.Loader.load_module` method was replaced by
    :meth:`~importlib.abc.Loader.exec_module` and the import
    machinery assumed all the boilerplate responsibilities of loading.
+
+   .. admonition:: flowdas
+
+      원래 :meth:`~importlib.abc.Loader.load_module` 이 책임을 지던 작업들을
+      대부분 임포트 절차가 떠맡고, 남은 것들만 :meth:`~importlib.abc.Loader.exec_module`
+      로 남겨두었다는 뜻입니다.
+
 
    For compatibility with existing loaders, the import machinery will use
    the ``load_module()`` method of loaders if it exists and the loader does
