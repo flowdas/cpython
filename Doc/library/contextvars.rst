@@ -22,6 +22,10 @@ See also :pep:`567` for additional details.
 
 .. versionadded:: 3.7
 
+.. admonition:: flowdas
+
+   파이썬 3.7 이전 버전을 위한 `백포트 <https://pypi.org/project/contextvars/>`_ 도
+   제공됩니다.
 
 Context Variables
 -----------------
