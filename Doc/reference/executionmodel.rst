@@ -157,6 +157,24 @@ function scope.  This means that the following will fail::
        a = 42
        b = list(a + i for i in range(10))
 
+.. admonition:: flowdas
+
+   ``a + i`` 가 제너레이터 표현식을 위한 별도의 함수 스코프에서 평가되기 때문입니다. 그 곳에서는 ``A``
+   의 클래스 스코프에 들어있는 ``a`` 가 보이지 않습니다. 하지만 다음과 같은 코드를 살펴봅시다::
+
+       >>> class A:
+       ...   a = 42
+       ...   b = list(i for i in range(a, a+10))
+       >>> A.b
+       [42, 43, 44, 45, 46, 47, 48, 49, 50, 51]
+
+   이 코드는 실패하지 않습니다. :keyword:`for` 의 오른쪽에 나오는 표현식들은 제너레이터 표현식을 위한 별도의
+   스코프에서 평가되지 않기 때문입니다. 컴프리헨션에서도 마찬가지 규칙이 적용됩니다.
+
+   이런 상황은 많은 사람들이 혼란스러워하는 파이썬 스코프 규칙의 어두운 면을 드러냅니다. 특히 클래스 스코프와
+   컴프리헨션 또는 제너레이터 표현식의 스코프에 적용되는 특수한 규칙들이 혼란을 일으킵니다. 이 규칙을 꼼꼼하게
+   따져보아야하는 어쩔 수 없는 상황이 있기는 하지만, 되도록 피하는 것이 상책입니다.
+
 .. _restrict_exec:
 
 Builtins and restricted execution
@@ -179,6 +197,14 @@ latter case the module's dictionary is used).  By default, when in the
 :mod:`builtins`; when in any other module, ``__builtins__`` is an
 alias for the dictionary of the :mod:`builtins` module itself.
 
+.. admonition:: flowdas
+
+   이 섹션의 제목에 붙은 "제한된 실행"은 무슨 뜻일까?
+
+   제한된 실행은, 주로 보안상의 이유로 코드가 어떤 일들을 할 수 없도록 제한하는 것을 뜻합니다.
+   가령 디스크의 파일을 읽거나 만들 수 없도록 하고 싶을 수 있습니다.
+   이럴 때 내장 함수들을 제약하는 경우가 많습니다. 이 내장 함수들이 제공되는 메커니즘을 설명하고 있고,
+   결과적으로 제한된 실행 환경을 제공하기 위해 조작해야 할 곳을 알려주고 있습니다.
 
 .. _dynamic-features:
 
