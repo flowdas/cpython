@@ -284,15 +284,15 @@ to create a base class for exceptions defined by that module, and subclass that
 to create specific exception classes for different error conditions::
 
    class Error(Exception):
-       """Base class for exceptions in this module."""
+       """이 모듈의 예외를 위한 베이스 클래스."""
        pass
 
    class InputError(Error):
-       """Exception raised for errors in the input.
+       """입력 에러로 인해 발생하는 예외.
 
-       Attributes:
-           expression -- input expression in which the error occurred
-           message -- explanation of the error
+       어트리뷰트:
+           expression -- 에러가 발생한 입력 표현식
+           message -- 에러의 설명
        """
 
        def __init__(self, expression, message):
@@ -300,13 +300,12 @@ to create specific exception classes for different error conditions::
            self.message = message
 
    class TransitionError(Error):
-       """Raised when an operation attempts a state transition that's not
-       allowed.
+       """작업이 허용되지 않는 상태 전환을 시도할 때 발생합니다.
 
-       Attributes:
-           previous -- state at beginning of transition
-           next -- attempted new state
-           message -- explanation of why the specific transition is not allowed
+       어트리뷰트:
+           previous -- 전환 시작시의 상태
+           next -- 시도된 새 상태
+           message -- 왜 해당 전환이 허락되지 않는지에 대한 설명
        """
 
        def __init__(self, previous, next, message):
