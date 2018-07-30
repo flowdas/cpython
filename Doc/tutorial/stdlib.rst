@@ -31,9 +31,9 @@ aids for working with large modules like :mod:`os`::
 
    >>> import os
    >>> dir(os)
-   <returns a list of all module functions>
+   <모든 모듈 함수의 리스트를 돌려줍니다>
    >>> help(os)
-   <returns an extensive manual page created from the module's docstrings>
+   <모듈의 독스트링에서 만들어진 광범위한 설명서 페이지를 돌려줍니다>
 
 For daily file and directory management tasks, the :mod:`shutil` module provides
 a higher level interface that is easier to use::
@@ -275,7 +275,7 @@ allows the doctest module to make sure the code remains true to the
 documentation::
 
    def average(values):
-       """Computes the arithmetic mean of a list of numbers.
+       """숫자 목록의 산술 평균을 계산합니다.
 
        >>> print(average([20, 30, 70]))
        40.0
