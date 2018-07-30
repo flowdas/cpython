@@ -398,9 +398,9 @@ your package (expressed in terms of a hierarchical filesystem):
 
 .. code-block:: text
 
-   sound/                          Top-level package
-         __init__.py               Initialize the sound package
-         formats/                  Subpackage for file format conversions
+   sound/                          최상위 패키지
+         __init__.py               sound 패키지 초기화
+         formats/                  파일 형식 변환을 위한 서브 패키지
                  __init__.py
                  wavread.py
                  wavwrite.py
@@ -409,13 +409,13 @@ your package (expressed in terms of a hierarchical filesystem):
                  auread.py
                  auwrite.py
                  ...
-         effects/                  Subpackage for sound effects
+         effects/                  음향 효과를 위한 서브 패키지
                  __init__.py
                  echo.py
                  surround.py
                  reverse.py
                  ...
-         filters/                  Subpackage for filters
+         filters/                  필터를 위한 서브 패키지
                  __init__.py
                  equalizer.py
                  vocoder.py
