@@ -66,6 +66,10 @@ per-module basis using the recommended construction
 ``logging.getLogger(__name__)``.  That's because in a module, ``__name__``
 is the module's name in the Python package namespace.
 
+.. admonition:: flowdas
+
+   ``logging.getLogger(__name__)`` 에 관한 설명은 :ref:`logging-advanced-tutorial`
+   를 참고하세요.
 
 .. class:: Logger
 
@@ -224,6 +228,10 @@ is the module's name in the Python package namespace.
       above example). In such circumstances, it is likely that specialized
       :class:`Formatter`\ s would be used with particular :class:`Handler`\ s.
 
+      .. admonition:: flowdas
+
+         로그에 문맥 정보를 추가하는 방법은 :ref:`context-info` 에서 좀 더 자세히 설명합니다.
+
       .. versionadded:: 3.2
          The *stack_info* parameter was added.
 
@@ -289,6 +297,10 @@ is the module's name in the Python package namespace.
       will be processed (passed to handlers). If one returns a false value, no
       further processing of the record occurs.
 
+      .. admonition:: flowdas
+
+         이 메서드는 레코드가 처리될 대상인지를 확인만 할뿐 처리기로 전달하지는 않습니다.
+
 
    .. method:: Logger.addHandler(hdlr)
 
@@ -306,6 +318,10 @@ is the module's name in the Python package namespace.
       number, function name and stack information as a 4-element tuple. The stack
       information is returned as ``None`` unless *stack_info* is ``True``.
 
+      .. admonition:: flowdas
+
+         이 메서드가 제공하는 4-튜플은 :meth:`makeRecord` 메서드의 *fn*, *lno*, *func*, *sinfo* 매개 변수로 전달됩니다.
+
 
    .. method:: Logger.handle(record)
 
@@ -314,11 +330,23 @@ is the module's name in the Python package namespace.
       for unpickled records received from a socket, as well as those created locally.
       Logger-level filtering is applied using :meth:`~Logger.filter`.
 
+      .. admonition:: flowdas
+
+         소켓을 통해 :class:`LogRecord` 인스턴스를 피클된 형태로 원격에서 전달받을 수 있습니다.
+         중앙 집중형 로그 서버를 구성할 때 사용되는 방법입니다. 이 경우 언피클해서 :class:`LogRecord`
+         인스턴스를 만들게되는데, 이를 :meth:`handle` 메서드로 처리하면됩니다.
+         예제 코드는 :ref:`network-logging` 를 참고하세요.
+
 
    .. method:: Logger.makeRecord(name, lvl, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None)
 
       This is a factory method which can be overridden in subclasses to create
       specialized :class:`LogRecord` instances.
+
+      .. admonition:: flowdas
+
+         이 팩토리 메서드보다는 보통 :func:`~logging.setLogRecordFactory` 를 사용합니다.
+         자세한 내용은 :ref:`custom-logrecord` 를 참고하세요.
 
    .. method:: Logger.hasHandlers()
 
@@ -386,6 +414,10 @@ subclasses. However, the :meth:`__init__` method in subclasses needs to call
       Initializes a thread lock which can be used to serialize access to underlying
       I/O functionality which may not be threadsafe.
 
+      .. admonition:: flowdas
+
+         기본적으로 :class:`threading.RLock` 을 만듭니다. 재진입 가능한 록입니다.
+
 
    .. method:: Handler.acquire()
 
@@ -435,6 +467,10 @@ subclasses. However, the :meth:`__init__` method in subclasses needs to call
       will be emitted. If one returns a false value, the handler will not emit the
       record.
 
+      .. admonition:: flowdas
+
+         이 메서드는 레코드가 처리될 대상인지를 확인만 할뿐 실제 처리하지는 않습니다.
+
 
    .. method:: Handler.flush()
 
@@ -469,6 +505,11 @@ subclasses. However, the :meth:`__init__` method in subclasses needs to call
       occurred. (The default value of ``raiseExceptions`` is ``True``, as that is
       more useful during development).
 
+      .. admonition:: flowdas
+
+         :meth:`handleError` 를 호출하는 책임은 :meth:`emit` 구현에 있습니다.
+         :meth:`handle` 은 :meth:`handleError` 를 호출하지 않습니다.
+
 
    .. method:: Handler.format(record)
 
@@ -498,6 +539,12 @@ be interpreted by either a human or an external system. The base
 supplied, the default value of ``'%(message)s'`` is used, which just includes
 the message in the logging call. To have additional items of information in the
 formatted output (such as a timestamp), keep reading.
+
+.. admonition:: flowdas
+
+   어트리뷰트를 따로 명시하지 않아서 찾기 불편하지만, 본문에는 :attr:`Formatter.converter`,
+   :attr:`Formatter.default_time_format`, :attr:`Formatter.default_msec_format`
+   이 정의되어 있습니다.
 
 A Formatter can be initialized with a format string which makes use of knowledge
 of the :class:`LogRecord` attributes - such as the default value mentioned above
@@ -544,6 +591,10 @@ The useful mapping keys in a :class:`LogRecord` are given in the section on
       value after a formatter has done its formatting, so that the next
       formatter to handle the event doesn't use the cached value but
       recalculates it afresh.
+
+      .. admonition:: flowdas
+
+         *exc_text* 는 :class:`LogRecord` 의 어트리뷰트입니다.
 
       If stack information is available, it's appended after the exception
       information, using :meth:`formatStack` to transform it if necessary.
@@ -595,6 +646,30 @@ The useful mapping keys in a :class:`LogRecord` are given in the section on
       :func:`traceback.print_stack`, but with the last newline removed) as a
       string. This default implementation just returns the input value.
 
+.. admonition:: flowdas
+
+   본문에는 :class:`BufferingFormatter` 가 빠져있습니다. 여기에 간단한 설명을 붙입니다.
+
+   .. class:: BufferingFormatter(linefmt=None)
+
+      여러 레코드를 포맷하는데 적합한 포매터.
+
+      *linefmt* 는 개별 레코드를 포맷하는데 사용될 포매터를 지정합니다. 지정하지 않으면 기본
+      포매터(:class:`Formatter`)가 사용됩니다.
+
+      .. method:: format(records)
+
+         지정된 레코드들을 포맷하고 그 결과를 문자열로 반환합니다.
+
+      .. method:: formatFooter(records)
+
+         지정된 레코드들의 바닥글 문자열을 반환합니다. 기본 구현은 빈 문자열을 돌려줍니다.
+
+      .. method:: formatHeader(records)
+
+         지정된 레코드들의 머릿글 문자열을 반환합니다. 기본 구현은 빈 문자열을 돌려줍니다.
+
+
 .. _filter:
 
 Filter Objects
@@ -621,12 +696,22 @@ empty string, all events are passed.
       yes. If deemed appropriate, the record may be modified in-place by this
       method.
 
+      .. admonition:: flowdas
+
+         필터가 레코드를 수정할 수 있도록 허용하기 때문에, 필터는 레코드에 문맥 정보를 주입하는데
+         사용될 수 있습니다.
+
 Note that filters attached to handlers are consulted before an event is
 emitted by the handler, whereas filters attached to loggers are consulted
 whenever an event is logged (using :meth:`debug`, :meth:`info`,
 etc.), before sending an event to handlers. This means that events which have
 been generated by descendant loggers will not be filtered by a logger's filter
 setting, unless the filter has also been applied to those descendant loggers.
+
+.. admonition:: flowdas
+
+   조상 로거로의 이벤트 확산은 로거에의한 필터링이 완료된 후에 이루어집니다. 확산될 때 이벤트는
+   조상 로거의 처리기들로 전달될 뿐, 조상 로거의 필터를 거치지는 않는다는 뜻입니다.
 
 You don't actually need to subclass ``Filter``: you can pass any instance
 which has a ``filter`` method with the same semantics.
@@ -724,6 +809,11 @@ wire).
    overwrite the standard attributes listed above, there should be no
    surprises.
 
+   .. admonition:: flowdas
+
+      이 패턴을 사용할 경우, 체인에 참여하는 팩토리의 순서는 임포트 순서에 영향을 받습니다. 임포트 순서를
+      정확히 제어할 수 없는 경우가 많기 때문에, 여러 팩토리가 조작하는 어트리뷰트들이 독립적이지 않다면
+      예상하지 못한 일이 일어날 수 있습니다.
 
 .. _logrecord-attributes:
 
@@ -824,6 +914,17 @@ the options available to you.
 | threadName     | ``%(threadName)s``      | Thread name (if available).                   |
 +----------------+-------------------------+-----------------------------------------------+
 
+.. admonition:: flowdas
+
+   ``module`` 은 ``filename`` 에서 확장자를 제외한 부분을 뜻합니다.
+
+   ``processName`` 은 :attr:`multiprocessing.Process.name` 의 값입니다.
+   ``logging.logProcesses = False`` 하면 그 이후로 ``process`` 는 제공되지 않습니다.
+   ``logging.logMultiprocessing = False`` 하면 그 이후로 ``processName`` 은 제공되지 않습니다.
+
+   ``threadName`` 은 :attr:`threading.Thread.name` 의 값입니다.
+   ``logging.logThreads = False`` 하면 그 이후로 ``thread`` 는 제공되지 않습니다.
+
 .. versionchanged:: 3.1
    *processName* was added.
 
@@ -878,6 +979,12 @@ module, you may not be able to use logging from within such handlers. This is
 because lock implementations in the :mod:`threading` module are not always
 re-entrant, and so cannot be invoked from such signal handlers.
 
+.. admonition:: flowdas
+
+   logging 모듈이 사용하고 있는 :class:`threading.RLock` 이 시그널에 안전하지 않다는 내용입니다만,
+   이는 파이썬으로 구현된 버전에만 해당하는 내용입니다. 최근의 파이썬 버전에서 사용되는
+   :class:`threading.RLock` 의 C 구현은 시그널에 안전합니다.
+
 
 Module-Level Functions
 ----------------------
@@ -893,6 +1000,10 @@ functions.
    typically a dot-separated hierarchical name like *'a'*, *'a.b'* or *'a.b.c.d'*.
    Choice of these names is entirely up to the developer who is using logging.
 
+   .. admonition:: flowdas
+
+      이름을 자유롭게 선택할 수 있지만, 계층을 구분하는데 점(.)대신 다른 기호를 사용할 수는 없습니다.
+
    All calls to this function with a given name return the same logger instance.
    This means that logger instances never need to be passed between different parts
    of an application.
@@ -906,7 +1017,7 @@ functions.
    not undo customizations already applied by other code. For example::
 
       class MyLogger(logging.getLoggerClass()):
-          # ... override behaviour here
+          # ... 여기에서 동작을 재정의 합니다
 
 
 .. function:: getLogRecordFactory()
@@ -933,6 +1044,10 @@ functions.
    added to the logging message. If an exception tuple (in the format returned by
    :func:`sys.exc_info`) is provided, it is used; otherwise, :func:`sys.exc_info`
    is called to get the exception information.
+
+   .. admonition:: flowdas
+
+      *exc_info* 로 예외 인스턴스를 전달할 수도 있습니다.
 
    The second optional keyword argument is *stack_info*, which defaults to
    ``False``. If true, stack information is added to the logging
@@ -988,6 +1103,10 @@ functions.
    context (such as remote client IP address and authenticated user name, in the
    above example). In such circumstances, it is likely that specialized
    :class:`Formatter`\ s would be used with particular :class:`Handler`\ s.
+
+   .. admonition:: flowdas
+
+      로그에 문맥 정보를 추가하는 방법은 :ref:`context-info` 에서 좀 더 자세히 설명합니다.
 
    .. versionadded:: 3.2
       The *stack_info* parameter was added.
@@ -1062,6 +1181,10 @@ functions.
    .. versionchanged:: 3.7
       The *lvl* parameter was defaulted to level ``CRITICAL``. See Issue
       #28524 for more information about this change.
+
+      .. admonition:: flowdas
+
+         이전 버전에서는 기본값이 없었습니다.
 
 .. function:: addLevelName(lvl, levelName)
 
@@ -1192,6 +1315,14 @@ functions.
    required, and the :meth:`__init__` should call :meth:`Logger.__init__`. This
    function is typically called before any loggers are instantiated by applications
    which need to use custom logger behavior.
+
+   .. admonition:: flowdas
+
+      이 문서에 :meth:`Logger.__init__` 의 서명이 나오지는 않지만, 이런식으로 하면됩니다::
+
+          class MyLogger(Logger):
+              def __init__(self, name):
+                  super().__init__(name)
 
 
 .. function:: setLogRecordFactory(factory)
