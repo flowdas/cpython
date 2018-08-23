@@ -155,6 +155,11 @@ And::
       스레드 풀을 구성하는 스레드 중 어느 하나에서 *initializer* 가 예외를 일으키면, 그 스레드 뿐만 아니라
       스레드 풀 전체가 사용불능 상태가 됩니다.
 
+   .. admonition:: flowdas
+
+      스레드 풀을 구성하는 스레드 중 어느 하나에서 *initializer* 가 예외를 일으키면, 그 스레드 뿐만 아니라
+      스레드 풀 전체가 사용불능 상태가 됩니다.
+
    .. versionchanged:: 3.5
       If *max_workers* is ``None`` or
       not given, it will default to the number of processors on the machine,
