@@ -155,11 +155,6 @@ And::
       스레드 풀을 구성하는 스레드 중 어느 하나에서 *initializer* 가 예외를 일으키면, 그 스레드 뿐만 아니라
       스레드 풀 전체가 사용불능 상태가 됩니다.
 
-   .. admonition:: flowdas
-
-      스레드 풀을 구성하는 스레드 중 어느 하나에서 *initializer* 가 예외를 일으키면, 그 스레드 뿐만 아니라
-      스레드 풀 전체가 사용불능 상태가 됩니다.
-
    .. versionchanged:: 3.5
       If *max_workers* is ``None`` or
       not given, it will default to the number of processors on the machine,
@@ -243,6 +238,11 @@ to a :class:`ProcessPoolExecutor` will result in deadlock.
    initializer.  Should *initializer* raise an exception, all currently
    pending jobs will raise a :exc:`~concurrent.futures.process.BrokenProcessPool`,
    as well any attempt to submit more jobs to the pool.
+
+   .. admonition:: flowdas
+
+      :exc:`~concurrent.futures.thread.BrokenThreadPool` 이 아니라
+      :exc:`~concurrent.futures.process.BrokenProcessPool` 을 발생시킵니다.
 
    .. versionchanged:: 3.3
       When one of the worker processes terminates abruptly, a
