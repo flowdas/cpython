@@ -2750,6 +2750,8 @@ the original base is ignored.
    :pep:`560` - Core support for typing module and generic types
 
 
+.. _flowdas_determining_the_appropriate_metaclass:
+
 Determining the appropriate metaclass
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. index::

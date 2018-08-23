@@ -4,7 +4,7 @@ import random
 import sys
 
 #
-# Functions used by test code
+# 테스트 코드가 사용하는 함수
 #
 
 def calculate(func, args):
@@ -35,16 +35,16 @@ def noop(x):
     pass
 
 #
-# Test code
+# 테스트 코드
 #
 
 def test():
     PROCESSES = 4
-    print('Creating pool with %d processes\n' % PROCESSES)
+    print('%d 프로세스로 풀을 만듭니다\n' % PROCESSES)
 
     with multiprocessing.Pool(PROCESSES) as pool:
         #
-        # Tests
+        # 테스트
         #
 
         TASKS = [(mul, (i, 7)) for i in range(10)] + \
@@ -54,36 +54,36 @@ def test():
         imap_it = pool.imap(calculatestar, TASKS)
         imap_unordered_it = pool.imap_unordered(calculatestar, TASKS)
 
-        print('Ordered results using pool.apply_async():')
+        print('pool.apply_async() 를 사용한 순서있는 결과:')
         for r in results:
             print('\t', r.get())
         print()
 
-        print('Ordered results using pool.imap():')
+        print('pool.imap() 를 사용한 순서있는 결과:')
         for x in imap_it:
             print('\t', x)
         print()
 
-        print('Unordered results using pool.imap_unordered():')
+        print('pool.imap_unordered() 를 사용한 순서없는 결과:')
         for x in imap_unordered_it:
             print('\t', x)
         print()
 
-        print('Ordered results using pool.map() --- will block till complete:')
+        print('pool.map() 를 사용한 순서있는 결과 --- 완료할 때까지 블록합니다:')
         for x in pool.map(calculatestar, TASKS):
             print('\t', x)
         print()
 
         #
-        # Test error handling
+        # 에러 처리 테스트
         #
 
-        print('Testing error handling:')
+        print('에러 처리를 검사합니다:')
 
         try:
             print(pool.apply(f, (5,)))
         except ZeroDivisionError:
-            print('\tGot ZeroDivisionError as expected from pool.apply()')
+            print('\tpool.apply() 로 부터 기대한 ZeroDivisionError 를 받았습니다')
         else:
             raise AssertionError('expected ZeroDivisionError')
 
@@ -119,7 +119,7 @@ def test():
         print()
 
         #
-        # Testing timeouts
+        # 시간 제한 테스트
         #
 
         print('Testing ApplyResult.get() with timeout:', end=' ')
