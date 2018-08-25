@@ -17,6 +17,14 @@ classes <abstract base class>` (ABCs) in Python, as outlined in :pep:`3119`;
 see the PEP for why this was added to Python. (See also :pep:`3141` and the
 :mod:`numbers` module regarding a type hierarchy for numbers based on ABCs.)
 
+.. admonition:: flowdas
+
+   ABC 의 가장 중요한 목적은 :func:`isinstance` 를 통해 객체의 형을 파악하는 표준적인 방법을
+   제공하는 것입니다. 표준적인 절차가 필요한 이유는, 형 계층 구조가 라이브러리들이 정의하는 클래스들과
+   확장형들에 의해 계속 확장될 것이고, 검사하고자 하는 형을 좀 더 추상화함으로써 이런 확장이 과거 호환성
+   있는 형태가 되도록 만들기위함입니다. 이 작업의 일환으로 :func:`issubclass` 도 확장 가능하도록
+   만드는 "가상 서브 클래스" 역시 도입됩니다.
+
 The :mod:`collections` module has some concrete classes that derive from
 ABCs; these can, of course, be further derived. In addition, the
 :mod:`collections.abc` submodule has some ABCs that can be used to test whether
@@ -49,6 +57,13 @@ a helper class :class:`ABC` to alternatively define ABCs through inheritance:
      class MyABC(metaclass=ABCMeta):
          pass
 
+   .. admonition:: flowdas
+
+      다중 상속이 메타 클래스 충돌을 일으킬 수 있다는 것은, 클래스를 정의할 때, 정의되는 클래스의
+      메타 클래스를 선택하는 규칙이 있고, 이 규칙을 만족하지 못하면 :exc:`TypeError` 를 일으킨다는
+      뜻입니다. 이 규칙의 자세한 내용은 :ref:`flowdas_determining_the_appropriate_metaclass` 를
+      참조하세요.
+
    .. versionadded:: 3.4
 
 
@@ -64,6 +79,12 @@ a helper class :class:`ABC` to alternatively define ABCs through inheritance:
    won't show up in their MRO (Method Resolution Order) nor will method
    implementations defined by the registering ABC be callable (not even via
    :func:`super`). [#]_
+
+   .. admonition:: flowdas
+
+      일부 ABC 는 구상 (즉 추상이 아닌) 메서드를 제공합니다. 가령 :mod:`collections.abc` 에서
+      이런 ABC 들을 다수 정의하고 있습니다. 이런 ABC 는 믹스 인(mix-in) 클래스로 볼 수 있고,
+      이 구상 메서드들을 믹스 인 메서드라고 부르기도 합니다.
 
    Classes created with a metaclass of :class:`ABCMeta` have the following method:
 
@@ -146,16 +167,45 @@ a helper class :class:`ABC` to alternatively define ABCs through inheritance:
    is also part of the ``MyIterable`` abstract base class, but it does not have
    to be overridden in non-abstract derived classes.
 
+   .. admonition:: flowdas
+
+      ``MyIterable`` 이 정의하는 :meth:`~iterator.__iter__` 메서드는 빈 이터레이터(좀 더
+      구체적으로는 제너레이터)를 돌려주도록 구현되었습니다. ``yield`` 문을 삽입하기위해 ``while False``
+      로 감쌉니다. 실제 서브 클래스에서는 (여전히 빈 이터레이터를 돌려줄 것이라면 그대로 써도 되지만) 자신에
+      맞는 :meth:`~iterator.__iter__` 를 재구현해야하지만, (재정의된 :meth:`~iterator.__iter__` 를
+      호출하게될) :meth:`get_iterator` 메서드는 재정의할 필요없이 그대로 써도 좋다는 뜻입니다.
+
    The :meth:`__subclasshook__` class method defined here says that any class
    that has an :meth:`~iterator.__iter__` method in its
    :attr:`~object.__dict__` (or in that of one of its base classes, accessed
    via the :attr:`~class.__mro__` list) is considered a ``MyIterable`` too.
+
+   .. admonition:: flowdas
+
+      ``MyIterable`` 의 핵심은 :meth:`get_iterator` 를 제공하는 것입니다. 때문에 ``MyIterable`` 이
+      메서드가 제공가는 기본 구현이 동작하는데 필요한 :meth:`~iterator.__iter__` 가 정의되어있는지 검사하고
+      있습니다.
 
    Finally, the last line makes ``Foo`` a virtual subclass of ``MyIterable``,
    even though it does not define an :meth:`~iterator.__iter__` method (it uses
    the old-style iterable protocol, defined in terms of :meth:`__len__` and
    :meth:`__getitem__`).  Note that this will not make ``get_iterator``
    available as a method of ``Foo``, so it is provided separately.
+
+   .. admonition:: flowdas
+
+      하지만 이터레이터를 얻는데 꼭 :meth:`~iterator.__iter__` 가 정의되어야 할 필요는 없고,
+      :meth:`__len__` 과 :meth:`__getitem__` 을 사용해도 됩니다. 그래서 ``Foo`` 역시
+      ``MyIterable`` 의 서브 클래스로 취급하기위해 ``MyIterable.register(Foo)`` 로 등록합니다.
+      하지만 이렇게 등록하는 경우 ``Foo`` 는 ``MyIterable`` 을 계승하지 않았기 때문에, ``MyIterable`` 의
+      기본 구현 :meth:`get_iterator` 를 제공받지 못합니다. 때문에 ``Foo`` 는 :meth:`get_iterator` 를
+      직접 구현해서 사용자들이 ``MyIterable`` 에서 기대하는 :meth:`get_iterator` 이 제공되도록 만듭니다.
+
+   .. admonition:: flowdas
+
+      ``any("__iter__" in B.__dict__ for B in C.__mro__)`` 과 같은 구문은 자주 쓰이는 표현인데,
+      ``hasattr(C, '__iter')`` 에 비해 메타 클래스나 어트리뷰트 조회에 관련된 특수 메서드와 디스크립터의 개입을
+      회피하는 결과를 줍니다.
 
 
 
@@ -335,6 +385,10 @@ The :mod:`abc` module also provides the following functions:
 
    .. versionadded:: 3.4
 
+   .. admonition:: flowdas
+
+      이 함수는 :func:`issubclass` 결과를 캐싱하는 경우(가령 :func:`functools.singledispatch`),
+      가상 서브 클래스가 변경되었는지를 감지해서, 캐시를 무효화시키려고 할 때 사용됩니다.
 
 .. rubric:: Footnotes
 
