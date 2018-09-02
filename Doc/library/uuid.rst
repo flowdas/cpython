@@ -10,6 +10,10 @@
 
 --------------
 
+.. admonition:: flowdas
+
+   이 페이지는 `Spike H.Y. Lee <https://github.com/hard-coders>`_ 님의 번역입니다.
+
 This module provides immutable :class:`UUID` objects (the :class:`UUID` class)
 and the functions :func:`uuid1`, :func:`uuid3`, :func:`uuid4`, :func:`uuid5` for
 generating version 1, 3, 4, and 5 UUIDs as specified in :rfc:`4122`.
@@ -270,34 +274,34 @@ Here are some examples of typical usage of the :mod:`uuid` module::
 
    >>> import uuid
 
-   >>> # make a UUID based on the host ID and current time
+   >>> # 호스트 ID 와 현재 시간에 기반한 UUID 를 만듭니다
    >>> uuid.uuid1()
    UUID('a8098c1a-f86e-11da-bd1a-00112444be1e')
 
-   >>> # make a UUID using an MD5 hash of a namespace UUID and a name
+   >>> # 이름공간 UUID 와 이름의 MD5 해시를 사용해서 UUID 를 만듭니다
    >>> uuid.uuid3(uuid.NAMESPACE_DNS, 'python.org')
    UUID('6fa459ea-ee8a-3ca4-894e-db77e160355e')
 
-   >>> # make a random UUID
+   >>> # 무작위 UUID 를 만듭니다
    >>> uuid.uuid4()
    UUID('16fd2706-8baf-433b-82eb-8c7fada847da')
 
-   >>> # make a UUID using a SHA-1 hash of a namespace UUID and a name
+   >>> # 이름공간 UUID 와 이름의 SHA-1 해시를 사용해서 UUID 를 만듭니다
    >>> uuid.uuid5(uuid.NAMESPACE_DNS, 'python.org')
    UUID('886313e1-3b8a-5372-9b90-0c9aee199e5d')
 
-   >>> # make a UUID from a string of hex digits (braces and hyphens ignored)
+   >>> # 16진수 문자열로 UUID 를 만듭니다 (중괄호와 붙임표(hyphen)는 무시됩니다)
    >>> x = uuid.UUID('{00010203-0405-0607-0809-0a0b0c0d0e0f}')
 
-   >>> # convert a UUID to a string of hex digits in standard form
+   >>> # UUID 를 표준 형식의 16진수 문자열로 변환합니다
    >>> str(x)
    '00010203-0405-0607-0809-0a0b0c0d0e0f'
 
-   >>> # get the raw 16 bytes of the UUID
+   >>> # UUID 의 길이 16인 날 바이트열을 얻습니다
    >>> x.bytes
    b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f'
 
-   >>> # make a UUID from a 16-byte string
+   >>> # 길이 16인 바이트열로 UUID 를 만듭니다
    >>> uuid.UUID(bytes=x.bytes)
    UUID('00010203-0405-0607-0809-0a0b0c0d0e0f')
 
