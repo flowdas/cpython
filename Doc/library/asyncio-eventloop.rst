@@ -33,6 +33,11 @@ It provides multiple facilities, including:
 
    Abstract base class of event loops.
 
+   .. admonition:: flowdas
+
+      다음에 소개되는 :class:`AbstractEventLoop` 클래스의 모든 메서드는 추상 메서드입니다.
+      여러분이 직접 이벤트 루프를 제작하려고 하면 모든 메서드들 구현해야한다는 뜻입니다.
+
    This class is :ref:`not thread safe <asyncio-multithreading>`.
 
 Run an event loop
@@ -48,6 +53,18 @@ Run an event loop
    this will run the current batch of callbacks and then exit.  Note
    that callbacks scheduled by callbacks will not run in that case;
    they will run the next time :meth:`run_forever` is called.
+
+   .. admonition:: flowdas
+
+      여기에서 구체적으로 제한하고 있지는 않지만, :mod:`asyncio` 에서 제공되는 모든 이벤트 루프는
+      재진입할 수 없습니다. 즉 이벤트 루프가 실행중일 때 자신 또는 다른 이벤트 루프의 :meth:`run_forever`
+      메서드를 호출하면 :exc:`RuntimeError` 예외를 일으킵니다. 이 제약은 :meth:`run_until_complete`
+      에도 동일하게 적용됩니다.
+
+      이 제약은 많은 상황에서 동기 코드내에서 비동기 코드를 호출할 수 없도록 만드는데, 그 반대의 경우는
+      항상 실행기(executor)를 사용할 수 있다는 점에서 비대칭적입니다. 파이썬의 비대칭적인 비동기 구현을
+      결함으로 보는 시각도 있습니다. 실제로 이런 비대칭성은 디스크립터와 같은 언어 기능에서도 문제를 일으킵니다.
+      하지만 이런 제약은 언어 자체에서 오는 것이 아니라 :mod:`asyncio` 의 구현에서 오는 것입니다.
 
    .. versionchanged:: 3.5.1
 
@@ -90,6 +107,9 @@ Run an event loop
    This is idempotent and irreversible. No other methods should be called after
    this one.
 
+   .. admonition:: flowdas
+
+      여기서 멱등적이란, 한번 호출하나 여러번 호출하나 같은 결과를 준다는 뜻입니다.
 
 .. coroutinemethod:: AbstractEventLoop.shutdown_asyncgens()
 
@@ -375,8 +395,26 @@ Creating connections
    :py:data:`~socket.SOCK_DGRAM`. *protocol_factory* must be a
    callable returning a :ref:`protocol <asyncio-protocol>` instance.
 
+   .. admonition:: flowdas
+
+      스트림 소켓은 유닉스 도메인 소켓(:py:data:`~socket.AF_UNIX`)이 별도의 메서드
+      :meth:`AbstractEventLoop.create_unix_connection` 로 분리되어 있으나,
+      데이터 그램 소켓의 경우는 이 메서드에서 모두 다룹니다. 하지만 소켓 유형
+      :py:data:`~socket.SOCK_SEQPACKET` 을 지원하지 않습니다.
+
+   .. admonition:: flowdas
+
+      *host* 라는 인자는 없습니다. *host* 는 *local_addr* 이나 *remote_addr* 에 포함된
+      *local_host* 와 *remote_host* 를 뜻합니다.
+
    This method will try to establish the connection in the background.
    When successful, it returns a ``(transport, protocol)`` pair.
+
+   .. admonition:: flowdas
+
+      데이터 그램 소켓에서, 연결한다는 것은 데이터 그램을 전송할 대상을 *remote_addr* 로 고정한다는 의미입니다.
+      따라서 *remote_addr* 이 제공되지 않으면 연결되지 않은 데이터 그램 소켓이 만들어지는데, 이 경우도
+      성공적인 것으로 판단합니다.
 
    Options changing how the connection is created:
 
@@ -403,6 +441,10 @@ Creating connections
      set this flag when being created. This option is not supported on Windows
      and some UNIX's. If the :py:data:`~socket.SO_REUSEPORT` constant is not
      defined then this capability is unsupported.
+
+     .. admonition:: flowdas
+
+        지원되지 않는 경우 이 옵션을 지정하면 예외를 일으킵니다.
 
    * *allow_broadcast* tells the kernel to allow this endpoint to send
      messages to the broadcast address.
@@ -460,6 +502,11 @@ Creating listening connections
    contains created sockets. Use the :meth:`Server.close` method to stop the
    server: close listening sockets.
 
+   .. admonition:: flowdas
+
+      :attr:`~Server.sockets` 어트리뷰트는 리스트입니다. 한 서버는 여러개의 소켓을 동시에
+      리스닝할 수 있습니다.
+
    Parameters:
 
    * The *host* parameter can be a string, in that case the TCP server is
@@ -494,6 +541,10 @@ Creating listening connections
      same port as other existing endpoints are bound to, so long as they all
      set this flag when being created. This option is not supported on
      Windows.
+
+     .. admonition:: flowdas
+
+        지원되지 않는 경우 이 옵션을 지정하면 예외를 일으킵니다.
 
    * *ssl_handshake_timeout* is (for an SSL server) the time in seconds to wait
      for the SSL handshake to complete before aborting the connection.
@@ -698,6 +749,14 @@ Low-level socket operations
    The received data is written into *buf* (a writable buffer).
    The return value is the number of bytes written.
 
+   .. admonition:: flowdas
+
+      소켓 IO 의 성능은 수반되는 복사에 크게 영향을 받습니다. :meth:`socket.socket.recv`
+      메서드는 수신 데이터를 반환값으로 제공하기 때문에 :meth:`socket.socket.recv_into`
+      메서드에 비해 복사가 한 번 더 일어날 수 있습니다. 하지만 여전히
+      :meth:`socket.socket.recvmsg_into` 메서드를 사용하는 Scatter/Gather IO는
+      제공되지 않고 있습니다.
+
    With :class:`SelectorEventLoop` event loop, the socket *sock* must be
    non-blocking.
 
@@ -707,6 +766,11 @@ Low-level socket operations
 
    Send data to the socket.  Modeled after blocking
    :meth:`socket.socket.sendall` method.
+
+   .. admonition:: flowdas
+
+      역시 :meth:`socket.socket.sendmsg` 메서드를 사용하는 Scatter/Gather IO는
+      지원되지 않습니다.
 
    The socket must be connected to a remote socket.
    This method continues to send data from *data* until either all data has
@@ -1009,9 +1073,9 @@ Server
       srv = await loop.create_server(...)
 
       async with srv:
-          # some code
+          # 코드
 
-      # At this point, srv is closed and no longer accepts new connections.
+      # 이 지점에서, srv 는 닫혔고 더는 새 연결을 받아들이지 않습니다.
 
 
    .. versionchanged:: 3.7
@@ -1063,8 +1127,8 @@ Server
       Example::
 
           async def client_connected(reader, writer):
-              # Communicate with the client with
-              # reader/writer streams.  For example:
+              # reader/writer 스트림으로 클라이언트와
+              # 통신합니다. 예를 들어:
               await reader.readline()
 
           async def main(host, port):
@@ -1165,10 +1229,10 @@ loop::
 
     loop = asyncio.get_event_loop()
 
-    # Schedule a call to hello_world()
+    # hello_world() 호출을 스케쥴합니다
     loop.call_soon(hello_world, loop)
 
-    # Blocking call interrupted by loop.stop()
+    # 블로킹 호출이 loop.stop() 에 의해 중단됩니다
     loop.run_forever()
     loop.close()
 
@@ -1199,11 +1263,11 @@ seconds, and then stops the event loop::
 
     loop = asyncio.get_event_loop()
 
-    # Schedule the first call to display_date()
+    # 첫번째 display_date() 호출을 스케쥴합니다
     end_time = loop.time() + 5.0
     loop.call_soon(display_date, end_time, loop)
 
-    # Blocking call interrupted by loop.stop()
+    # 블로킹 호출이 loop.stop() 에 의해 중단됩니다
     loop.run_forever()
     loop.close()
 
@@ -1225,28 +1289,28 @@ Wait until a file descriptor received some data using the
     import asyncio
     from socket import socketpair
 
-    # Create a pair of connected file descriptors
+    # 연결된 파일 기술자 쌍을 만듭니다
     rsock, wsock = socketpair()
     loop = asyncio.get_event_loop()
 
     def reader():
         data = rsock.recv(100)
         print("Received:", data.decode())
-        # We are done: unregister the file descriptor
+        # 할 일을 끝냈습니다: 파일 기술자를 등록 취소합니다
         loop.remove_reader(rsock)
-        # Stop the event loop
+        # 이벤트 루프를 중지합니다
         loop.stop()
 
-    # Register the file descriptor for read event
+    # 읽기 이벤트를 위해 파일 기술자를 등록합니다
     loop.add_reader(rsock, reader)
 
-    # Simulate the reception of data from the network
+    # 네트웍으로 부터의 데이터 수신을 흉내냅니다
     loop.call_soon(wsock.send, 'abc'.encode())
 
-    # Run the event loop
+    # 이벤트 루프를 실행합니다
     loop.run_forever()
 
-    # We are done, close sockets and the event loop
+    # 할 일을 끝냈습니다, 소켓과 이벤트 루프를 닫습니다
     rsock.close()
     wsock.close()
     loop.close()
