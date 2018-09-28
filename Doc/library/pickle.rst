@@ -34,6 +34,14 @@ avoid confusion, the terms used here are "pickling" and "unpickling".
    constructed data.  Never unpickle data received from an untrusted or
    unauthenticated source.
 
+   .. admonition:: flowdas
+
+      신뢰할 수 없는 출처의 데이터를 언피클하는 것을 안전하게 만드는 것은 :func:`eval` 을
+      안전하게 만드는 것과 비슷한 정도로 어렵습니다. 안전하게 만들기 위해서는 언피클에 아주 강한
+      제약을 걸어야만 하는데, 피클링의 유용성을 크게 낮추게됩니다. 때문에 오직 신뢰할 수 있는
+      데이터만 사용하는 전략이 더 실용적입니다. 그렇게 하는 한가지 방법은 피클된 데이터에
+      암호적으로 서명을 첨부하는 것입니다.
+
 
 Relationship to other Python modules
 ------------------------------------
@@ -327,6 +335,11 @@ The :mod:`pickle` module exports two classes, :class:`Pickler` and
       conform to the same interface as a :meth:`__reduce__`
       method.
 
+      .. admonition:: flowdas
+
+         환원 함수가 :meth:`__reduce__` 와 같은 인터페이스를 갖기 위해서는 인자로 해당 클래스의
+         인스턴스를 받아들여야합니다. :meth:`__reduce__` 의 ``self`` 에 해당합니다.
+
       By default, a pickler object will not have a
       :attr:`dispatch_table` attribute, and it will instead use the
       global dispatch table managed by the :mod:`copyreg` module.
@@ -449,6 +462,15 @@ restored in the unpickling environment::
        attr = 'A class attribute'
 
    picklestring = pickle.dumps(Foo)
+
+.. admonition:: flowdas
+
+   이 예는 약간 오해의 소지가 있습니다. ``picklestring`` 에 ``attr`` 어트리뷰트의 값이 포함되지
+   않는 것은 맞습니다만, 언피클했을 때 ``attr`` 어트리뷰트가 사라지는 것은 아닙니다. 피클 데이터는
+   ``Foo`` 의 이름 참조만을 포함하고, 언피클하면 ``Foo`` 클래스에 대한 참조로 복원됩니다.
+   따라서 언피클 환경이 같은 ``Foo`` 의 정의를 포함하고 있다면 ``attr`` 어트리뷰트 역시 제공됩니다.
+   다만 ``attr`` 어트리뷰트가 수정되고 있는 상황이라면 피클 시점의 ``attr`` 어트리뷰트의 값이
+   복원되지는 않습니다.
 
 These restrictions are why picklable functions and classes must be defined in
 the top level of a module.
@@ -718,7 +740,7 @@ reading resumes from the last location. The :meth:`__setstate__` and
 :meth:`__getstate__` methods are used to implement this behavior. ::
 
    class TextReader:
-       """Print and number lines in a text file."""
+       """텍스트 파일의 줄을 인쇄하고 번호를 매깁니다."""
 
        def __init__(self, filename):
            self.filename = filename
@@ -735,23 +757,23 @@ reading resumes from the last location. The :meth:`__setstate__` and
            return "%i: %s" % (self.lineno, line)
 
        def __getstate__(self):
-           # Copy the object's state from self.__dict__ which contains
-           # all our instance attributes. Always use the dict.copy()
-           # method to avoid modifying the original state.
+           # 우리의 모든 인스턴스 어트리뷰트를 포함하는 self.__dict__ 에서 객체의
+           # 상태를 복사합니다. 원래 상태를 수정하지 않으려면 항상 dict.copy()
+           # 메서드를 사용하십시오.
            state = self.__dict__.copy()
-           # Remove the unpicklable entries.
+           # 피클 가능하지 않은 항목을 제거합니다.
            del state['file']
            return state
 
        def __setstate__(self, state):
-           # Restore instance attributes (i.e., filename and lineno).
+           # 인스턴스 어트리뷰트(즉, filename 과 lineno)를 복원합니다.
            self.__dict__.update(state)
-           # Restore the previously opened file's state. To do so, we need to
-           # reopen it and read from it until the line count is restored.
+           # 이전에 열린 파일의 상태를 복원합니다. 그렇게 하려면, 다시 열어서 행 수를 복원할
+           # 때까지 읽어야 합니다.
            file = open(self.filename)
            for _ in range(self.lineno):
                file.readline()
-           # Finally, save the file.
+           # 마지막으로, 파일을 저장합니다.
            self.file = file
 
 
@@ -785,6 +807,24 @@ this hand-crafted pickle data stream does when loaded::
     hello world
     0
 
+.. admonition:: flowdas
+
+   ``0`` 은 ``pickle.loads()`` 가 반환한 값이고, ``hello world`` 는 언 피클 과정에서
+   콘솔에 출력된 내용입니다. 이 피클 스트림은 프로토콜 0으로 구성된 것인데, 끝부분에 있는 ``R``
+   이 ``REDUCE`` 라는 옵코드입니다. ``REDUCE`` 는 콜러블과 튜플을 사용해서 호출한 후 결과를
+   취합니다. 즉 ``0`` 은 ``os.system('echo hello world')`` 의 반환 값입니다.
+   :meth:`pickletools.dis` 로 피클 스트림을 디코딩해보면 이렇습니다::
+
+       >>> import pickletools
+       >>> pickletools.dis(b"cos\nsystem\n(S'echo hello world'\ntR.")
+           0: c    GLOBAL     'os system'
+          11: (    MARK
+          12: S        STRING     'echo hello world'
+          32: t        TUPLE      (MARK at 11)
+          33: R    REDUCE
+          34: .    STOP
+       highest protocol among opcodes = 0
+
 In this example, the unpickler imports the :func:`os.system` function and then
 apply the string argument "echo hello world".  Although this example is
 inoffensive, it is not difficult to imagine one that could damage your system.
@@ -813,15 +853,15 @@ Here is an example of an unpickler allowing only few safe classes from the
    class RestrictedUnpickler(pickle.Unpickler):
 
        def find_class(self, module, name):
-           # Only allow safe classes from builtins.
+           # builtins의 안전한 클래스만 허용합니다.
            if module == "builtins" and name in safe_builtins:
                return getattr(builtins, name)
-           # Forbid everything else.
+           # 다른 모든 것을 금지합니다.
            raise pickle.UnpicklingError("global '%s.%s' is forbidden" %
                                         (module, name))
 
    def restricted_loads(s):
-       """Helper function analogous to pickle.loads()."""
+       """pickle.loads()와 유사한 도움 함수."""
        return RestrictedUnpickler(io.BytesIO(s)).load()
 
 A sample usage of our unpickler working has intended::
@@ -866,7 +906,7 @@ For the simplest code, use the :func:`dump` and :func:`load` functions. ::
 
    import pickle
 
-   # An arbitrary collection of objects supported by pickle.
+   # pickle이 지원하는 임의의 객체 모음.
    data = {
        'a': [1, 2.0, 3, 4+6j],
        'b': ("character string", b"byte string"),
@@ -874,7 +914,7 @@ For the simplest code, use the :func:`dump` and :func:`load` functions. ::
    }
 
    with open('data.pickle', 'wb') as f:
-       # Pickle the 'data' dictionary using the highest protocol available.
+       # 사용 가능한 가장 높은 프로토콜을 사용하여 'data' 딕셔너리를 피클 합니다.
        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
 
@@ -883,8 +923,7 @@ The following example reads the resulting pickled data. ::
    import pickle
 
    with open('data.pickle', 'rb') as f:
-       # The protocol version used is detected automatically, so we do not
-       # have to specify it.
+       # 사용된 프로토콜 버전이 자동으로 감지되므로, 지정할 필요가 없습니다.
        data = pickle.load(f)
 
 
