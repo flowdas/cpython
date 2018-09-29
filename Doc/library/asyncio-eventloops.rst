@@ -64,6 +64,20 @@ asyncio currently provides two implementations of event loops:
       `MSDN documentation on I/O Completion Ports
       <https://msdn.microsoft.com/en-us/library/windows/desktop/aa365198%28v=vs.85%29.aspx>`_.
 
+   .. admonition:: flowdas
+
+      프로액터(proactor) 는 리액터(reactor)와 대비되는 용어입니다. :mod:`selectors` 모듈이 제공하는
+      셀렉터들은 모두 비 블로킹(non-blocking) I/O를 사용합니다. 이들은 동기(synchronous) I/O와 사실상
+      같은 구조를 갖지만 요청한 I/O가 블로킹에 들어갈 것 같으면 ``EWOULDBLOCK`` 에러를 일으키도록 하고, 셀렉터는
+      이 에러를 일으키지 않고 I/O가 수행될 수 있을 때까지 **한꺼번에** 대기할 수 있도록 합니다. 이런 방식을
+      reactive 하다고 합니다. 이에 반해 I/O를 즉시 완료할 수 없어도 요청 자체를 거부하는 것이 아니라, 요청을
+      큐에 넣어두고, I/O가 완료되면 완료 신호를 주는 방식이 있습니다. 이때도 셀렉터와 비슷한 종류의 대기 메커니즘이
+      제공됩니다. 윈도우의 IOCP 가 이 대기 메커니즘의 하나입니다. 비 블로킹 방식과의 결정적인 차이는, 요청하는
+      순간부터 요청이 완료될 때까지 I/O에 수반되는 버퍼가 I/O 하부 시스템에 붙잡혀있게 된다는 것과, 큐에 들어간
+      요청을 취소하는 메커니즘이 필요하다는 것입니다. 이 때문에 I/O 루프가 좀 다른 방식으로 구성되어야 합니다.
+      구별하기 위해 이런 방식을 proactive 하다고 합니다. 버퍼가 직접 제공되기 때문에 reactive 한 방식보다 메모리
+      복사를 줄여 성능을 개선할 수 있는 여지가 있습니다.
+
 Example to use a :class:`ProactorEventLoop` on Windows::
 
     import asyncio, sys
@@ -154,6 +168,10 @@ process, a single global policy object manages the event loops available to the
 process based on the calling context. A policy is an object implementing the
 :class:`AbstractEventLoopPolicy` interface.
 
+.. admonition:: flowdas
+
+   정책 패턴(policy pattern)은 디자인 패턴의 한 종류 입니다.
+
 For most users of :mod:`asyncio`, policies never have to be dealt with
 explicitly, since the default global policy is sufficient (see below).
 
@@ -179,9 +197,21 @@ An event loop policy must implement the following interface:
       interface. In case called from coroutine, it returns the currently
       running event loop.
 
+      .. admonition:: flowdas
+
+         코루틴에서 호출될 때 그 코루틴을 실행하고 있는 이벤트 루프와 현재 컨텍스트의 이벤트 루프가
+         다를 수도 있음을 시사하고 있습니다.
+
       Raises an exception in case no event loop has been set for the current
       context and the current policy does not specify to create one. It must
       never return ``None``.
+
+      .. admonition:: flowdas
+
+         이벤트 루프를 새로 만들지를 지정하는 인터페이스 같은 것은 없습니다. 이런 정책은 정책 객체의
+         코드에서 정의됩니다. 기본 정책의 경우는 메인 스레드에서 호출하는 경우만 루프를 새로 만들도록
+         허락합니다. 컨텍스트라는 개념도 추상적인 것으로, 컨텍스트가 무엇을 의미하는지 역시 정책 객체의
+         코드에서 결정합니다. 기본 정책의 경우는 컨텍스트가 스레드입니다.
 
       .. versionchanged:: 3.6
 
@@ -233,12 +263,18 @@ and override the methods for which you want to change behavior, for example::
     class MyEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
 
         def get_event_loop(self):
-            """Get the event loop.
+            """이벤트 루프를 가져옵니다.
 
-            This may be None or an instance of EventLoop.
+            None 이거나 EventLoop 의 인스턴스일 수 있습니다.
             """
             loop = super().get_event_loop()
-            # Do something with loop ...
+            # loop 로 뭔가 합니다 ...
             return loop
 
     asyncio.set_event_loop_policy(MyEventLoopPolicy())
+
+.. admonition:: flowdas
+
+   따로 설명하고 있지는 않지만 :class:`DefaultEventLoopPolicy` 라는 클래스가 정의되는 것으로
+   보아야 합니다.
+
