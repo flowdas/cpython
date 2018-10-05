@@ -103,8 +103,8 @@ source.
    Many standard library modules contain code that is invoked on their execution
    as a script.  An example is the :mod:`timeit` module::
 
-       python -mtimeit -s 'setup here' 'benchmarked code here'
-       python -mtimeit -h # for details
+       python -mtimeit -s '설정은 여기에 넣습니다' '측정할 코드는 여기에 넣습니다'
+       python -mtimeit -h # 자세한 내용
 
    .. seealso::
       :func:`runpy.run_module`
@@ -147,6 +147,10 @@ source.
    If the script name refers to a directory or zipfile, the script name is
    added to the start of :data:`sys.path` and the ``__main__.py`` file in
    that location is executed as the :mod:`__main__` module.
+
+   .. admonition:: flowdas
+
+      이름 공간 패키지도 허락되기 때문에, 디렉터리를 주는 경우 `__init__.py`` 파일은 없어도 됩니다.
 
    .. seealso::
       :func:`runpy.run_path`
@@ -363,7 +367,7 @@ Miscellaneous options
 
    .. code-block:: none
 
-       file:line: category: message
+       파일:줄: 범주: 메시지
 
    By default, each warning is printed once for each source line where it
    occurs.  This option controls how often warnings are printed.
@@ -381,12 +385,12 @@ Miscellaneous options
    warnings emitted by a process (even those that are otherwise ignored by
    default)::
 
-       -Wdefault  # Warn once per call location
-       -Werror    # Convert to exceptions
-       -Walways   # Warn every time
-       -Wmodule   # Warn once per calling module
-       -Wonce     # Warn once per Python process
-       -Wignore   # Never warn
+       -Wdefault  # 호출 위치마다 한 번 경고합니다
+       -Werror    # 예외로 변환합니다
+       -Walways   # 매번 경고합니다
+       -Wmodule   # 호출하는 모듈마다 한 번 경고합니다
+       -Wonce     # 파이썬 프로세스마다 한 번 경고합니다
+       -Wignore   # 경고하지 않습니다
 
    The action names can be abbreviated as desired (e.g. ``-Wi``, ``-Wd``,
    ``-Wa``, ``-We``) and the interpreter will resolve them to the appropriate
@@ -663,12 +667,12 @@ conflict.
    warnings emitted by a process (even those that are otherwise ignored by
    default)::
 
-       PYTHONWARNINGS=default  # Warn once per call location
-       PYTHONWARNINGS=error    # Convert to exceptions
-       PYTHONWARNINGS=always   # Warn every time
-       PYTHONWARNINGS=module   # Warn once per calling module
-       PYTHONWARNINGS=once     # Warn once per Python process
-       PYTHONWARNINGS=ignore   # Never warn
+       PYTHONWARNINGS=default  # 호출 위치마다 한 번 경고합니다
+       PYTHONWARNINGS=error    # 예외로 변환합니다
+       PYTHONWARNINGS=always   # 매번 경고합니다
+       PYTHONWARNINGS=module   # 호출하는 모듈마다 한 번 경고합니다
+       PYTHONWARNINGS=once     # 파이썬 프로세스마다 한 번 경고합니다
+       PYTHONWARNINGS=ignore   # 경고하지 않습니다
 
    See :ref:`warning-filter` and :ref:`describing-warning-filters` for more
    details.
