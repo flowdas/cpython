@@ -1093,6 +1093,17 @@ Any object that supports the ``in`` operator can be passed as the *choices*
 value, so :class:`dict` objects, :class:`set` objects, custom containers,
 etc. are all supported.
 
+.. admonition:: flowdas
+
+   *choices* 와 ``nargs='*'`` 를 함께 쓰면 묘한 일이 일어납니다. 아무런 값도 주지 않으면 빈 튜플이
+   제공되는 대신, 에러를 일으킵니다::
+
+      >>> parser = argparse.ArgumentParser(prog='doors.py')
+      >>> parser.add_argument('door', type=int, nargs='*', choices=range(1, 4))
+      >>> parser.parse_args([])
+      usage: doors.py [-h] [{1,2,3} [{1,2,3} ...]]
+      doors.py: error: argument door: invalid choice: [] (choose from 1, 2, 3)
+
 
 required
 ^^^^^^^^
