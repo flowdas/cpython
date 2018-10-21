@@ -2886,16 +2886,16 @@ features:
           print(sum(getsize(join(root, name)) for name in files), end=" ")
           print("bytes in", len(files), "non-directory files")
           if 'CVS' in dirs:
-              dirs.remove('CVS')  # don't visit CVS directories
+              dirs.remove('CVS')  # CVS 디렉터리는 방문하지 않습니다
 
    In the next example (simple implementation of :func:`shutil.rmtree`),
    walking the tree bottom-up is essential, :func:`rmdir` doesn't allow
    deleting a directory before the directory is empty::
 
-      # Delete everything reachable from the directory named in "top",
-      # assuming there are no symbolic links.
-      # CAUTION:  This is dangerous!  For example, if top == '/', it
-      # could delete all your disk files.
+      # 심볼릭 링크가 없다고 가정하고, "top"으로 지정한 디렉터리에서 도달할 수 있는
+      # 모든 것을 삭제합니다.
+      # 주의: 위험합니다! 예를 들어, top == '/' 이면, 모든 디스크 파일을 삭제할 수
+      # 있습니다.
       import os
       for root, dirs, files in os.walk(top, topdown=False):
           for name in files:
@@ -2945,16 +2945,16 @@ features:
                 end="")
           print("bytes in", len(files), "non-directory files")
           if 'CVS' in dirs:
-              dirs.remove('CVS')  # don't visit CVS directories
+              dirs.remove('CVS')  # CVS 디렉터리는 방문하지 않습니다
 
    In the next example, walking the tree bottom-up is essential:
    :func:`rmdir` doesn't allow deleting a directory before the directory is
    empty::
 
-      # Delete everything reachable from the directory named in "top",
-      # assuming there are no symbolic links.
-      # CAUTION:  This is dangerous!  For example, if top == '/', it
-      # could delete all your disk files.
+      # 심볼릭 링크가 없다고 가정하고, "top"으로 지정한 디렉터리에서 도달할 수 있는
+      # 모든 것을 삭제합니다.
+      # 주의: 위험합니다! 예를 들어, top == '/' 이면, 모든 디스크 파일을 삭제할 수
+      # 있습니다.
       import os
       for root, dirs, files, rootfd in os.fwalk(top, topdown=False):
           for name in files:
