@@ -223,7 +223,7 @@ Scheduling callbacks
    Most :mod:`asyncio` scheduling functions don't allow passing
    keyword arguments.  To do that, use :func:`functools.partial`::
 
-      # will schedule "print("Hello", flush=True)"
+      # "print("Hello", flush=True)" 를 스케줄합니다
       loop.call_soon(
           functools.partial(print, "Hello", flush=True))
 
@@ -1051,34 +1051,33 @@ Executing code in thread or process pools
       import concurrent.futures
 
       def blocking_io():
-          # File operations (such as logging) can block the
-          # event loop: run them in a thread pool.
+          # 파일 연산(가령 로깅)은 이벤트 루프를 블록할 수 있습니다:
+          # 스레드 풀에서 실행하십시오.
           with open('/dev/urandom', 'rb') as f:
               return f.read(100)
 
       def cpu_bound():
-          # CPU-bound operations will block the event loop:
-          # in general it is preferable to run them in a
-          # process pool.
+          # CPU 병목 작업은 이벤트 루프를 블록합니다:
+          # 일반적으로 프로세스 풀에서 실행하는 것이 좋습니다.
           return sum(i * i for i in range(10 ** 7))
 
       async def main():
           loop = asyncio.get_running_loop()
 
-          ## Options:
+          ## 선택지:
 
-          # 1. Run in the default loop's executor:
+          # 1. 기본 루프의 실행기에서 실행:
           result = await loop.run_in_executor(
               None, blocking_io)
           print('default thread pool', result)
 
-          # 2. Run in a custom thread pool:
+          # 2. 사용자 정의 스레드 풀에서 실행:
           with concurrent.futures.ThreadPoolExecutor() as pool:
               result = await loop.run_in_executor(
                   pool, blocking_io)
               print('custom thread pool', result)
 
-          # 3. Run in a custom process pool:
+          # 3. 사용자 정의 프로세스 풀에서 실행:
           with concurrent.futures.ProcessPoolExecutor() as pool:
               result = await loop.run_in_executor(
                   pool, cpu_bound)
