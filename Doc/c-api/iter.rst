@@ -26,21 +26,21 @@ something like this::
    PyObject *item;
 
    if (iterator == NULL) {
-       /* propagate error */
+       /* 에러를 전파합니다 */
    }
 
    while (item = PyIter_Next(iterator)) {
-       /* do something with item */
+       /* item으로 뭔가 합니다 */
        ...
-       /* release reference when done */
+       /* 끝나면 참조를 반환합니다 */
        Py_DECREF(item);
    }
 
    Py_DECREF(iterator);
 
    if (PyErr_Occurred()) {
-       /* propagate error */
+       /* 에러를 전파합니다 */
    }
    else {
-       /* continue doing useful work */
+       /* 쓸모있는 일을 계속합니다 */
    }
