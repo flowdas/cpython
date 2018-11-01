@@ -127,6 +127,10 @@ diffs. For comparing directories and files, see also, the :mod:`filecmp` module.
       the next difference highlight at the top of the browser without any leading
       context).
 
+      .. admonition:: flowdas
+
+         "next" 하이퍼 링크는 만들어진 HTML 의 첫번째 열에 "n" (처음은 "f") 로 표시되는 링크를 뜻합니다.
+
       .. versionchanged:: 3.5
          *charset* keyword-only argument was added.  The default charset of
          HTML document changed from ``'ISO-8859-1'`` to ``'utf-8'``.
@@ -263,7 +267,7 @@ diffs. For comparing directories and files, see also, the :mod:`filecmp` module.
 
       >>> diff = ndiff('one\ntwo\nthree\n'.splitlines(keepends=True),
       ...              'ore\ntree\nemu\n'.splitlines(keepends=True))
-      >>> diff = list(diff) # materialize the generated delta into a list
+      >>> diff = list(diff) # 생성된 델타를 리스트로 구체화합니다
       >>> print(''.join(restore(diff, 1)), end="")
       one
       two
