@@ -186,16 +186,28 @@ creation according to their needs, the :class:`EnvBuilder` class.
         ``python`` and ``python3`` will be created pointing to that executable,
         unless files with those names already exist.
 
+        .. admonition:: flowdas
+
+           pip 는 이 메서드가 호출된 직후에 설치됩니다.
+
     .. method:: setup_scripts(context)
 
         Installs activation scripts appropriate to the platform into the virtual
         environment. On Windows, also installs the ``python[w].exe`` scripts.
+
+        .. admonition:: flowdas
+
+           ``upgrade`` 가 지정되면 호출되지 않습니다.
 
     .. method:: post_setup(context)
 
         A placeholder method which can be overridden in third party
         implementations to pre-install packages in the virtual environment or
         perform other post-creation steps.
+
+        .. admonition:: flowdas
+
+           ``upgrade`` 가 지정되면 호출되지 않습니다.
 
     .. versionchanged:: 3.7.2
        Windows now uses redirector scripts for ``python[w].exe`` instead of
@@ -245,6 +257,11 @@ There is also a module-level convenience function:
 
 An example of extending ``EnvBuilder``
 --------------------------------------
+
+.. admonition:: flowdas
+
+   파이썬 3.4 이후로는 setuptools와 pip가 기본 설치되기 때문에, 이 스크립트는 그 이전 버전에서만
+   쓸모있습니다. 단지 API 사용 예로만 활용하시기 바랍니다.
 
 The following script shows how to extend :class:`EnvBuilder` by implementing a
 subclass which installs setuptools and pip into a created virtual environment::
