@@ -152,8 +152,8 @@ creation according to their needs, the :class:`EnvBuilder` class.
 
             def create(self, env_dir):
                 """
-                Create a virtualized Python environment in a directory.
-                env_dir is the target directory to create an environment in.
+                디렉터리에 가상화된 파이썬 환경을 만듭니다.
+                env_dir은 안에 환경을 만들 대상 디렉터리입니다.
                 """
                 env_dir = os.path.abspath(env_dir)
                 context = self.ensure_directories(env_dir)
@@ -264,26 +264,19 @@ subclass which installs setuptools and pip into a created virtual environment::
 
     class ExtendedEnvBuilder(venv.EnvBuilder):
         """
-        This builder installs setuptools and pip so that you can pip or
-        easy_install other packages into the created virtual environment.
+        이 빌더는 setuptools 와 pip을 설치하여 만들어진 가상 환경에 다른 패키지를 pip이나
+        easy_install 할 수 있도록 합니다.
 
-        :param nodist: If True, setuptools and pip are not installed into the
-                       created virtual environment.
-        :param nopip: If True, pip is not installed into the created
-                      virtual environment.
-        :param progress: If setuptools or pip are installed, the progress of the
-                         installation can be monitored by passing a progress
-                         callable. If specified, it is called with two
-                         arguments: a string indicating some progress, and a
-                         context indicating where the string is coming from.
-                         The context argument can have one of three values:
-                         'main', indicating that it is called from virtualize()
-                         itself, and 'stdout' and 'stderr', which are obtained
-                         by reading lines from the output streams of a subprocess
-                         which is used to install the app.
+        :param nodist: True면, 만들어진 가상 환경에 setuptools와 pip를 설치하지 않습니다.
+        :param nopip: True면, 만들어진 가상 환경에 pip를 설치하지 않습니다.
+        :param progress: setuptools 나 pip 설치되면, progress 콜러블을 전달하여 설치 진행
+                         상황을 감시할 수 있습니다. 지정하면, 두 개의 인자로 호출됩니다: 진행률을
+                         나타내는 문자열과 문자열의 출처를 나타내는 context. context 인자는
+                         세 가지 값 중 하나를 가질 수 있습니다: virtualize() 자체에서
+                         호출되었음을 나타내는 'main'과, 앱 설치에 사용된 자식 프로세스의 출력
+                         스트림에서 줄을 읽어서 얻었음을 나타내는 'stdout'과 'stderr'.
 
-                         If a callable is not specified, default progress
-                         information is output to sys.stderr.
+                         콜러블을 지정하지 않으면, sys.stderr에 기본 진행 정보가 출력됩니다.
         """
 
         def __init__(self, *args, **kwargs):
@@ -295,23 +288,21 @@ subclass which installs setuptools and pip into a created virtual environment::
 
         def post_setup(self, context):
             """
-            Set up any packages which need to be pre-installed into the
-            virtual environment being created.
+            만들어지는 가상 환경에 미리 설치될 필요가 있는 것들을 설정합니다.
 
-            :param context: The information for the virtual environment
-                            creation request being processed.
+            :param context: 처리 중인 가상 환경 생성 요청에 대한 정보.
             """
             os.environ['VIRTUAL_ENV'] = context.env_dir
             if not self.nodist:
                 self.install_setuptools(context)
-            # Can't install pip without setuptools
+            # setuptools 없이 pip을 설치할 수 없습니다
             if not self.nopip and not self.nodist:
                 self.install_pip(context)
 
         def reader(self, stream, context):
             """
-            Read lines from a subprocess' output stream and either pass to a progress
-            callable (if specified) or write progress information to sys.stderr.
+            자식 프로세스의 출력 스트림에서 줄을 읽고 (지정되었으면) progress 콜러블로 전달하거나 진행
+            정보를 sys.stderr에 씁니다.
             """
             progress = self.progress
             while True:
@@ -333,7 +324,7 @@ subclass which installs setuptools and pip into a created virtual environment::
             fn = os.path.split(path)[-1]
             binpath = context.bin_path
             distpath = os.path.join(binpath, fn)
-            # Download script into the virtual environment's binaries folder
+            # 가상 환경의 바이너리 폴더에 스크립트를 내려받습니다
             urlretrieve(url, distpath)
             progress = self.progress
             if self.verbose:
@@ -345,7 +336,7 @@ subclass which installs setuptools and pip into a created virtual environment::
             else:
                 sys.stderr.write('Installing %s ...%s' % (name, term))
                 sys.stderr.flush()
-            # Install in the virtual environment
+            # 가상 환경에 설치합니다
             args = [context.env_exe, fn]
             p = Popen(args, stdout=PIPE, stderr=PIPE, cwd=binpath)
             t1 = Thread(target=self.reader, args=(p.stdout, 'stdout'))
@@ -364,14 +355,13 @@ subclass which installs setuptools and pip into a created virtual environment::
 
         def install_setuptools(self, context):
             """
-            Install setuptools in the virtual environment.
+            가상 환경에 setuptools를 설치합니다.
 
-            :param context: The information for the virtual environment
-                            creation request being processed.
+            :param context: 처리 중인 가상 환경 생성 요청에 대한 정보.
             """
             url = 'https://bitbucket.org/pypa/setuptools/downloads/ez_setup.py'
             self.install_script(context, 'setuptools', url)
-            # clear up the setuptools archive which gets downloaded
+            # 내려받은 setuptools 저장소를 지웁니다
             pred = lambda o: o.startswith('setuptools-') and o.endswith('.tar.gz')
             files = filter(pred, os.listdir(context.bin_path))
             for f in files:
@@ -380,10 +370,9 @@ subclass which installs setuptools and pip into a created virtual environment::
 
         def install_pip(self, context):
             """
-            Install pip in the virtual environment.
+            가상 환경에 pip을 설치합니다.
 
-            :param context: The information for the virtual environment
-                            creation request being processed.
+            :param context: 처리 중인 가상 환경 생성 요청에 대한 정보.
             """
             url = 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py'
             self.install_script(context, 'pip', url)
