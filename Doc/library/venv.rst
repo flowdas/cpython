@@ -346,7 +346,7 @@ subclass which installs setuptools and pip into a created virtual environment::
                 progress('done.', 'main')
             else:
                 sys.stderr.write('done.\n')
-            # Clean up - no longer needed
+            # 정리 - 더는 필요 없습니다
             os.unlink(distpath)
 
         def install_setuptools(self, context):
