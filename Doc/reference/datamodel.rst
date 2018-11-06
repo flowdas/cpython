@@ -1666,7 +1666,7 @@ Basic customization
       적절한 인자를 전달한다는 것은 ``super().__new__()`` 가 받을 수 있는 인자를 전달한다는 뜻이지,
       :meth:`__new__` 로 전달된 모든 인자를 전달한다는 뜻이 아닙니다. :meth:`__new__` 를 재정의 하는
       클래스는 그 성격상 아무것도 계승하고 있지 않을(즉 :class:`object` 만 계승할) 가능성이 많습니다.
-      이 때는 :meth:`object.__new__` 가 호출되는데, 이 메쏘드는 *cls* 외에는 아무것도 받지 않습니다.
+      이 때는 :meth:`object.__new__` 가 호출되는데, 이 메서드는 *cls* 외에는 아무것도 받지 않습니다.
 
    If :meth:`__new__` returns an instance of *cls*, then the new instance's
    :meth:`__init__` method will be invoked like ``__init__(self[, ...])``, where
