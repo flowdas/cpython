@@ -12,6 +12,11 @@
 data types, and allows calling functions in DLLs or shared libraries.  It can be
 used to wrap these libraries in pure Python.
 
+.. admonition:: flowdas
+
+   같은 목적으로 자주 사용되는 제삼자 라이브러리로 PyPy 팀에서 개발한
+   `cffi <https://cffi.readthedocs.io/en/latest/>`_\가 있습니다. CPython에서도 사용할 수 있고,
+   PyPy 에서는 대체로 :mod:`ctypes` 에 비해 훨씬 높은 성능을 제공합니다.
 
 .. _ctypes-ctypes-tutorial:
 
@@ -305,11 +310,11 @@ bytes objects are immutable)::
    >>> print(c_s.value)
    Hello World
    >>> c_s.value = "Hi, there"
-   >>> print(c_s)              # the memory location has changed
+   >>> print(c_s)              # 메모리 위치가 변경되었습니다
    c_wchar_p(139966783348904)
    >>> print(c_s.value)
    Hi, there
-   >>> print(s)                # first object is unchanged
+   >>> print(s)                # 원래 객체는 변경되지 않습니다
    Hello, World
    >>>
 
@@ -321,21 +326,28 @@ property; if you want to access it as NUL terminated string, use the ``value``
 property::
 
    >>> from ctypes import *
-   >>> p = create_string_buffer(3)            # create a 3 byte buffer, initialized to NUL bytes
+   >>> p = create_string_buffer(3)            # 3바이트 버퍼를 만들고, NUL 바이트로 초기화합니다
    >>> print(sizeof(p), repr(p.raw))
    3 b'\x00\x00\x00'
-   >>> p = create_string_buffer(b"Hello")     # create a buffer containing a NUL terminated string
+   >>> p = create_string_buffer(b"Hello")     # NUL 종료 문자열을 포함하는 버퍼를 만듭니다
    >>> print(sizeof(p), repr(p.raw))
    6 b'Hello\x00'
    >>> print(repr(p.value))
    b'Hello'
-   >>> p = create_string_buffer(b"Hello", 10) # create a 10 byte buffer
+   >>> p = create_string_buffer(b"Hello", 10) # 10바이트 버퍼를 만듭니다
    >>> print(sizeof(p), repr(p.raw))
    10 b'Hello\x00\x00\x00\x00\x00'
    >>> p.value = b"Hi"
    >>> print(sizeof(p), repr(p.raw))
    10 b'Hi\x00lo\x00\x00\x00\x00\x00'
    >>>
+
+.. admonition:: flowdas
+
+   NUL 종료 문자열로 액세스한다는 것은 메모리의 내용을 NULL 종료 문자열로 해석한다는 뜻입니다. 따라서,
+   ``value`` 프로퍼티는 문자열의 끝을 나타내는 NULL 을 포함하지 않는 바이트열을 줍니다. 반면, 임의의 메모리
+   블록으로 해석하는 ``raw`` 프로퍼티는 메모리에 담긴 모든 바이트를 제공하기 때문에, NUL을 포함하는 바이트열을
+   돌려줍니다.
 
 The :func:`create_string_buffer` function replaces the :func:`c_buffer` function
 (which is still available as an alias), as well as the :func:`c_string` function
@@ -1151,7 +1163,7 @@ Consider the following example::
    >>> rc = RECT(p1, p2)
    >>> print(rc.a.x, rc.a.y, rc.b.x, rc.b.y)
    1 2 3 4
-   >>> # now swap the two points
+   >>> # 이제 두 포인터를 스왑합니다
    >>> rc.a, rc.b = rc.b, rc.a
    >>> print(rc.a.x, rc.a.y, rc.b.x, rc.b.y)
    3 4 3 4
