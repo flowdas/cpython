@@ -239,11 +239,6 @@ to a :class:`ProcessPoolExecutor` will result in deadlock.
    pending jobs will raise a :exc:`~concurrent.futures.process.BrokenProcessPool`,
    as well any attempt to submit more jobs to the pool.
 
-   .. admonition:: flowdas
-
-      :exc:`~concurrent.futures.thread.BrokenThreadPool` 이 아니라
-      :exc:`~concurrent.futures.process.BrokenProcessPool` 을 발생시킵니다.
-
    .. versionchanged:: 3.3
       When one of the worker processes terminates abruptly, a
       :exc:`BrokenProcessPool` error is now raised.  Previously, behaviour
