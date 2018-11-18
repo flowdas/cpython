@@ -14,16 +14,16 @@ def convert_point(s):
     x, y = list(map(float, s.split(b";")))
     return Point(x, y)
 
-# Register the adapter
+# 어댑터를 등록합니다
 sqlite3.register_adapter(Point, adapt_point)
 
-# Register the converter
+# 변환기를 등록합니다
 sqlite3.register_converter("point", convert_point)
 
 p = Point(4.0, -3.2)
 
 #########################
-# 1) Using declared types
+# 1) 선언된 형 사용하기
 con = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
 cur = con.cursor()
 cur.execute("create table test(p point)")
@@ -35,7 +35,7 @@ cur.close()
 con.close()
 
 #######################
-# 1) Using column names
+# 1) 열 이름 사용하기
 con = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_COLNAMES)
 cur = con.cursor()
 cur.execute("create table test(p)")

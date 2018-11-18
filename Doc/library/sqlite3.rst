@@ -34,18 +34,18 @@ and call its :meth:`~Cursor.execute` method to perform SQL commands::
 
    c = conn.cursor()
 
-   # Create table
+   # 테이블을 만듭니다
    c.execute('''CREATE TABLE stocks
                 (date text, trans text, symbol text, qty real, price real)''')
 
-   # Insert a row of data
+   # 데이터 행을 삽입합니다
    c.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
 
-   # Save (commit) the changes
+   # 변경을 저장(commit)합니다
    conn.commit()
 
-   # We can also close the connection if we are done with it.
-   # Just be sure any changes have been committed or they will be lost.
+   # 작업이 끝나면 연결을 닫을 수도 있습니다.
+   # 모든 변경 사항이 커밋되었음을 확인하십시오. 그렇지 않으면 잃어버립니다.
    conn.close()
 
 The data you've saved is persistent and is available in subsequent sessions::
@@ -65,16 +65,16 @@ second argument to the cursor's :meth:`~Cursor.execute` method.  (Other database
 modules may use a different placeholder, such as ``%s`` or ``:1``.) For
 example::
 
-   # Never do this -- insecure!
+   # 절대로 하지 마십시오 -- 안전하지 않습니다!
    symbol = 'RHAT'
    c.execute("SELECT * FROM stocks WHERE symbol = '%s'" % symbol)
 
-   # Do this instead
+   # 대신 이렇게 하세요
    t = ('RHAT',)
    c.execute('SELECT * FROM stocks WHERE symbol=?', t)
    print(c.fetchone())
 
-   # Larger example that inserts many records at a time
+   # 한 번에 많은 레코드를 삽입하는 더 큰 예
    purchases = [('2006-03-28', 'BUY', 'IBM', 1000, 45.00),
                 ('2006-04-05', 'BUY', 'MSFT', 1000, 72.00),
                 ('2006-04-06', 'SELL', 'IBM', 500, 53.00),
@@ -119,6 +119,11 @@ This example uses the iterator form::
 Module functions and constants
 ------------------------------
 
+.. admonition:: flowdas
+
+   이 설명서에는 나와있지 않지만 DB-API 2.0은 세 개의 모듈 전역 상수를 정의하고 있습니다:
+   ``apilevel``, ``threadsafety``, ``paramstyle``.
+   :mod:`sqlite3` 에는 세 상수 모두 정의되어 있습니다.
 
 .. data:: version
 
@@ -172,6 +177,21 @@ Module functions and constants
 
 .. function:: connect(database[, timeout, detect_types, isolation_level, check_same_thread, factory, cached_statements, uri])
 
+   .. admonition:: flowdas
+
+      DB-API 2.0 이 정의하는 함수입니다. 이 함수가 반환하는 :class:`Connection` 객체도 DB-API
+      2.0 이 정의합니다. 하지만 인자는 데이터베이스 종속적이고 DB-API 2.0은 어떤 매개 변수도 정의하지
+      않습니다. 다만 매개 변수를 정의하는 지침은 제공하고 있는데, 다음과 같은 키워드 매개 변수입니다.
+
+      * *dsn* - 필수. 문자열 데이터 소스 이름.
+      * *user* - 선택적. 사용자 이름.
+      * *password* - 선택적. 암호.
+      * *host* - 선택적. 호스트 이름.
+      * *database* - 선택적. 데이터베이스 이름.
+
+      :mod:`sqlite3` 는 이 중 *database* 만 사용하고 있습니다만, 실제 의미는 이 지침의 *dsn* 에
+      해당합니다.
+
    Opens a connection to the SQLite database file *database*. By default returns a
    :class:`Connection` object, unless a custom *factory* is given.
 
@@ -179,6 +199,11 @@ Module functions and constants
    relative to the current  working directory) of the database file to be opened.
    You can use ``":memory:"`` to open a database connection to a database that
    resides in RAM instead of on disk.
+
+   .. admonition:: flowdas
+
+      *database* 에 빈 문자열을 주면 임시 파일이 사용되고, 연결이 닫히면 파일은 삭제됩니다.
+      데이터베이스가 파일에 만들어진다는 점을 제외하면 모든 면에서 ``":memory:"`` 와 비슷합니다.
 
    When a database is accessed by multiple connections, and one of the processes
    modifies the database, the SQLite database is locked until that transaction is
@@ -277,6 +302,10 @@ Connection Objects
 
 .. class:: Connection
 
+   .. admonition:: flowdas
+
+      DB-API 2.0이 정의하는 클래스입니다.
+
    A SQLite database connection has the following attributes and methods:
 
    .. attribute:: isolation_level
@@ -284,6 +313,11 @@ Connection Objects
       Get or set the current default isolation level. :const:`None` for autocommit mode or
       one of "DEFERRED", "IMMEDIATE" or "EXCLUSIVE". See section
       :ref:`sqlite3-controlling-transactions` for a more detailed explanation.
+
+      .. admonition:: flowdas
+
+         :attr:`isolation_level` 의 기본값은 "" 입니다. 이 값은 :const:`None` 과는 다른 것이며
+         "DEFERRED" 와 같은 방식으로 동작합니다.
 
    .. attribute:: in_transaction
 
@@ -294,11 +328,19 @@ Connection Objects
 
    .. method:: cursor(factory=Cursor)
 
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 메서드입니다. 다만 *factory* 매개 변수는 정의하지 않습니다.
+
       The cursor method accepts a single optional parameter *factory*. If
       supplied, this must be a callable returning an instance of :class:`Cursor`
       or its subclasses.
 
    .. method:: commit()
+
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 메서드입니다.
 
       This method commits the current transaction. If you don't call this method,
       anything you did since the last call to ``commit()`` is not visible from
@@ -307,10 +349,18 @@ Connection Objects
 
    .. method:: rollback()
 
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 메서드입니다.
+
       This method rolls back any changes to the database since the last call to
       :meth:`commit`.
 
    .. method:: close()
+
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 메서드입니다.
 
       This closes the database connection. Note that this does not automatically
       call :meth:`commit`. If you just close your database connection without
@@ -523,7 +573,7 @@ Connection Objects
 
       Example::
 
-         # Convert file existing_db.db to SQL dump file dump.sql
+         # existing_db.db 파일을 SQL 덤프 파일 dump.sql로 변환합니다
          import sqlite3
 
          con = sqlite3.connect('existing_db.db')
@@ -589,14 +639,33 @@ Cursor Objects
 
 .. class:: Cursor
 
+   .. admonition:: flowdas
+
+      DB-API 2.0이 정의하는 클래스입니다. 이 설명서에는 나와있지 않지만 DB-API 2.0이 필수로 정의하는
+      :meth:`setinputsizes` 와 :meth:`setoutputsize` 메서드도 정의되어 있습니다.
+      두 메서드 모두 아무일도 하지 않습니다.
+
    A :class:`Cursor` instance has the following attributes and methods.
 
    .. method:: execute(sql[, parameters])
+
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 메서드입니다.
 
       Executes an SQL statement. The SQL statement may be parameterized (i. e.
       placeholders instead of SQL literals). The :mod:`sqlite3` module supports two
       kinds of placeholders: question marks (qmark style) and named placeholders
       (named style).
+
+      .. admonition:: flowdas
+
+         DB-API 2.0은 다섯 종류의 자리표시자를 정의하고 있습니다: ``qmark``, ``numeric``, ``named``,
+         ``format``, ``pyformat``. 이 중 어느 것을 지원하는지는 모듈 전역으로 정의되는
+         ``paramstyle`` 문자열 상수로 알려주도록 하고 있습니다. :mod:`sqlite3` 는
+         ``qmark`` 와 ``named`` 를 지원하지만, :data:`sqlite3.paramstyle` 는 ``qmark`` 라고
+         알려주고 있습니다. 하지만 DB-API 2.0 은 가능하다면 ``numeric``, ``named``, ``pyformat`` 중
+         하나를 사용하도록 권고하고 있습니다.
 
       Here's an example of both styles:
 
@@ -609,6 +678,10 @@ Cursor Objects
 
 
    .. method:: executemany(sql, seq_of_parameters)
+
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 메서드입니다.
 
       Executes an SQL command against all parameter sequences or mappings found in
       the sequence *seq_of_parameters*.  The :mod:`sqlite3` module also allows
@@ -636,11 +709,19 @@ Cursor Objects
 
    .. method:: fetchone()
 
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 메서드입니다.
+
       Fetches the next row of a query result set, returning a single sequence,
       or :const:`None` when no more data is available.
 
 
    .. method:: fetchmany(size=cursor.arraysize)
+
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 메서드입니다.
 
       Fetches the next set of rows of a query result, returning a list.  An empty
       list is returned when no more rows are available.
@@ -658,11 +739,19 @@ Cursor Objects
 
    .. method:: fetchall()
 
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 메서드입니다.
+
       Fetches all (remaining) rows of a query result, returning a list.  Note that
       the cursor's arraysize attribute can affect the performance of this operation.
       An empty list is returned when no rows are available.
 
    .. method:: close()
+
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 메서드입니다.
 
       Close the cursor now (rather than whenever ``__del__`` is called).
 
@@ -670,6 +759,10 @@ Cursor Objects
       exception will be raised if any operation is attempted with the cursor.
 
    .. attribute:: rowcount
+
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 어트리뷰트입니다.
 
       Although the :class:`Cursor` class of the :mod:`sqlite3` module implements this
       attribute, the database engine's own support for the determination of "rows
@@ -689,6 +782,10 @@ Cursor Objects
 
    .. attribute:: lastrowid
 
+      .. admonition:: flowdas
+
+         DB-API 2.0이 선택적으로 정의하는 어트리뷰트입니다.
+
       This read-only attribute provides the rowid of the last modified row. It is
       only set if you issued an ``INSERT`` or a ``REPLACE`` statement using the
       :meth:`execute` method.  For operations other than ``INSERT`` or
@@ -703,10 +800,23 @@ Cursor Objects
 
    .. attribute:: arraysize
 
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 어트리뷰트입니다.
+
       Read/write attribute that controls the number of rows returned by :meth:`fetchmany`.
       The default value is 1 which means a single row would be fetched per call.
 
    .. attribute:: description
+
+      .. admonition:: flowdas
+
+         DB-API 2.0이 정의하는 어트리뷰트입니다. 하지만 그 내용은 규격에서 살짝 벗어납니다.
+         DB-API 2.0은 처음 두 항목 ``name`` 과 ``type_code``\를 필수 항목으로 정의하고 있습니다.
+         하지만 :mod:`sqlite3`\는 :attr:`description` 의 두 번째 항목으로 항상 :const:`None`\을
+         줍니다. DB-API 2.0은 ``type_code``\\를 통해 열의 형을 파악할 수 있도록 하고 있고, 이 값과 비교할 수 있는
+         다음과 같은 형들을 모듈 수준에서 정의하고 있습니다: ``STRING``, ``BINARY``, ``NUMBER``,
+         ``DATETIME``, ``ROWID``. :mod:`sqlite3` 모듈은 이 형들도 정의하고 있지 않습니다.
 
       This read-only attribute provides the column names of the last query. To
       remain compatible with the Python DB API, it returns a 7-tuple for each
@@ -715,6 +825,10 @@ Cursor Objects
       It is set for ``SELECT`` statements without any matching rows as well.
 
    .. attribute:: connection
+
+      .. admonition:: flowdas
+
+         DB-API 2.0이 선택적으로 정의하는 어트리뷰트입니다.
 
       This read-only attribute provides the SQLite database :class:`Connection`
       used by the :class:`Cursor` object.  A :class:`Cursor` object created by
@@ -799,23 +913,43 @@ Exceptions
 
 .. exception:: Warning
 
+   .. admonition:: flowdas
+
+      DB-API 2.0이 정의하는 예외입니다.
+
    A subclass of :exc:`Exception`.
 
 .. exception:: Error
+
+   .. admonition:: flowdas
+
+      DB-API 2.0이 정의하는 예외입니다.
 
    The base class of the other exceptions in this module.  It is a subclass
    of :exc:`Exception`.
 
 .. exception:: DatabaseError
 
+   .. admonition:: flowdas
+
+      DB-API 2.0이 정의하는 예외입니다.
+
    Exception raised for errors that are related to the database.
 
 .. exception:: IntegrityError
+
+   .. admonition:: flowdas
+
+      DB-API 2.0이 정의하는 예외입니다.
 
    Exception raised when the relational integrity of the database is affected,
    e.g. a foreign key check fails.  It is a subclass of :exc:`DatabaseError`.
 
 .. exception:: ProgrammingError
+
+   .. admonition:: flowdas
+
+      DB-API 2.0이 정의하는 예외입니다.
 
    Exception raised for programming errors, e.g. table not found or already
    exists, syntax error in the SQL statement, wrong number of parameters
@@ -823,12 +957,20 @@ Exceptions
 
 .. exception:: OperationalError
 
+   .. admonition:: flowdas
+
+      DB-API 2.0이 정의하는 예외입니다.
+
    Exception raised for errors that are related to the database's operation
    and not necessarily under the control of the programmer, e.g. an unexpected
    disconnect occurs, the data source name is not found, a transaction could
    not be processed, etc.  It is a subclass of :exc:`DatabaseError`.
 
 .. exception:: NotSupportedError
+
+   .. admonition:: flowdas
+
+      DB-API 2.0이 정의하는 예외입니다.
 
    Exception raised in case a method or database API was used which is not
    supported by the database, e.g. calling the :meth:`~Connection.rollback`
@@ -887,6 +1029,26 @@ store additional Python types in a SQLite database via object adaptation, and
 you can let the :mod:`sqlite3` module convert SQLite types to different Python
 types via converters.
 
+.. admonition:: flowdas
+
+   DB-API 2.0은 날짜, 시간, 바이너리를 데이터베이스로 전달하는 데 사용할 수 있는 모듈 수준 함수들을
+   몇가지 정의하고 있습니다. 이 모두를 :mod:`sqlite3` 가 지원하고 있지만 이 설명서에는 나오지 않습니다.
+   다음과 같은 함수입니다.
+
+   .. function:: Date(year, month, day)
+
+   .. function:: Time(hour, minute, second)
+
+   .. function:: Timestamp(year, month, day, hour, minute, second)
+
+   .. function:: DateFromTicks(ticks)
+
+   .. function:: TimeFromTicks(ticks)
+
+   .. function:: TimestampFromTicks(ticks)
+
+   .. function:: Binary(string)
+
 
 Using adapters to store additional Python types in SQLite databases
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -917,7 +1079,6 @@ to give your class a method ``__conform__(self, protocol)`` which must return
 the converted value. The parameter *protocol* will be :class:`PrepareProtocol`.
 
 .. literalinclude:: ../includes/sqlite3/adapter_point_1.py
-
 
 Registering an adapter callable
 """""""""""""""""""""""""""""""
@@ -1021,6 +1182,13 @@ call, or via the :attr:`isolation_level` property of connections.
 If you specify no *isolation_level*, a plain ``BEGIN`` is used, which is
 equivalent to specifying ``DEFERRED``.  Other possible values are ``IMMEDIATE``
 and ``EXCLUSIVE``.
+
+.. admonition:: flowdas
+
+   ``DEFERRED`` 는 ``BEGIN`` 문이 실행될 때 록을 만들지 않고, 실제로 읽거나 쓰는 시점에 록을
+   만듭니다. 반면에 ``IMMEDIATE`` 는 ``BEGIN`` 문에서 즉시 록을 만듭니다. 두 경우 모두
+   다른 연결에서 여전히 데이터베이스를 읽을 수 있습니다. 하지만, ``EXCLUSIVE`` 도
+   ``IMMEDIATE``\처럼 ``BEGIN`` 문에서 즉시 록을 만드는데, 이때는 다른 연결에서도 읽기가 금지됩니다.
 
 You can disable the :mod:`sqlite3` module's implicit transaction management by
 setting :attr:`isolation_level` to ``None``.  This will leave the underlying
