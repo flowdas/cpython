@@ -214,6 +214,10 @@ StreamReader
       Return ``True`` if the buffer is empty and :meth:`feed_eof`
       was called.
 
+      .. admonition:: flowdas
+
+         :meth:`feed_eof` 는 EOF를 수신했을 때 호출되는 내부 메서드입니다.
+
 
 StreamWriter
 ============
@@ -406,7 +410,7 @@ Simple example querying HTTP headers of the URL passed on the command line::
             if line:
                 print(f'HTTP header> {line}')
 
-        # Ignore the body, close the socket
+        # 바디를 무시하고, 소켓을 닫습니다
         writer.close()
 
     url = sys.argv[1]
@@ -434,27 +438,26 @@ Coroutine waiting until a socket receives data using the
     import socket
 
     async def wait_for_data():
-        # Get a reference to the current event loop because
-        # we want to access low-level APIs.
+        # 저수준 API에 액세스하기 위해 현재 이벤트 루프에 대한 참조를 가져옵니다.
         loop = asyncio.get_running_loop()
 
-        # Create a pair of connected sockets.
+        # 연결된 소켓 쌍을 만듭니다.
         rsock, wsock = socket.socketpair()
 
-        # Register the open socket to wait for data.
+        # 데이터를 기다리는 열린 소켓을 등록합니다.
         reader, writer = await asyncio.open_connection(sock=rsock)
 
-        # Simulate the reception of data from the network
+        # 네트워크로부터의 데이터 수신을 시뮬레이션합니다
         loop.call_soon(wsock.send, 'abc'.encode())
 
-        # Wait for data
+        # 데이터를 기다립니다
         data = await reader.read(100)
 
-        # Got data, we are done: close the socket
+        # 데이터를 받았습니다, 할 일을 마쳤습니다: 소켓을 닫습니다.
         print("Received:", data.decode())
         writer.close()
 
-        # Close the second socket
+        # 두 번째 소켓을 닫습니다
         wsock.close()
 
     asyncio.run(wait_for_data())
