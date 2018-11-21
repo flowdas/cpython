@@ -44,18 +44,18 @@ Lock
 
        lock = asyncio.Lock()
 
-       # ... later
+       # ... 뒤에서
        async with lock:
-           # access shared state
+           # 공유 상태를 액세스합니다
 
    which is equivalent to::
 
        lock = asyncio.Lock()
 
-       # ... later
+       # ... 뒤에서
        await lock.acquire()
        try:
-           # access shared state
+           # 공유 상태를 액세스합니다
        finally:
            lock.release()
 
@@ -104,17 +104,17 @@ Event
           print('... got it!')
 
       async def main():
-          # Create an Event object.
+          # Event 객체를 만듭니다
           event = asyncio.Event()
 
-          # Spawn a Task to wait until 'event' is set.
+          # 'event'가 설정될 때까지 대기 할 Task를 만듭니다.
           waiter_task = asyncio.create_task(waiter(event))
 
-          # Sleep for 1 second and set the event.
+          # 1초 동안 잠잔 후에 event를 설정합니다.
           await asyncio.sleep(1)
           event.set()
 
-          # Wait until the waiter task is finished.
+          # waiter 태스크가 끝날 때까지 기다립니다.
           await waiter_task
 
       asyncio.run(main())
@@ -171,7 +171,7 @@ Condition
 
        cond = asyncio.Condition()
 
-       # ... later
+       # ... 뒤에서
        async with cond:
            await cond.wait()
 
@@ -179,7 +179,7 @@ Condition
 
        cond = asyncio.Condition()
 
-       # ... later
+       # ... 뒤에서
        await lock.acquire()
        try:
            await cond.wait()
@@ -267,18 +267,18 @@ Semaphore
 
        sem = asyncio.Semaphore(10)
 
-       # ... later
+       # ... 뒤에서
        async with sem:
-           # work with shared resource
+           # 공유 자원으로 작업합니다
 
    which is equivalent to::
 
        sem = asyncio.Semaphore(10)
 
-       # ... later
+       # ... 뒤에서
        await sem.acquire()
        try:
-           # work with shared resource
+           # 공유 자원으로 작업합니다
        finally:
            sem.release()
 
