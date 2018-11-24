@@ -33,8 +33,7 @@ Exceptions
         try:
             await operation
         except Exception:
-            # The cancellation is broken because the *except* block
-            # suppresses the CancelledError exception.
+            # *except* 블록이 CancelledError 예외를 억제하므로, 취소가 손상됩니다.
             log.log('an error has occurred')
 
       Instead, the following pattern should be used::
