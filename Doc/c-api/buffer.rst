@@ -366,10 +366,9 @@ this function:
 .. code-block:: python
 
    def verify_structure(memlen, itemsize, ndim, shape, strides, offset):
-       """Verify that the parameters represent a valid array within
-          the bounds of the allocated memory:
-              char *mem: start of the physical memory block
-              memlen: length of the physical memory block
+       """매개 변수가 할당된 메모리 범위 내에서 유효한 배열을 나타내는지 확인합니다:
+              char *mem: 물리적 메모리 블록의 시작
+              memlen: 물리적 메모리 블록의 길이
               offset: (char *)buf - mem
        """
        if offset % itemsize:
