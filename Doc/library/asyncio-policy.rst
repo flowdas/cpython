@@ -210,12 +210,12 @@ custom behavior is wanted, e.g.::
     class MyEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
 
         def get_event_loop(self):
-            """Get the event loop.
+            """이벤트 루프를 가져옵니다.
 
-            This may be None or an instance of EventLoop.
+            이것은 None이거나 EventLoop의 인스턴스일 수 있습니다.
             """
             loop = super().get_event_loop()
-            # Do something with loop ...
+            # loop로 무언가를 하십시오 ...
             return loop
 
     asyncio.set_event_loop_policy(MyEventLoopPolicy())
