@@ -58,6 +58,27 @@ parameter expect a WSGI-compliant dictionary to be supplied; please see
    is received via SSL.  So, this function returns "https" if such a value is
    found, and "http" otherwise.
 
+   .. admonition:: flowdas
+
+      WSGI 는 `CGI 1.1 <https://tools.ietf.org/html/draft-coar-cgi-v11-03>`_ 이 정의하는
+      환경변수 중 일부를 반드시 제공하도록 요구하고 있습니다: ``REQUEST_METHOD``, ``SCRIPT_NAME``,
+      ``PATH_INFO``, ``QUERY_STRING``, ``CONTENT_TYPE``, ``CONTENT_LENGTH``, ``SERVER_NAME``,
+      ``SERVER_PORT``, ``SERVER_PROTOCOL``, ``HTTP_*``. 이 변수들을 제공하지 않으면 빈 문자열이라는
+      뜻입니다. 여기에 더해 SSL 요청의 경우는 Apache의 SSL 모듈이 정의하는 변수들도 제공하도록 권장하고 있습니다:
+      ``HTTPS``, ``SSL_*``.
+
+      WSGI 는 여기에 더해 몇 가지 ``wsgi.*`` 변수들도 응용 프로그램에 전달하도록 요구하고 있습니다: ``wsgi.version``,
+      ``wsgi.url_scheme``, ``wsgi.input``, ``wsgi.errors``, ``wsgi.multithread``,
+      ``wsgi.multiprocess``, ``wsgi.run_once``.
+
+      이 함수는 CGI 나 그와 유사한 환경에서 동작하는 게이트웨이가 ``wsgi.url_scheme`` 변수를 설정하기 위해 사용할 수 있습니다.
+      하지만 로드 밸런서에서 SSL 터미네이션을 하는 경우가 종종 있습니다. 이럴 때 브라우저가 ``https`` 요청을 보냈어도, 로드 밸런서가
+      웹 서버로 보내는 요청은 ``http`` 가 됩니다. 브라우저가 실제 요청한 프로토콜은 ``X-Forwarded-Proto`` 나 그 외의
+      비표준 헤더들을 통해 전달되는데, 이 함수는 그런 것을 고려하고 있지 않습니다.
+
+      더 나아가 WSGI 명세가 이런 상황에서 ``wsgi.url_scheme`` 에 어떤 값이 제공되어야 하는지 구체적으로 언급하고 있지 않기
+      때문에, WSGI 응용 프로그램이나 프레임워크는 ``wsgi.url_scheme`` 변수의 값이 항상 브라우저의 요청을 반영하고 있다고
+      가정할 수 없습니다.
 
 .. function:: request_uri(environ, include_query=True)
 
@@ -65,13 +86,23 @@ parameter expect a WSGI-compliant dictionary to be supplied; please see
    algorithm found in the "URL Reconstruction" section of :pep:`3333`.  If
    *include_query* is false, the query string is not included in the resulting URI.
 
-
 .. function:: application_uri(environ)
 
    Similar to :func:`request_uri`, except that the ``PATH_INFO`` and
    ``QUERY_STRING`` variables are ignored.  The result is the base URI of the
    application object addressed by the request.
 
+   .. admonition:: flowdas
+
+      "응용 프로그램 객체의 기본 URI" 는 URI 에 ``SCRIPT_NAME`` 변수가 포함된다는 뜻입니다.
+
+   .. admonition:: flowdas
+
+      :func:`request_uri` 와 마찬가지로, 이 함수는 환경 변수 ``wsgi.url_scheme`` 뿐만 아니라, ``SERVER_NAME``,
+      ``SERVER_PORT`` 에도 의존합니다. 이 들 역시 로드 밸런서 환경이 올바르게 반영된다는 보장이 없습니다.
+
+      응용 프로그램은 URI를 재구성할 때는 :mod:`wsgiref` 에 의존하기보다는 프레임워크가 제공하는 기능을 사용해야 합니다. 또는
+      직접 요청 헤더를 조사하도록 직접 구현해야 합니다.
 
 .. function:: shift_path_info(environ)
 
@@ -119,8 +150,8 @@ parameter expect a WSGI-compliant dictionary to be supplied; please see
       from wsgiref.util import setup_testing_defaults
       from wsgiref.simple_server import make_server
 
-      # A relatively simple WSGI application. It's going to print out the
-      # environment dictionary after being updated by setup_testing_defaults
+      # 상대적으로 간단한 WSGI 응용 프로그램. setup_testing_defaults로 갱신된 후에 환경
+      # 딕셔너리를 인쇄할 것입니다.
       def simple_app(environ, start_response):
           setup_testing_defaults(environ)
 
@@ -147,6 +178,16 @@ also provides these miscellaneous utilities:
    Return true if 'header_name' is an HTTP/1.1 "Hop-by-Hop" header, as defined by
    :rfc:`2616`.
 
+   .. admonition:: flowdas
+
+      HTTP 프로토콜은 브라우저와 오리진 서버 사이에 캐싱, 로드 밸런싱, 라우팅 등을 위해 다양한 중간자들이 끼어들 수 있도록 합니다.
+      이때 직접 소켓으로 연결되어 통신하는 당사자들 간에만 의미 있는 헤더들이 있는데, 이들을 "Hop-by-Hop" 헤더라고
+      부릅니다. WSGI 는 WSGI 응용 프로그램이 "Hop-by-Hop" 헤더를 직접 응답하는 것을 금지하고 있습니다. 이 함수가 감지하는
+      "Hop-by-Hop" 헤더는  ``'connection'``, ``'keep-alive'``, ``'proxy-authenticate'``,
+      ``'proxy-authorization'``, ``'te'``, ``'trailers'``, ``'transfer-encoding'``,
+      ``'upgrade'`` 입니다. 이 헤더들은 WSGI 컨테이너가 필요할 때 만들어냅니다.
+
+      이 제약은 WSGI로 중간자를 만들기 어렵게 합니다.
 
 .. class:: FileWrapper(filelike, blksize=8192)
 
@@ -166,7 +207,7 @@ also provides these miscellaneous utilities:
       from io import StringIO
       from wsgiref.util import FileWrapper
 
-      # We're using a StringIO-buffer for as the file-like object
+      # 파일류 객체로 StringIO 버퍼를 사용하고 있습니다
       filelike = StringIO("This is an example file-like object"*10)
       wrapper = FileWrapper(filelike, blksize=5)
 
@@ -288,10 +329,10 @@ request.  (E.g., using the :func:`shift_path_info` function from
       with make_server('', 8000, demo_app) as httpd:
           print("Serving HTTP on port 8000...")
 
-          # Respond to requests until process is killed
+          # 프로세스를 죽일 때까지 요청에 응답합니다
           httpd.serve_forever()
 
-          # Alternative: serve one request, then exit
+          # 대안: 하나의 요청을 처리한 다음 종료합니다
           httpd.handle_request()
 
 
@@ -418,18 +459,16 @@ Paste" library.
       from wsgiref.validate import validator
       from wsgiref.simple_server import make_server
 
-      # Our callable object which is intentionally not compliant to the
-      # standard, so the validator is going to break
+      # 의도적으로 표준을 준수하지 않는 콜러블 객체이므로, 적합성 검사기가 중단됩니다
       def simple_app(environ, start_response):
           status = '200 OK'  # HTTP Status
           headers = [('Content-type', 'text/plain')]  # HTTP Headers
           start_response(status, headers)
 
-          # This is going to break because we need to return a list, and
-          # the validator is going to inform us
+          # 이것은 중단하게 되는데, 목록을 반환해야 하기 때문입니다, 적합성 검사기가 알려줄 것입니다
           return b"Hello World"
 
-      # This is the application wrapped in a validator
+      # 이것은 적합성 검사기로 감싼 응용 프로그램입니다
       validator_app = validator(simple_app)
 
       with make_server('', 8000, validator_app) as httpd:
@@ -746,6 +785,12 @@ input, output, and error streams.
    is bytes, but the system encoding used by Python to decode it is anything
    other than ISO-8859-1 (e.g. Unix systems using UTF-8).
 
+   .. admonition:: flowdas
+
+      "유니코드에 들어있는 바이트열" 이란, 파이썬 3의 ``str`` 형으로 표현되지만, 실제 들어있는 값은
+      Latin-1 인코딩으로 인코드할 때 원래의 바이트열을 손실 없이 얻을 수 있는 바이트열을 내용으로 가진
+      문자열을 뜻합니다.
+
    If you are implementing a CGI-based handler of your own, you probably want
    to use this routine instead of just copying values out of ``os.environ``
    directly.
@@ -760,22 +805,20 @@ This is a working "Hello World" WSGI application::
 
    from wsgiref.simple_server import make_server
 
-   # Every WSGI application must have an application object - a callable
-   # object that accepts two arguments. For that purpose, we're going to
-   # use a function (note that you're not limited to a function, you can
-   # use a class for example). The first argument passed to the function
-   # is a dictionary containing CGI-style environment variables and the
-   # second variable is the callable object (see PEP 333).
+   # 모든 WSGI 응용 프로그램은 응용 프로그램 객체를 가져야 합니다 - 두 개의 인자를 받아들이는
+   # 콜러블. 이를 위해, 함수를 사용하려고 합니다 (함수로 제한되지는 않습니다, 예를 들어 클래스를
+   # 사용할 수 있습니다). 함수에 전달되는 첫 번째 인자는 CGI 스타일 환경 변수를 포함하는
+   # 딕셔너리이고, 두 번째 변수는 콜러블 객체입니다 (PEP 333을 참조하세요).
    def hello_world_app(environ, start_response):
        status = '200 OK'  # HTTP Status
        headers = [('Content-type', 'text/plain; charset=utf-8')]  # HTTP Headers
        start_response(status, headers)
 
-       # The returned object is going to be printed
+       # 반환된 객체가 인쇄될 것입니다.
        return [b"Hello World"]
 
    with make_server('', 8000, hello_world_app) as httpd:
        print("Serving on port 8000...")
 
-       # Serve until process is killed
+       # 프로세스를 죽일 때까지 서빙합니다
        httpd.serve_forever()
