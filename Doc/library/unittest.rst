@@ -13,6 +13,10 @@
 
 --------------
 
+.. admonition:: flowdas
+
+   이 페이지는 `Hyukhoon Kwon <https://github.com/unace>`_ 님의 번역입니다.
+
 (If you are already familiar with the basic concepts of testing, you might want
 to skip to :ref:`the list of assert methods <assert-methods>`.)
 
@@ -101,7 +105,7 @@ Here is a short script to test three string methods::
       def test_split(self):
           s = 'hello world'
           self.assertEqual(s.split(), ['hello', 'world'])
-          # check that s.split fails when the separator is not a string
+          # 구분 기호가 문자열이 아닐 때 s.split이 실패하는지 검사합니다
           with self.assertRaises(TypeError):
               s.split(2)
 
@@ -523,12 +527,12 @@ Basic skipping looks like this::
        @unittest.skipIf(mylib.__version__ < (1, 3),
                         "not supported in this library version")
        def test_format(self):
-           # Tests that work for only a certain version of the library.
+           # 특정 버전의 라이브러리에서만 작동하는 테스트.
            pass
 
        @unittest.skipUnless(sys.platform.startswith("win"), "requires Windows")
        def test_windows_support(self):
-           # windows specific testing code
+           # 윈도우 특정 테스트 코드
            pass
 
 This is the output of running the example above in verbose mode::
@@ -617,7 +621,7 @@ For example, the following test::
 
        def test_even(self):
            """
-           Test that numbers between 0 and 5 are all even.
+           0과 5 사이의 숫자가 모두 짝수인지 테스트합니다.
            """
            for i in range(0, 6):
                with self.subTest(i=i):
@@ -2176,7 +2180,7 @@ continue (and potentially modify) test discovery. A 'do nothing'
 ``load_tests`` function for a test package would look like::
 
     def load_tests(loader, standard_tests, pattern):
-        # top level directory cached on loader instance
+        # 로더 인스턴스에 캐시 된 최상위 디렉터리
         this_dir = os.path.dirname(__file__)
         package_tests = loader.discover(start_dir=this_dir, pattern=pattern)
         standard_tests.addTests(package_tests)
