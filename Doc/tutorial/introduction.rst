@@ -204,7 +204,7 @@ produces the following output (note that the initial newline is not included):
 Strings can be concatenated (glued together) with the ``+`` operator, and
 repeated with ``*``::
 
-   >>> # 'un' dmf 3번 반복하고 'ium' 을 붙입니다
+   >>> # 'un' 을 3번 반복하고 'ium' 을 붙입니다
    >>> 3 * 'un' + 'ium'
    'unununium'
 
