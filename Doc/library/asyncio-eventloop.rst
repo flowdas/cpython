@@ -1510,7 +1510,7 @@ on all platforms.
    .. admonition:: flowdas
 
       다음에 소개되는 :class:`AbstractEventLoop` 클래스의 모든 메서드는 추상 메서드입니다.
-      여러분이 직접 이벤트 루프를 제작하려고 하면 모든 메서드들 구현해야한다는 뜻입니다.
+      여러분이 직접 이벤트 루프를 제작하려고 하면 모든 메서드를 구현해야한다는 뜻입니다.
 
    The :ref:`Event Loop Methods <asyncio-event-loop>` section lists all
    methods that an alternative implementation of ``AbstractEventLoop``
