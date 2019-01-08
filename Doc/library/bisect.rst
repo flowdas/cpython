@@ -75,35 +75,35 @@ functions show how to transform them into the standard lookups for sorted
 lists::
 
     def index(a, x):
-        'Locate the leftmost value exactly equal to x'
+        'x 와 정확히 같은 가장 왼쪽의 값을 찾습니다'
         i = bisect_left(a, x)
         if i != len(a) and a[i] == x:
             return i
         raise ValueError
 
     def find_lt(a, x):
-        'Find rightmost value less than x'
+        'x보다 작은 가장 오른쪽 값을 찾습니다'
         i = bisect_left(a, x)
         if i:
             return a[i-1]
         raise ValueError
 
     def find_le(a, x):
-        'Find rightmost value less than or equal to x'
+        'x보다 작거나 같은 가장 오른쪽 값을 찾습니다'
         i = bisect_right(a, x)
         if i:
             return a[i-1]
         raise ValueError
 
     def find_gt(a, x):
-        'Find leftmost value greater than x'
+        'x보다 큰 가장 왼쪽 값을 찾습니다'
         i = bisect_right(a, x)
         if i != len(a):
             return a[i]
         raise ValueError
 
     def find_ge(a, x):
-        'Find leftmost item greater than or equal to x'
+        'x보다 크거나 같은 가장 왼쪽 항목을 찾습니다'
         i = bisect_left(a, x)
         if i != len(a):
             return a[i]
@@ -137,7 +137,7 @@ of the record in question::
 
     >>> data = [('red', 5), ('blue', 1), ('yellow', 8), ('black', 0)]
     >>> data.sort(key=lambda r: r[1])
-    >>> keys = [r[1] for r in data]         # precomputed list of keys
+    >>> keys = [r[1] for r in data]         # 미리 계산된 키 리스트
     >>> data[bisect_left(keys, 0)]
     ('black', 0)
     >>> data[bisect_left(keys, 1)]
