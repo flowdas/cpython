@@ -77,11 +77,11 @@ provided by Windows platforms.  It includes functions and several constants.
    For example::
 
       import winsound
-      # Play Windows exit sound.
+      # 윈도우 종료 소리를 재생합니다.
       winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
 
-      # Probably play Windows default sound, if any is registered (because
-      # "*" probably isn't the registered name of any sound).
+      # 아마도 (등록되어 있다면) 윈도우 기본 소리를 재생합니다 (아마도 "*" 는 등록 된 소리
+      # 이름이 아니기 때문에).
       winsound.PlaySound("*", winsound.SND_ALIAS)
 
 
