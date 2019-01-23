@@ -74,6 +74,13 @@ The :class:`dircmp` class
    :attr:`filecmp.DEFAULT_IGNORES`.  *hide* is a list of names to hide, and
    defaults to ``[os.curdir, os.pardir]``.
 
+   .. admonition:: flowdas
+
+      *ignore* 의 기본값이 ``'__pycache__'`` 나 ``'.git'`` 와 같은 일반 디렉터리지만 디렉터리 비교에서
+      흔히 제외하는 디렉터리명을 포함하고, *hide* 의 기본값이 ``'.'`` 나 ``'..'`` 와 같은 특수 디렉터리를
+      포함한다는 것 외에, *ignore* 와 *hide* 간의 차이는 분명하지 않습니다. 실제로 두 인자는 같은 방식으로
+      사용됩니다.
+
    The :class:`dircmp` class compares files by doing *shallow* comparisons
    as described for :func:`filecmp.cmp`.
 
