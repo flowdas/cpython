@@ -177,8 +177,8 @@ Generate an `XKCD-style passphrase <https://xkcd.com/936/>`_:
 
 .. testcode::
 
-   # On standard Linux systems, use a convenient dictionary file.
-   # Other platforms may need to provide their own word-list.
+   # 표준 리눅스 시스템에서는, 편리한 딕셔너리 파일을 사용하십시오.
+   # 다른 플랫폼에서는, 자신의 단어 목록을 제공해야 할 수도 있습니다.
    with open('/usr/share/dict/words') as f:
        words = [word.strip() for word in f]
        password = ' '.join(choice(words) for i in range(4))
