@@ -58,7 +58,7 @@ and :c:type:`PyBytes`. ::
    #include "Python.h"
    #include "bytesobject.h"
 
-   /* text example */
+   /* 텍스트 예제 */
    static PyObject *
    say_hello(PyObject *self, PyObject *args) {
        PyObject *name, *result;
@@ -70,10 +70,10 @@ and :c:type:`PyBytes`. ::
        return result;
    }
 
-   /* just a forward */
+   /* 단지 전방 선언입니다 */
    static char * do_encode(PyObject *);
 
-   /* bytes example */
+   /* 바이트열 예제 */
    static PyObject *
    encode_object(PyObject *self, PyObject *args) {
        char *encoded;
