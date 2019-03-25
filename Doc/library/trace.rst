@@ -32,6 +32,11 @@ simple as ::
 The above will execute :file:`somefile.py` and generate annotated listings of
 all Python modules imported during the execution into the current directory.
 
+.. admonition:: flowdas
+
+   "주석이 달린 리스트"란 현재 디렉터리에 모듈마다 하나씩 만들어지는 :file:`{dir}/{package}/{module}.cover` 파일을
+   뜻합니다. 이 파일은 모듈의 소스 코드가 복사되고, 줄마다 앞에 몇 번 실행되었는지를 나타내는 주석이 붙게 됩니다.
+
 .. program:: trace
 
 .. cmdoption:: --help
@@ -197,17 +202,16 @@ A simple example demonstrating the use of the programmatic interface::
    import sys
    import trace
 
-   # create a Trace object, telling it what to ignore, and whether to
-   # do tracing or line-counting or both.
+   # Trace 객체를 만들고, 무시할 대상과, 추적할지, 줄을 셀지 또는 둘 다 수행할지를 지정합니다.
    tracer = trace.Trace(
        ignoredirs=[sys.prefix, sys.exec_prefix],
        trace=0,
        count=1)
 
-   # run the new command using the given tracer
+   # 주어진 tracer를 사용해서 새 명령을 실행합니다
    tracer.run('main()')
 
-   # make a report, placing output in the current directory
+   # 보고서를 만들어, 현재 디렉터리에 출력을 넣습니다
    r = tracer.results()
    r.write_results(show_missing=True, coverdir=".")
 
