@@ -189,18 +189,10 @@ creation according to their needs, the :class:`EnvBuilder` class.
 
            pip 는 이 메서드가 호출된 직후에 설치됩니다.
 
-        .. admonition:: flowdas
-
-           pip 는 이 메서드가 호출된 직후에 설치됩니다.
-
     .. method:: setup_scripts(context)
 
         Installs activation scripts appropriate to the platform into the virtual
         environment.
-
-        .. admonition:: flowdas
-
-           ``upgrade`` 가 지정되면 호출되지 않습니다.
 
         .. admonition:: flowdas
 
