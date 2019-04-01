@@ -127,10 +127,6 @@ diffs. For comparing directories and files, see also, the :mod:`filecmp` module.
       the next difference highlight at the top of the browser without any leading
       context).
 
-      .. admonition:: flowdas
-
-         "next" 하이퍼 링크는 만들어진 HTML 의 첫번째 열에 "n" (처음은 "f") 로 표시되는 링크를 뜻합니다.
-
       .. versionchanged:: 3.5
          *charset* keyword-only argument was added.  The default charset of
          HTML document changed from ``'ISO-8859-1'`` to ``'utf-8'``.

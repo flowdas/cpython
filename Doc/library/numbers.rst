@@ -8,10 +8,6 @@
 
 --------------
 
-.. admonition:: flowdas
-
-   이 페이지는 `Hae-sun Park <https://github.com/rickiepark>`_ 님의 번역입니다.
-
 The :mod:`numbers` module (:pep:`3141`) defines a hierarchy of numeric
 :term:`abstract base classes <abstract base class>` which progressively define
 more operations.  None of the types defined in this module can be instantiated.

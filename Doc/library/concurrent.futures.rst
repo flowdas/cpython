@@ -28,14 +28,6 @@ Executor Objects
    An abstract class that provides methods to execute calls asynchronously.  It
    should not be used directly, but through its concrete subclasses.
 
-    .. admonition:: flowdas
-
-       실행기의 스레드 안전성에 대해서는 언급하고 있지 않습니다. 가령 :meth:`Executor.submit` 과
-       :meth:`Executor.shutdown` 을 다른 스레드에서 호출할 경우 안전한지 여부가 정의되어있지 않습니다.
-
-       하지만 이 패키지가 제공하고 있는 :class:`ThreadPoolExecutor` 와 :class:`ProcessPoolExecutor` 는
-       스레드 안전합니다.
-
     .. method:: submit(fn, *args, **kwargs)
 
        Schedules the callable, *fn*, to be executed as ``fn(*args **kwargs)``
@@ -149,16 +141,6 @@ And::
    initializer.  Should *initializer* raise an exception, all currently
    pending jobs will raise a :exc:`~concurrent.futures.thread.BrokenThreadPool`,
    as well as any attempt to submit more jobs to the pool.
-
-   .. admonition:: flowdas
-
-      스레드 풀을 구성하는 스레드 중 어느 하나에서 *initializer* 가 예외를 일으키면, 그 스레드 뿐만 아니라
-      스레드 풀 전체가 사용불능 상태가 됩니다.
-
-   .. admonition:: flowdas
-
-      스레드 풀을 구성하는 스레드 중 어느 하나에서 *initializer* 가 예외를 일으키면, 그 스레드 뿐만 아니라
-      스레드 풀 전체가 사용불능 상태가 됩니다.
 
    .. versionchanged:: 3.5
       If *max_workers* is ``None`` or

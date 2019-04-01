@@ -214,10 +214,6 @@ StreamReader
       Return ``True`` if the buffer is empty and :meth:`feed_eof`
       was called.
 
-      .. admonition:: flowdas
-
-         :meth:`feed_eof` 는 EOF를 수신했을 때 호출되는 내부 메서드입니다.
-
 
 StreamWriter
 ============

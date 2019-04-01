@@ -2,10 +2,6 @@
   Functional Programming HOWTO
 ********************************
 
-.. admonition:: flowdas
-
-   이 페이지는 `SeomGi, Han <https://github.com/iandmyhand>`_ 님의 번역입니다.
-
 :Author: A. M. Kuchling
 :Release: 0.32
 

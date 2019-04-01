@@ -19,38 +19,6 @@ to this, the :mod:`multiprocessing` module allows the programmer to fully
 leverage multiple processors on a given machine.  It runs on both Unix and
 Windows.
 
-.. admonition:: flowdas
-
-   흔히 알려진 것과는 달리 :mod:`multiprocessing` 은 원격 동시성을 지원합니다. 즉 하나의 기계에서
-   뿐만 아니라 여러대의 기계에서 실행되는 프로세스를 제어할 수 있습니다.
-
-   소위 분산 작업 큐(Distributed Task Queue)로 사용할 수 있는데, 이 영역에서 가장 널리 알려진 도구는
-   `Celery <http://www.celeryproject.org/>`_ 입니다. 이런 별도의 도구들이 제공하는 수준의
-   기능을 :mod:`multiprocessing` 이 모두 제공하고 있지는 않습니다.
-
-.. admonition:: flowdas
-
-   GIL(전역 인터프리터 록)은 다중 스레드 환경에서 파이썬의 바이트 코드가 안전하게 실행되도록 보장하기 위해
-   인터프리터가 주기적으로 획득하는 록입니다. 이 록을 얻은 스레드만 실행될 수 있기 때문에, 한 프로세스에서
-   여러 스레드를 만들어도 특정 시점에 파이썬 코드를 실행하는 스레드는 오직 하나뿐입니다. 이 때문에 멀티 코어
-   환경에서 파이썬 프로세스는 하나의 코어밖에 사용하지 못하게됩니다. 확장 모듈을 만든다면, 파이썬 코드를
-   실행하지 않는 C(혹은 Cython) 코드 에서 GIL 을 반납하고, 멀티 코어를 활용하도록 할 수는 있습니다.
-   하지만 순수한 파이썬 코드만으로 하나의 프로세스에서 멀티 코어를 활용하도록 할 방법은 없습니다.
-
-   프로세스를 여러개 만든다면 각 프로세스마다 코어를 하나씩 쓸 수 있게되기 때문에, 멀티 코어를 활용할 수 있게
-   됩니다. :mod:`multiprocessing` 은 이렇게 하는데 필요한 도구를 제공합니다. 여기에 더해,
-   멀티 코어 활용에만 머무르지 않고 멀티 인스턴스(호스트)를 활용하는 방법도 제공합니다.
-
-   보통 CPU 병목형 응용 프로그램에서 멀티 코어 활용이 요구됩니다. IO 병목형에서는 꼭 필요하지 않아서, 스레드를
-   사용하는 것으로 충분한 경우가 많습니다. 하지만 IO 병목형도 병목 지점들을 제거하다보면 결국 CPU 병목형으로
-   변하는 경우가 많으니, 속단하지는 마세요.
-
-.. admonition:: flowdas
-
-   프로세스를 스폰(spawn) 한다는 것은 한 프로세스가 자식 프로세스를 새로 만들어 어떤 작업을 위임하는 것을
-   뜻합니다. 하지만 자식 프로세스를 만드는 방법이 한가지가 아니고, 때로 spawn 은 그 중 한가지를 가리키는
-   경우에도 사용됩니다. 여기에서는 넓은 의미로 사용되었습니다. 좁은 의미로 사용될 때는 그냥 영문으로 표기합니다.
-
 The :mod:`multiprocessing` module also introduces APIs which do not have
 analogs in the :mod:`threading` module.  A prime example of this is the
 :class:`~multiprocessing.pool.Pool` object which offers a convenient means of
@@ -72,10 +40,6 @@ of data parallelism using :class:`~multiprocessing.pool.Pool`, ::
 will print to standard output ::
 
    [1, 4, 9]
-
-.. admonition:: flowdas
-
-   예제 코드를 REPL 환경에서 실행하려고 하면 잘 안될 수 있습니다. 파일에 저장해서 스크립트로 실행시키세요.
 
 
 The :class:`Process` class
@@ -138,13 +102,6 @@ to start a process.  These *start methods* are
     will not be inherited.  Starting a process using this method is
     rather slow compared to using *fork* or *forkserver*.
 
-    .. admonition:: flowdas
-
-       유닉스에서는 :func:`os.fork` 후에 :func:`os.execv` 합니다. 그래서 좀 느려집니다.
-
-       좀 느려지더라도, 플랫폼에 관계없이 동일한 동작을 원한다면 이 시작 방법을 사용합니다.
-       또는 윈도우에서도 잘 동작할지를 유닉스에서 테스트하는 경우에도 사용합니다.
-
     Available on Unix and Windows.  The default on Windows.
 
   *fork*
@@ -153,13 +110,6 @@ to start a process.  These *start methods* are
     identical to the parent process.  All resources of the parent are
     inherited by the child process.  Note that safely forking a
     multithreaded process is problematic.
-
-    .. admonition:: flowdas
-
-       부모 프로세스에 여러개의 스레드가 실행되고 있어도, 자식 프로세스에는 :func:`os.fork`
-       를 호출한 스레드 하나만 남습니다. 나머지 스레드는 *그냥 사라집니다*. 이런 그냥 사라짐은
-       여러가지 문제를 일으킬 수 있습니다. 가령 사라진 스레드가 뮤텍스를 획득한 상태였다면, 그 뮤텍스는
-       정의되지 않은 상태로 남게됩니다.
 
     Available on Unix only.  The default on Unix.
 
@@ -235,10 +185,6 @@ the *fork* context cannot be passed to processes started using the
 A library which wants to use a particular start method should probably
 use :func:`get_context` to avoid interfering with the choice of the
 library user.
-
-.. admonition:: flowdas
-
-   라이브러리 제작자는  :func:`set_start_method` 를 사용하지 말라는 뜻입니다.
 
 .. warning::
 
@@ -600,11 +546,6 @@ The :mod:`multiprocessing` package mostly replicates the API of the
       Unix daemons or services, they are normal processes that will be
       terminated (and not joined) if non-daemonic processes have exited.
 
-      .. admonition:: flowdas
-
-         표준 라이브러리만으로 유닉스 데몬 프로세스를 만들 수는 있습니다만, 이 작업을 편리하게 할 수
-         있는 기능이 표준 라이브러리에 따로 준비되어 있지는 않습니다.
-
    In addition to the  :class:`threading.Thread` API, :class:`Process` objects
    also support the following attributes and methods:
 
@@ -641,15 +582,6 @@ The :mod:`multiprocessing` package mostly replicates the API of the
       once using :func:`multiprocessing.connection.wait`.  Otherwise
       calling :meth:`join()` is simpler.
 
-      .. admonition:: flowdas
-
-         :meth:`join()` 은 한번에 하나의 프로세스가 종료하는 것을 기다립니다. 프로세스를
-         여러개 만들고 그 중 어느 것이 먼저 종료할지 모르는 상황에서, 어느 것이건 먼저 종료하는 것부터
-         차례대로 처리하고자 하는 경우, :func:`multiprocessing.connection.wait` 에
-         :attr:`~multiprocessing.Process.sentinel` 를 제공해서 여러 프로세스를 한꺼번에
-         기다릴 수 있습니다. 이 방법을 쓰면 다음 문단에 나오는 유닉스와 윈도우의 차이를 고려하지 않아도
-         됩니다.
-
       On Windows, this is an OS handle usable with the ``WaitForSingleObject``
       and ``WaitForMultipleObjects`` family of API calls.  On Unix, this is
       a file descriptor usable with primitives from the :mod:`select` module.
@@ -661,10 +593,6 @@ The :mod:`multiprocessing` package mostly replicates the API of the
       Terminate the process.  On Unix this is done using the ``SIGTERM`` signal;
       on Windows :c:func:`TerminateProcess` is used.  Note that exit handlers and
       finally clauses, etc., will not be executed.
-
-      .. admonition:: flowdas
-
-         이 메서드는 실제로 프로세스가 종료할 때까지 기다리지 않고 즉시 반환합니다.
 
       Note that descendant processes of the process will *not* be terminated --
       they will simply become orphaned.
@@ -800,12 +728,6 @@ Note that one can also create a shared queue by using a manager object -- see
    <multiprocessing.Queue.cancel_join_thread>`), then that process will
    not terminate until all buffered items have been flushed to the pipe.
 
-   .. admonition:: flowdas
-
-      배경 스레드가 큐에 넣은 모든 항목을 하부 파이프로 플러시할 수 있으려면, 반대편 수신단에서 충분히
-      수신해야만 합니다. 그렇지 않으면 하부 파이프의 내부 버퍼가 꽉차서 배경 스레드는 플러시할 방법이
-      없게됩니다.
-
    This means that if you try joining that process you may get a deadlock unless
    you are sure that all items which have been put on the queue have been
    consumed.  Similarly, if the child process is non-daemonic then the parent
@@ -829,12 +751,6 @@ For an example of the usage of queues for interprocess communication see
    used for receiving messages and ``conn2`` can only be used for sending
    messages.
 
-   .. admonition:: flowdas
-
-      *duplex* 가 ``True`` 면 ``conn1`` 을 읽거나 쓰는데 모두 사용할 수 있지만, *duplex*
-      가 ``False`` 면 ``conn1`` 을 읽는데만 사용할 수 있다는 뜻입니다. ``conn1`` 으로 쓴
-      데이터는 ``conn2`` 에서 읽히고, ``conn2`` 로 쓴 데이터는 ``conn1`` 에서 읽힙니다.
-
 
 .. class:: Queue([maxsize])
 
@@ -848,13 +764,6 @@ For an example of the usage of queues for interprocess communication see
    :class:`Queue` implements all the methods of :class:`queue.Queue` except for
    :meth:`~queue.Queue.task_done` and :meth:`~queue.Queue.join`.
 
-   .. admonition:: flowdas
-
-      *maxsize* 의 기본값도 :class:`queue.Queue` 와 다릅니다. :class:`queue.Queue` 에서
-      *maxsize* 를 지정하기 않으면 길이 제한이 없다는 뜻입니다. 반면에 :class:`Queue` 에서
-      *maxsize* 를 지정하기 않으면 시스템이 허락하는 최대값이 사용됩니다. 꽤 큰 값 (가령 ``32767``)
-      이지만 제한이 없는 것과는 다릅니다.
-
    .. method:: qsize()
 
       Return the approximate size of the queue.  Because of
@@ -862,18 +771,6 @@ For an example of the usage of queues for interprocess communication see
 
       Note that this may raise :exc:`NotImplementedError` on Unix platforms like
       Mac OS X where ``sem_getvalue()`` is not implemented.
-
-      .. admonition:: flowdas
-
-         이 것도 :class:`queue.Queue` 와 다른 점입니다. :meth:`queue.Queue.qsize` 는
-         Mac OS X 에서 :exc:`NotImplementedError` 를 일으키지 않습니다.
-
-         하지만 :class:`queue.Queue` 와 :class:`Queue` 모두 :meth:`~queue.Queue.qsize`,
-         :meth:`~queue.Queue.empty`, :meth:`~queue.Queue.full` 메서드는 신뢰할 수 없는
-         정보를 줍니다. 이 메서드들이 제공하는 값은 어느 시점에서는 정확한 정보였을 수 있지만, 다중 스레드나
-         다중 프로세스 환경에서, 메서드가 값을 돌려주는 시점에는 이미 낡은 정보일 수 있습니다. 때문에 이 값들에
-         의존하는 코드는 신뢰성이 보장될 수 없습니다. 이 값들이 꼭 필요한 상황이라면, 보통 새로운 동기화 객체를
-         설계해야한다는 신호로 받아들여야 합니다.
 
    .. method:: empty()
 
@@ -961,10 +858,6 @@ For an example of the usage of queues for interprocess communication see
 
    It is a simplified :class:`Queue` type, very close to a locked :class:`Pipe`.
 
-   .. admonition:: flowdas
-
-      이 클래스는 :class:`Queue` 의 서브 클래스가 아닙니다.
-
    .. method:: empty()
 
       Return ``True`` if the queue is empty, ``False`` otherwise.
@@ -1027,24 +920,10 @@ Miscellaneous
    use.  The number of usable CPUs can be obtained with
    ``len(os.sched_getaffinity(0))``
 
-   .. admonition:: flowdas
-
-      플랫폼에 따라, 다중 CPU 환경에서, 특정 CPU 를 특정 프로세스에 할당할 수 있도록 합니다.
-      이렇게 하면 CPU 를 다른 프로세스와 나눠쓰지 않아도 되고, CPU 의 캐시 효율도 높아지기 때문에
-      프로세스의 성능이 좋아집니다. 더 나아가 이 프로세스가 만드는 자식 프로세스들도 이 할당을 계승합니다.
-      때문에 이런 상황을 반영하지 않는 :func:`cpu_count` 는 자식 프로세스를 만드는 상황에서 정확한 정보를
-      준다고 볼 수 없습니다. 이런 정보를 반영한 값은 :func:`os.sched_getaffinity` 를 통해 얻을 수 있지만,
-      늘 지원되는 함수가 아닙니다.
-
    May raise :exc:`NotImplementedError`.
 
    .. seealso::
       :func:`os.cpu_count`
-
-   .. admonition:: flowdas
-
-      :exc:`NotImplementedError` 를 일으킨다는 점을 제외하면, 사실상 :func:`os.cpu_count` 와 같은 기능입니다.
-      :func:`os.cpu_count` 는 파이썬 3.4 이전에는 제공되지 않기 때문에, 이 함수가 더 널리 사용됩니다.
 
 .. function:: current_process()
 
@@ -1128,10 +1007,6 @@ Miscellaneous
    .. versionchanged:: 3.4
       Now supported on Unix when the ``'spawn'`` start method is used.
 
-   .. admonition:: flowdas
-
-      당연히 ``'forkserver'`` 시작 방법에서도 사용됩니다.
-
 .. function:: set_start_method(method)
 
    Set the method which should be used to start child processes.
@@ -1158,14 +1033,6 @@ Connection Objects
 
 Connection objects allow the sending and receiving of picklable objects or
 strings.  They can be thought of as message oriented connected sockets.
-
-.. admonition:: flowdas
-
-   "메시지 지향" 이라는 것은 API 가 메시지와 메시지 사이의 경계를 인식하고 분리해서 메시지 단위로
-   송수신할 수 있도록 지원한다는 뜻입니다. 단순 TCP 소켓을 사용하면 메시지 경계없이 "바이트 스트림"
-   이 읽힙니다. 또한, "연결된" 은 송신단과 수신단으로 이루어진 쌍이 확정되어 있다는 것으로,
-   메시지를 송신할 때 수신자을 지정할 필요도, 수신할 때 누가 보냈는지 확인할 필요도 없다는 뜻입니다.
-   더 나아가 연결이 유지되고 있다는 상태가 존재한다는 뜻이기도 합니다.
 
 Connection objects are usually created using
 :func:`Pipe <multiprocessing.Pipe>` -- see also
@@ -1224,10 +1091,6 @@ Connection objects are usually created using
       connection as a string.  Blocks until there is something to receive.
       Raises :exc:`EOFError` if there is nothing left
       to receive and the other end has closed.
-
-      .. admonition:: flowdas
-
-         아래 예에서 확인할 수 있듯이, 이 메서드는 문자열이 아니라 바이트열을 돌려줍니다.
 
       If *maxlength* is specified and the message is longer than *maxlength*
       then :exc:`OSError` is raised and the connection will no longer be
@@ -1549,10 +1412,6 @@ inherited by child processes.
    automatically protected by a lock, so it will not necessarily be
    "process-safe".
 
-   .. admonition:: flowdas
-
-      *lock* 이 ``True`` 일 때 만들어지는 록 개체는 :class:`Value` 와 마찬가지로 재귀적 록입니다.
-
    Note that *lock* is a keyword only argument.
 
    Note that an array of :data:`ctypes.c_char` has *value* and *raw*
@@ -1720,10 +1579,6 @@ The results printed are ::
     HELLO WORLD
     [(3.515625, 39.0625), (33.0625, 4.0), (5.640625, 90.25)]
 
-.. admonition:: flowdas
-
-   사실은 ``HELLO WORLD`` 대신 ``b'HELLO WORLD'`` 가 인쇄됩니다.
-
 .. highlight:: python3
 
 
@@ -1761,10 +1616,6 @@ their parent process exits.  The manager classes are defined in the
 
    *address* is the address on which the manager process listens for new
    connections.  If *address* is ``None`` then an arbitrary one is chosen.
-
-   .. admonition:: flowdas
-
-      :meth:`connect` 로 연결할 때는 *address* 가 리슨하는 주소가 아니라, 연결할 서버의 주소로 사용됩니다.
 
    *authkey* is the authentication key which will be used to check the
    validity of incoming connections to the server process.  If
@@ -1830,16 +1681,6 @@ their parent process exits.  The manager classes are defined in the
       object will be accessible.  (Here a "public method" means any attribute
       which has a :meth:`~object.__call__` method and whose name does not begin
       with ``'_'``.)
-
-      .. admonition:: flowdas
-
-         공용 메서드가 :meth:`~object.__call__` 메서드를 갖는 어트리뷰트라는 조건은 사실상
-         모든 콜러블 어트리뷰트를 뜻합니다. 때문에 메서드들이 모두 포함됩니다.
-
-         또한 ``'_'`` 로 시작하지 않아야 한다는 조건은, 모든 특수 메서드들이 기본적으로는
-         공용 메서드로 취급되지 않음을 의미합니다. 하지만 :class:`SyncManager` 가 제공하는
-         다양한 프락시 객체들은 일반적으로 필요로하는 특수 메서드들을 :attr:`proxytype._exposed_` 를
-         통해 노출시키고 있습니다.
 
       *method_to_typeid* is a mapping used to specify the return type of those
       exposed methods which should return a proxy.  It maps method names to
@@ -2464,10 +2305,6 @@ multiple connections at the same time.
    then a welcome message is sent to the other end of the connection.  Otherwise
    :exc:`~multiprocessing.AuthenticationError` is raised.
 
-   .. admonition:: flowdas
-
-      HMAC-MD5 를 사용하고 있습니다.
-
 .. function:: answer_challenge(connection, authkey)
 
    Receive a message, calculate the digest of the message using *authkey* as the
@@ -2490,10 +2327,6 @@ multiple connections at the same time.
    authentication is done if *authkey* is None.
    :exc:`~multiprocessing.AuthenticationError` is raised if authentication fails.
    See :ref:`multiprocessing-auth-keys`.
-
-   .. admonition:: flowdas
-
-      리스너와의 연결이 만들어지고 인증을 완료할 때까지 블록됩니다.
 
 .. class:: Listener([address[, family[, backlog[, authkey]]]])
 
@@ -2727,10 +2560,6 @@ handler type) for messages from different processes to get mixed up.
 
    Returns the logger used by :mod:`multiprocessing`.  If necessary, a new one
    will be created.
-
-   .. admonition:: flowdas
-
-      로거의 이름은 ``'multiprocessing'`` 입니다.
 
    When first created the logger has level :data:`logging.NOTSET` and no
    default handler. Messages sent to this logger will not by default propagate

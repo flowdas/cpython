@@ -41,12 +41,6 @@ directly specified in the ``InventoryItem`` definition shown above.
 
 .. versionadded:: 3.7
 
-.. admonition:: flowdas
-
-   파이썬 3.6 을 위한 `백포트 <https://pypi.org/project/dataclasses/>`_ 도
-   제공됩니다. 하지만, :term:`변수 어노테이션 <variable annotation>`\을 필요로
-   하는 모듈이기 때문에, 파이썬 3.5 나 그 이전 버전에서는 지원할 방법이 없습니다.
-
 Module-level decorators, classes, and functions
 -----------------------------------------------
 

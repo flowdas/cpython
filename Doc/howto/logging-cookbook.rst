@@ -193,11 +193,6 @@ previous simple module-based configuration example::
 Notice that the 'application' code does not care about multiple handlers.  All
 that changed was the addition and configuration of a new handler named *fh*.
 
-.. admonition:: flowdas
-
-   본문의 설명과는 달리 앞의 예제에도 이미 *fh* 처리기가 들어있습니다. 저자의 의도는,
-   앞의 예제에 콘솔 처리기 (*ch*) 만 들어있는 것입니다.
-
 The ability to create new handlers with higher- or lower-severity filters can be
 very helpful when writing and testing an application.  Instead of using many
 ``print`` statements for debugging, use ``logger.debug``: Unlike the print
@@ -682,11 +677,6 @@ script::
             lvl = choice(levels)
             lvlname = logging.getLevelName(lvl)
             a2.log(lvl, 'A message at %s level with %d %s', lvlname, 2, 'parameters')
-
-.. admonition:: flowdas
-
-   본문의 설명과는 달리 ``LoggerAdapter`` 의 예제는 IP 주소나 사용자 이름을 사용하고 있지 않습니다. 아마 어느 시점에선가
-   상호 참조를 손상 시킨 변경이 있었던 것으로 추정됩니다. ``LoggerAdapter`` 를 언급하는 부분은 무시해주세요.
 
 which, when run, produces something like:
 
@@ -1710,14 +1700,6 @@ If the above script is run, it prints:
 Note that the order of items might be different according to the version of
 Python used.
 
-.. admonition:: flowdas
-
-   딕셔너리의 순서가 보존되는 파이썬 3.7 (실질적으로는 3.6) 부터는 다음과 같이 키워드 인자 순서를 따릅니다.
-
-   .. code-block:: none
-
-       message 1 >>> {"foo": "bar", "bar": "baz", "num": 123, "fnum": 123.456}
-
 If you need more specialised processing, you can use a custom JSON encoder,
 as in the following complete example::
 
@@ -1757,12 +1739,6 @@ as in the following complete example::
 
     if __name__ == '__main__':
         main()
-
-.. admonition:: flowdas
-
-   ``unicode_escape`` 는 코덱입니다 (자세한 내용은 :mod:`codecs` 를 보세요).
-   이 코덱을 사용한 변환이 꼭 필요하지는 않습니다.
-   하지만 :class:`set` 은 기본 :class:`json.JSONEncoder` 가 처리하지 못하기 때문에 필요합니다.
 
 When the above script is run, it prints:
 
@@ -1917,10 +1893,6 @@ or a different type of handler altogether.
 Using particular formatting styles throughout your application
 --------------------------------------------------------------
 
-.. admonition:: flowdas
-
-   이 절은 앞선 :ref:`format-styles` 절과 내용이 꽤 겹칩니다.
-
 In Python 3.2, the :class:`~logging.Formatter` gained a ``style`` keyword
 parameter which, while defaulting to ``%`` for backward compatibility, allowed
 the specification of ``{`` or ``$`` to support the formatting approaches
@@ -1964,18 +1936,6 @@ should be careful to support all formatting styles and allow %-formatting as
 the default, to ensure interoperability with other code. Care should also be
 taken to call ``str(self.msg)``, just as the base implementation does.
 
-.. admonition:: flowdas
-
-   ``str(self.msg)`` 호출 조건은 :ref:`arbitrary-object-messages` 절에서 설명하는
-   내용과 관련있습니다. :meth:`~LogRecord.getMessage` 의 베이스 구현에서는 이런식으로
-   처리되고 있습니다::
-
-       def getMessage(self):
-           msg = str(self.msg)
-           if self.args:
-               msg = msg % self.args
-           return msg
-
 
 Refer to the reference documentation on :func:`setLogRecordFactory` and
 :class:`LogRecord` for more information.
@@ -2016,11 +1976,6 @@ If you find it a little unwieldy to use the class names whenever you want to log
 something, you can make it more palatable if you use an alias such as ``M`` or
 ``_`` for the message (or perhaps ``__``, if you are using ``_`` for
 localization).
-
-.. admonition:: flowdas
-
-   ``_`` 는 흔히 :func:`gettext.gettext` 의 별칭으로 만들어져, 여러 언어로 번역될 텍스트를 감싸는
-   용도로 사용됩니다.
 
 Examples of this approach are given below. Firstly, formatting with
 :meth:`str.format`::

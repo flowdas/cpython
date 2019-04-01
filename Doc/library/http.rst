@@ -12,10 +12,6 @@
 
 --------------
 
-.. admonition:: flowdas
-
-   이 페이지는 `Spike H.Y. Lee <https://github.com/hard-coders>`_ 님의 번역입니다.
-
 :mod:`http` is a package that collects several modules for working with the
 HyperText Transfer Protocol:
 

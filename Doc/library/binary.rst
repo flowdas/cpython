@@ -4,10 +4,6 @@
 Binary Data Services
 ********************
 
-.. admonition:: flowdas
-
-   이 페이지는 `Hyeongdo Lee <https://github.com/caerang>`_ 님의 번역입니다.
-
 The modules described in this chapter provide some basic services operations
 for manipulation of binary data. Other operations on binary data, specifically
 in relation to file formats and network protocols, are described in the

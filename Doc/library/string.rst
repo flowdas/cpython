@@ -58,10 +58,6 @@ The constants defined in this module are:
    String of ASCII characters which are considered punctuation characters
    in the ``C`` locale.
 
-   .. admonition:: flowdas
-
-      문자열 ``'!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'`` 입니다.
-
 
 .. data:: printable
 
@@ -75,10 +71,6 @@ The constants defined in this module are:
    A string containing all ASCII characters that are considered whitespace.
    This includes the characters space, tab, linefeed, return, formfeed, and
    vertical tab.
-
-   .. admonition:: flowdas
-
-      문자열 ``' \t\n\r\v\f'`` 입니다.
 
 
 .. _string-formatting:
@@ -176,10 +168,6 @@ implementation as the built-in :meth:`~str.format` method.
       parameters.  :meth:`check_unused_args` is assumed to raise an exception if
       the check fails.
 
-      .. admonition:: flowdas
-
-         기본 구현은 아무일도 하지 않습니다. 어떤 예외를 일으켜야하는지도 정의되어있지 않습니다.
-
    .. method:: format_field(value, format_spec)
 
       :meth:`format_field` simply calls the global :func:`format` built-in.  The
@@ -249,19 +237,6 @@ attribute expressions. An expression of the form ``'.name'`` selects the named
 attribute using :func:`getattr`, while an expression of the form ``'[index]'``
 does an index lookup using :func:`__getitem__`.
 
-.. admonition:: flowdas
-
-   숫자 *arg_name* 을 생략하는 것은 "전부 아니면 전무" 스타일만 허락됩니다. 즉 ``'{} {1}'`` 같은 포맷
-   문자열은 허락되지 않습니다.
-
-.. admonition:: flowdas
-
-   *arg_name* 이 따옴표로 분리되지 않을뿐만 아니라, *element_index* 역시 따옴표로 분리되지 않습니다.
-   하지만 *element_index* 은 ```[]``` 로 분리되어 있기 때문에 식별자가 아닌 문자열도 문법상 허락됩니다.
-   가령 ``'{[ ]}'.format({' ': 'blank'})`` 은 ``'blank'`` 가 됩니다. 하지만 두 가지 제약조건 때문에 임의의
-   딕셔너리 조회가 지원되지는 않습니다. 하나는 *element_index* 가 ``']'`` 문자를 포함할 수 없다는 것이고,
-   다른 하나는 숫자만으로 구성된 경우 숫자로만 해석된다는 것입니다.
-
 .. versionchanged:: 3.1
    The positional argument specifiers can be omitted for :meth:`str.format`,
    so ``'{} {}'.format(a, b)`` is equivalent to ``'{0} {1}'.format(a, b)``.
@@ -300,18 +275,6 @@ presented, including such details as field width, alignment, padding, decimal
 precision and so on.  Each value type can define its own "formatting
 mini-language" or interpretation of the *format_spec*.
 
-.. admonition:: flowdas
-
-   실제 포매팅이 일어나는 :meth:`__format__` 에 *format_spec* 이 그대로 전달됩니다.
-   따라서 사용자 정의 형은 :meth:`__format__` 을 재정의함으로써 *format_spec* 에
-   완전히 새로운 문법을 도입할 수 있습니다. :ref:`formatspec` 섹션에서 설명되는 문법은
-   내장형에서 지원되는 문법일 뿐입니다. 특히 클래스를 정의할 경우 :meth:`__format__` 의
-   기본 구현은 ``str(self)`` 를 돌려주는데, 이 문법을 지원하지 않고, *format_spec* 이
-   빈 문자열이 아니면(즉 뭔가 지정되면) :exc:`TypeError` 를 일으킵니다.
-   표준 라이브러리가 제공하는 클래스 중에는 자신만의 문법을 정의하는 것도 있습니다.
-   가령 :meth:`datetime.datetime.__format__` 은 이 문법 대신
-   :ref:`strftime-strptime-behavior` 에서 정의하는 문법을 사용합니다.
-
 Most built-in types support a common formatting mini-language, which is
 described in the next section.
 
@@ -321,11 +284,6 @@ and format specification, but deeper nesting is
 not allowed.  The replacement fields within the
 format_spec are substituted before the *format_spec* string is interpreted.
 This allows the formatting of a value to be dynamically specified.
-
-.. admonition:: flowdas
-
-   *format_spec* 필드 안에 중첩된 치환 필드들은 :meth:`__format__` 을 호출하기 전에
-   치환된다는 뜻입니다. 따라서 형이 :meth:`__format__` 를 재정의한 경우에도 적용됩니다.
 
 See the :ref:`formatexamples` section for some examples.
 
@@ -473,15 +431,6 @@ value formatted with ``'g'`` or ``'G'``.  For non-number types the field
 indicates the maximum field size - in other words, how many characters will be
 used from the field content. The *precision* is not allowed for integer values.
 
-.. admonition:: flowdas
-
-   *precision* 이 표시 유형 ``'e'`` 와 ``'E'`` 에서 어떻게 작용하는지 설명하고 있지 않은데,
-   사실은 ``'f'``, ``'F'`` 와 유사하게 해석됩니다. 즉 소수점 뒤로 오는 숫자의 개수입니다.
-   이 때문에 ``'e'`` 나 ``'E'`` 로 인쇄되는 숫자는 *precision* 보다 하나 많은 유효숫자를 갖게됩니다.
-   이에 반해 ``'g'`` 나 ``'G'`` 로 인쇄할 때 과학 표기법으로 포맷되는 경우에는 *precision* 과 유효숫자의
-   개수가 일치합니다. 가령 ``'{:.6e}'.format(1/30000)`` 은 ``3.333333e-05'`` 이고,
-   ``'{:.6g}'.format(1/30000)`` 은 ``'3.33333e-05'`` 입니다.
-
 Finally, the *type* determines how the data should be presented.
 
 The available string presentation types are:
@@ -587,15 +536,6 @@ The available presentation types for floating point and decimal values are:
    |         | output of :func:`str` as altered by the other format     |
    |         | modifiers.                                               |
    +---------+----------------------------------------------------------+
-
-.. admonition:: flowdas
-
-   표시 형식 ``'g'`` 에 적용되는 규칙이 복잡해 보이지만 사실은 간단한 원칙을 따르고 있습니다.
-   숫자의 절대값이 너무 커지거나 작아질 때만 과학 표기법을 사용하자는 것입니다. 큰 쪽으로의 경계는
-   10\ :sup:`p` 이고, 작은 쪽으로의 경계는 0.0001 입니다. 이 조건이 ``-4 <= exp < p`` 라는
-   식으로 표현됩니다. 정밀도를 ``'f'`` 형식의 경우 ``p-1-exp`` 를 사용한다는 표현은 유효숫자를
-   ``p`` 개로 맞추겠다는 뜻입니다. ``'e'`` 형식의 경우 ``p-1`` 를 사용하는 이유는,
-   위에서 설명한 것처럼, 정밀도를 ``p-1`` 을 주면 유효숫자는 ``p`` 개가 되기 때문입니다.
 
 .. _formatexamples:
 
@@ -707,11 +647,6 @@ Using type-specific formatting::
    >>> '{:%Y-%m-%d %H:%M:%S}'.format(d)
    '2010-07-04 12:15:58'
 
-.. admonition:: flowdas
-
-   :class:`datetime.datetime` 은 :meth:`~datetime.datetime.__format__` 메서드를 정의하고 있어서,
-   포맷 명세에 다른 문법을 사용합니다.
-
 Nesting arguments and more complex examples::
 
    >>> for align, text in zip('<^>', ['left', 'center', 'right']):
@@ -793,11 +728,6 @@ these rules.  The methods of :class:`Template` are:
       keywords are the placeholders.  When both *mapping* and *kwds* are given
       and there are duplicates, the placeholders from *kwds* take precedence.
 
-      .. admonition:: flowdas
-
-         메서드 서명이 잘못 표시되어 있습니다. *mapping* 인자는 생략 가능합니다.
-         :meth:`~Template.safe_substitute` 도 마찬가지 입니다.
-
 
    .. method:: safe_substitute(mapping, **kwds)
 
@@ -862,11 +792,6 @@ attributes:
      with some non-ASCII characters. That's why we use the local ``a`` flag
      here.
 
-     .. admonition:: flowdas
-
-        *flags* 에 ``re.ASCII`` 를 추가하지 않고 ``a`` 플래그 (정규식의 ``?a:`` 부분)
-        를 넣은 이유는 과거 호환성 때문입니다.
-
   .. versionchanged:: 3.7
      *braceidpattern* can be used to define separate patterns used inside and
      outside the braces.
@@ -876,11 +801,6 @@ attributes:
   *idpattern* (i.e. the same pattern is used both inside and outside braces).
   If given, this allows you to define different patterns for braced and
   unbraced placeholders.
-
-  .. admonition:: flowdas
-
-     중괄호 자체는 정규식에 포함되지 않습니다. 때문에 이 값을 지정해도 중괄호를 다른 것으로 바꿀 수는
-     없습니다. 그러려면, 뒤에 설명하는 *pattern* 을 바꿔야합니다.
 
   .. versionadded:: 3.7
 

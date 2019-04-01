@@ -65,12 +65,6 @@ are available on all platforms):
    The traditional method with a 2 character salt and 13 characters of
    hash.  This is the weakest method.
 
-   .. admonition:: flowdas
-
-      이 방법은 모듈형 암호 형식이 아닙니다. 즉 :func:`mksalt`\가 만들어내는 솔트와,
-      이 솔트를 사용해서 :func:`crypt`\가 만들어내는 암호화된 비밀번호는 ``$digit$``\로
-      시작하지 않고, 솔트와 해시 사이의 ``$``\도 없습니다.
-
 Module Attributes
 -----------------
 

@@ -116,3 +116,4 @@ Tools/ssl/win32
 gmon.out
 /_gettext/
 /locale/
+/_publish/

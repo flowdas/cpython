@@ -13,10 +13,6 @@
 
 --------------
 
-.. admonition:: flowdas
-
-   이 페이지는 `Hyukhoon Kwon <https://github.com/unace>`_ 님의 번역입니다.
-
 (If you are already familiar with the basic concepts of testing, you might want
 to skip to :ref:`the list of assert methods <assert-methods>`.)
 

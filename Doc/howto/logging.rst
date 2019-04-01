@@ -448,11 +448,6 @@ With the logger object configured, the following methods create log messages:
   logging methods care only about a keyword of ``exc_info`` and use it to
   determine whether to log exception information.
 
-  .. admonition:: flowdas
-
-     사실은 ``exc_info`` 뿐만 아니라 ``stack_info`` 와 ``extra`` 도 정의되어 있습니다.
-     자세한 내용은 :meth:`Logger.debug` 을 참조하세요.
-
 * :meth:`Logger.exception` creates a log message similar to
   :meth:`Logger.error`.  The difference is that :meth:`Logger.exception` dumps a
   stack trace along with it.  Call this method only from an exception handler.
@@ -986,13 +981,6 @@ For formatting multiple messages in a batch, instances of
 :class:`~handlers.BufferingFormatter` can be used. In addition to the format
 string (which is applied to each message in the batch), there is provision for
 header and trailer format strings.
-
-.. admonition:: flowdas
-
-   :class:`logging.BufferingFormatter` 는 :mod:`logging` 모듈에 들어있지만 문서로 만들어지지는
-   않은 상태입니다. ``__all__`` 을 통해 노출하고 있고, 이 문서에서 언급하고 있는 것으로 보아, 비공개 API
-   라기 보다는 실수로 빠뜨린 것으로 보입니다. 최초의 :pep:`282` 에서도 언급되고 있습니다.
-   사용하려면 소스 코드를 직접 참조해야합니다.
 
 When filtering based on logger level and/or handler level is not enough,
 instances of :class:`Filter` can be added to both :class:`Logger` and

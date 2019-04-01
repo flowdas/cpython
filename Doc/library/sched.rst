@@ -17,17 +17,6 @@ scheduler:
 
 .. class:: scheduler(timefunc=time.monotonic, delayfunc=time.sleep)
 
-   .. admonition:: flowdas
-
-      스케줄러 객체는 :mod:`heapq`\를 사용합니다. 따라서 개별 이벤트를 등록하고, 실행하는 시간 복잡도는
-      O(log n) 입니다. 하지만 :meth:`cancel` 은 최적화되지 않아서, O(log n) 이 가능한데도
-      O(n) 시간 복잡도를 제공하고 있습니다.
-
-   .. admonition:: flowdas
-
-      스케줄러가 스레드 안전하기는 하지만, :meth:`run`\이 실행 중이고, 다음 이벤트가 실행될 시간이
-      도래할 때까지 기다리고 있는 상황에서, 다른 스레드에서 이벤트를 등록해도 깨어나지 않습니다.
-
    The :class:`scheduler` class defines a generic interface to scheduling events.
    It needs two functions to actually deal with the "outside world" --- *timefunc*
    should be callable without arguments, and return  a number (the "time", in any

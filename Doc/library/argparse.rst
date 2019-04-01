@@ -1093,17 +1093,6 @@ Any object that supports the ``in`` operator can be passed as the *choices*
 value, so :class:`dict` objects, :class:`set` objects, custom containers,
 etc. are all supported.
 
-.. admonition:: flowdas
-
-   *choices* 와 ``nargs='*'`` 를 함께 쓰면 묘한 일이 일어납니다. 아무런 값도 주지 않으면 빈 튜플이
-   제공되는 대신, 에러를 일으킵니다::
-
-      >>> parser = argparse.ArgumentParser(prog='doors.py')
-      >>> parser.add_argument('door', type=int, nargs='*', choices=range(1, 4))
-      >>> parser.parse_args([])
-      usage: doors.py [-h] [{1,2,3} [{1,2,3} ...]]
-      doors.py: error: argument door: invalid choice: [] (choose from 1, 2, 3)
-
 
 required
 ^^^^^^^^
@@ -1234,11 +1223,6 @@ Note that ``metavar`` only changes the *displayed* name - the name of the
 attribute on the :meth:`~ArgumentParser.parse_args` object is still determined
 by the dest_ value.
 
-.. admonition:: flowdas
-
-   하지만, *표시되는* 이름이 없을 때 (가령 ``'store_false'`` 나 ``'store_true'`` 액션을
-   사용할 때) ``metavar`` 를 주면 에러를 일으킵니다.
-
 Different values of ``nargs`` may cause the metavar to be used multiple times.
 Providing a tuple to ``metavar`` specifies a different display for each of the
 arguments::
@@ -1269,12 +1253,6 @@ attribute is determined by the ``dest`` keyword argument of
    >>> parser.add_argument('bar')
    >>> parser.parse_args(['XXX'])
    Namespace(bar='XXX')
-
-.. admonition:: flowdas
-
-   위치 인자의 경우 :meth:`~ArgumentParser.add_argument` 에 첫 번째 위치 인자가 제공되면,
-   ``dest`` 키워드 인자를 줄 수 없습니다. ``dest`` 가 중복된 것으로 취급합니다.
-   선택 인자에서는 이런 일이 없기 때문에, 간혹 혼란스러울 수 있습니다.
 
 For optional argument actions, the value of ``dest`` is normally inferred from
 the option strings.  :class:`ArgumentParser` generates the value of ``dest`` by

@@ -148,10 +148,6 @@ source.
    added to the start of :data:`sys.path` and the ``__main__.py`` file in
    that location is executed as the :mod:`__main__` module.
 
-   .. admonition:: flowdas
-
-      이름 공간 패키지도 허락되기 때문에, 디렉터리를 주는 경우 `__init__.py`` 파일은 없어도 됩니다.
-
    .. seealso::
       :func:`runpy.run_path`
          Equivalent functionality directly available to Python code

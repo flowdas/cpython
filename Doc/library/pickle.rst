@@ -34,14 +34,6 @@ avoid confusion, the terms used here are "pickling" and "unpickling".
    constructed data.  Never unpickle data received from an untrusted or
    unauthenticated source.
 
-   .. admonition:: flowdas
-
-      신뢰할 수 없는 출처의 데이터를 언피클하는 것을 안전하게 만드는 것은 :func:`eval` 을
-      안전하게 만드는 것과 비슷한 정도로 어렵습니다. 안전하게 만들기 위해서는 언피클에 아주 강한
-      제약을 걸어야만 하는데, 피클링의 유용성을 크게 낮추게됩니다. 때문에 오직 신뢰할 수 있는
-      데이터만 사용하는 전략이 더 실용적입니다. 그렇게 하는 한가지 방법은 피클된 데이터에
-      암호적으로 서명을 첨부하는 것입니다.
-
 
 Relationship to other Python modules
 ------------------------------------
@@ -343,11 +335,6 @@ The :mod:`pickle` module exports two classes, :class:`Pickler` and
       conform to the same interface as a :meth:`__reduce__`
       method.
 
-      .. admonition:: flowdas
-
-         환원 함수가 :meth:`__reduce__` 와 같은 인터페이스를 갖기 위해서는 인자로 해당 클래스의
-         인스턴스를 받아들여야합니다. :meth:`__reduce__` 의 ``self`` 에 해당합니다.
-
       By default, a pickler object will not have a
       :attr:`dispatch_table` attribute, and it will instead use the
       global dispatch table managed by the :mod:`copyreg` module.
@@ -470,15 +457,6 @@ restored in the unpickling environment::
        attr = 'A class attribute'
 
    picklestring = pickle.dumps(Foo)
-
-.. admonition:: flowdas
-
-   이 예는 약간 오해의 소지가 있습니다. ``picklestring`` 에 ``attr`` 어트리뷰트의 값이 포함되지
-   않는 것은 맞습니다만, 언피클했을 때 ``attr`` 어트리뷰트가 사라지는 것은 아닙니다. 피클 데이터는
-   ``Foo`` 의 이름 참조만을 포함하고, 언피클하면 ``Foo`` 클래스에 대한 참조로 복원됩니다.
-   따라서 언피클 환경이 같은 ``Foo`` 의 정의를 포함하고 있다면 ``attr`` 어트리뷰트 역시 제공됩니다.
-   다만 ``attr`` 어트리뷰트가 수정되고 있는 상황이라면 피클 시점의 ``attr`` 어트리뷰트의 값이
-   복원되지는 않습니다.
 
 These restrictions are why picklable functions and classes must be defined in
 the top level of a module.
@@ -814,24 +792,6 @@ this hand-crafted pickle data stream does when loaded::
     >>> pickle.loads(b"cos\nsystem\n(S'echo hello world'\ntR.")
     hello world
     0
-
-.. admonition:: flowdas
-
-   ``0`` 은 ``pickle.loads()`` 가 반환한 값이고, ``hello world`` 는 언 피클 과정에서
-   콘솔에 출력된 내용입니다. 이 피클 스트림은 프로토콜 0으로 구성된 것인데, 끝부분에 있는 ``R``
-   이 ``REDUCE`` 라는 옵코드입니다. ``REDUCE`` 는 콜러블과 튜플을 사용해서 호출한 후 결과를
-   취합니다. 즉 ``0`` 은 ``os.system('echo hello world')`` 의 반환 값입니다.
-   :meth:`pickletools.dis` 로 피클 스트림을 디코딩해보면 이렇습니다::
-
-       >>> import pickletools
-       >>> pickletools.dis(b"cos\nsystem\n(S'echo hello world'\ntR.")
-           0: c    GLOBAL     'os system'
-          11: (    MARK
-          12: S        STRING     'echo hello world'
-          32: t        TUPLE      (MARK at 11)
-          33: R    REDUCE
-          34: .    STOP
-       highest protocol among opcodes = 0
 
 In this example, the unpickler imports the :func:`os.system` function and then
 apply the string argument "echo hello world".  Although this example is

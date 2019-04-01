@@ -32,11 +32,6 @@ simple as ::
 The above will execute :file:`somefile.py` and generate annotated listings of
 all Python modules imported during the execution into the current directory.
 
-.. admonition:: flowdas
-
-   "주석이 달린 리스트"란 현재 디렉터리에 모듈마다 하나씩 만들어지는 :file:`{dir}/{package}/{module}.cover` 파일을
-   뜻합니다. 이 파일은 모듈의 소스 코드가 복사되고, 줄마다 앞에 몇 번 실행되었는지를 나타내는 주석이 붙게 됩니다.
-
 .. program:: trace
 
 .. cmdoption:: --help

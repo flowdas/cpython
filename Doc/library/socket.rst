@@ -209,11 +209,6 @@ Non-blocking mode is supported through :meth:`~socket.setblocking`.  A
 generalization of this based on timeouts is supported through
 :meth:`~socket.settimeout`.
 
-.. admonition:: flowdas
-
-   여기에서 일반화란, :meth:`~socket.settimeout` 으로 시간제한을 0으로 줄 때,
-   비 블로킹 소켓으로 전환한다는 뜻입니다.
-
 Module contents
 ---------------
 

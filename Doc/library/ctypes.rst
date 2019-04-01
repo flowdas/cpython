@@ -12,12 +12,6 @@
 data types, and allows calling functions in DLLs or shared libraries.  It can be
 used to wrap these libraries in pure Python.
 
-.. admonition:: flowdas
-
-   같은 목적으로 자주 사용되는 제삼자 라이브러리로 PyPy 팀에서 개발한
-   `cffi <https://cffi.readthedocs.io/en/latest/>`_\가 있습니다. CPython에서도 사용할 수 있고,
-   PyPy 에서는 대체로 :mod:`ctypes` 에 비해 훨씬 높은 성능을 제공합니다.
-
 .. _ctypes-ctypes-tutorial:
 
 ctypes tutorial
@@ -341,13 +335,6 @@ property::
    >>> print(sizeof(p), repr(p.raw))
    10 b'Hi\x00lo\x00\x00\x00\x00\x00'
    >>>
-
-.. admonition:: flowdas
-
-   NUL 종료 문자열로 액세스한다는 것은 메모리의 내용을 NULL 종료 문자열로 해석한다는 뜻입니다. 따라서,
-   ``value`` 프로퍼티는 문자열의 끝을 나타내는 NULL 을 포함하지 않는 바이트열을 줍니다. 반면, 임의의 메모리
-   블록으로 해석하는 ``raw`` 프로퍼티는 메모리에 담긴 모든 바이트를 제공하기 때문에, NUL을 포함하는 바이트열을
-   돌려줍니다.
 
 The :func:`create_string_buffer` function replaces the :func:`c_buffer` function
 (which is still available as an alias), as well as the :func:`c_string` function

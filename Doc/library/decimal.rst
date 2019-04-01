@@ -51,29 +51,12 @@ decimal floating point arithmetic. It offers several advantages over the
   reason, decimal is preferred in accounting applications which have strict
   equality invariants.
 
-  .. admonition:: flowdas
-
-     십진 소수를 유지하기 때문에, 진법 변환으로 인한 부정확함이 없다는 뜻이지, 산술의 결과를 항상
-     정확하게 유지할 수 있다는 뜻이 아닙니다. 가령 나눗셈이 수반되면 무한 소수가 만들어질 수 있는데,
-     Decimal 은 무한 소수를 정확하게 표현하지 못합니다. Decimal 은 항상 유한한 정밀도를 유지하고,
-     자리 올림을 통해 무한 소수의 근사값을 취합니다.
-
 * The decimal module incorporates a notion of significant places so that ``1.30
   + 1.20`` is :const:`2.50`.  The trailing zero is kept to indicate significance.
   This is the customary presentation for monetary applications. For
   multiplication, the "schoolbook" approach uses all the figures in the
   multiplicands.  For instance, ``1.3 * 1.2`` gives :const:`1.56` while ``1.30 *
   1.20`` gives :const:`1.5600`.
-
-  .. admonition:: flowdas
-
-     예전에는 (요즘은 없어졌을 가능성이 높습니다. 중3에게 물어보니 들어본적이 없다네요) 중등 교과 과정에
-     "유효 숫자" 라는 개념이 포함되어 있었습니다.
-     유효 숫자는 숫자의 불확실성에 관한 것인데, 주로 실험적으로 어떤 숫자를 얻을 때 쓸모있는 개념입니다.
-     가령 눈금자로 길이를 측정할 때 보통 마지막 눈금을 쪼개서 읽을겁니다. 가령 ``1.25`` cm. 그런데
-     정확히 눈금과 일치할 때는 ``1.20`` 이라고 읽을 것입니다. 이 때 ``1.2`` 와 ``1.20`` 은
-     다르며 끝의 ``0`` 은 한 수준 높은 정밀도를 표현합니다. 디지털 저울을 읽을 때도 마찬가지 입니다.
-     소수점 한자리까지 표시하는 저울과 두자리까지 표시하는 저울은 그 정밀도가 다릅니다.
 
 * Unlike hardware based binary floating point, the decimal module has a user
   alterable precision (defaulting to 28 places) which can be as large as needed for
@@ -93,20 +76,6 @@ decimal floating point arithmetic. It offers several advantages over the
   When needed, the programmer has full control over rounding and signal handling.
   This includes an option to enforce exact arithmetic by using exceptions
   to block any inexact operations.
-
-  .. admonition:: flowdas
-
-     rounding 을 흔히 쓰는 "반올림" 대신 "자리 올림" 이라고 번역합니다. decimal 에서 지원하는 rounding
-     은 8가지인데, 이중 일부만 "반올림"에 해당하기 때문입니다.
-
-  .. admonition:: flowdas
-
-     signal 은 :mod:`signal` 모듈의 시그널과 구분하기위해 "신호" 라고 번역합니다. 하지만 두 signal 이
-     아주 관계 없는 것은 아닙니다. 부동 소수점 산술은 하드웨어 구현을 염두에 두고 있는 것이고, 실제로
-     float 형을 통해 제공되고 있는 이진 부동 소수점은 대부분의 플랫폼에서 하드웨어에 기반합니다. 하드웨어에서
-     지원되는 경우 이진 부동 소수점 신호가 ``SIGFPE`` 시그널을 통하는 경우가 있습니다. 예전에는 ``fpectl``
-     이라는 모듈을 통해 제한적으로나마 제어할 수 있는 방법을 제공했지만, 사실상 아무도 쓰지 않기 때문에
-     파이썬 3.7 에서는 아예 제거되었습니다.
 
 * The decimal module was designed to support "without prejudice, both exact
   unrounded decimal arithmetic (sometimes called fixed-point arithmetic)
@@ -208,18 +177,6 @@ an exception::
    >>> Decimal('3.5') == 3.5
    True
 
-.. admonition:: flowdas
-
-   예제 코드의 마지막에서 볼 수 있듯이, 동등 비교는 예외를 일으키지 않습니다.
-   또한 3.5 는 이진 부동 소수점으로 정확히 표현할 수 있는 수이기 때문에 비교 결과가 ``True`` 입니다.
-
-.. admonition:: flowdas
-
-   float 가 조용히 Decimal 로 변환되도록하면, float 값으로 이미 정확하지 않은 값이 들어갔을 가능성이
-   크기 때문에, Decimal 이 제공하는 정확한 산술이 의미가 없어질 수 있습니다. 이 때문에 정확한 산술이
-   중요한 응용에서는 :exc:`FloatOperation` 신호를 트랩해서 실수로라도 그런일이 일어나는 것을
-   막습니다.
-
 .. versionadded:: 3.3
 
 The significance of a new Decimal is determined solely by the number of digits
@@ -293,11 +250,6 @@ And some mathematical functions are also available to Decimal:
    >>> Decimal('10').log10()
    Decimal('1')
 
-.. admonition:: flowdas
-
-   :mod:`math` 모듈의 수학 함수들에 Decimal 을 제공해도 됩니다. 다만 :mod:`math` 모듈의 함수들은
-   float 로 변환한 값으로 계산한 후 float 값을 돌려줍니다.
-
 The :meth:`quantize` method rounds a number to a fixed exponent.  This method is
 useful for monetary applications that often round results to a fixed number of
 places:
@@ -306,15 +258,6 @@ places:
    Decimal('7.32')
    >>> Decimal('7.325').quantize(Decimal('1.'), rounding=ROUND_UP)
    Decimal('8')
-
-.. admonition:: flowdas
-
-   여기서 "고정된 지수로 자리 올림" 한다는 뜻은, 계수부를 정수로 만들때의 지수부가 지정한 값이 되도록
-   만든다는 뜻입니다. 때문에 소수점 밑의 자리수를 맞추는 결과를 줍니다.
-   첫번째 예에서, ``Decimal('.01')`` 은 ``Decimal(1e-2)`` 와 같아서 지수가 ``-2`` 입니다. 따라서
-   ``Decimal('732e-2')`` 가 되도록 자리 올림합니다. (실제로는 ``ROUND_DOWN`` 이라서 내림합니다.)
-   두번째 예에서, ``Decimal('1.')`` 는 ``Decimal('1e0')`` 이고, 지수가 ``0`` 이므로
-   ``Decimal('8e0')`` 으로 올림(ROUND_UP)합니다.
 
 As shown above, the :func:`getcontext` function accesses the current context and
 allows the settings to be changed.  This approach meets the needs of most
@@ -370,10 +313,6 @@ The *flags* entry shows that the rational approximation to :const:`Pi` was
 rounded (digits beyond the context precision were thrown away) and that the
 result is inexact (some of the discarded digits were non-zero).
 
-.. admonition:: flowdas
-
-   355/113 은 :const:`Pi` 와 소수점 6자리까지 일치하는 간단한 유리수 근사값입니다.
-
 Individual traps are set using the dictionary in the :attr:`traps` field of a
 context:
 
@@ -394,11 +333,6 @@ program.  And, in many applications, data is converted to :class:`Decimal` with
 a single cast inside a loop.  With context set and decimals created, the bulk of
 the program manipulates the data no differently than with other Python numeric
 types.
-
-.. admonition:: flowdas
-
-   대체로 파이썬의 다른 숫자 형과 비슷하게 동작하지만, 정수 나눗셈에 음수가 포함될 때는 차이가 있기 때문에
-   조심해야합니다. 이 차이에 대해서는 밑에서 설명합니다.
 
 .. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -433,11 +367,6 @@ Decimal objects
    appears above.  These include decimal digits from various other
    alphabets (for example, Arabic-Indic and Devanāgarī digits) along
    with the fullwidth digits ``'\uff10'`` through ``'\uff19'``.
-
-   .. admonition:: flowdas
-
-      인도-아라비아 숫자는 우리가 흔히 아라비아 숫자라고 부르는 것이고, 데바나가리(Devanāgarī) 숫자는
-      고대 인도의 문자입니다.
 
    If *value* is a :class:`tuple`, it should have three components, a sign
    (:const:`0` for positive or :const:`1` for negative), a :class:`tuple` of
@@ -527,10 +456,6 @@ Decimal objects
       ``Decimal('321e+5').adjusted()`` returns seven.  Used for determining the
       position of the most significant digit with respect to the decimal point.
 
-      .. admonition:: flowdas
-
-         '321e+5' 를 '3.21e+7' 로 변환한 후에 `7` 을 취한다는 뜻입니다.
-
    .. method:: as_integer_ratio()
 
       Return a pair ``(n, d)`` of integers that represent the given
@@ -542,13 +467,6 @@ Decimal objects
 
       The conversion is exact.  Raise OverflowError on infinities and ValueError
       on NaNs.
-
-      .. admonition:: flowdas
-
-         이 변환이 정확하기는 하지만, 기약 분수를 만들기 때문에 유효 숫자를 모두 보존하지는 않습니다.
-
-             >>> Decimal('-3.140').as_integer_ratio()
-             (-157, 50)
 
    .. versionadded:: 3.6
 
@@ -575,10 +493,6 @@ Decimal objects
          a == b           ==> Decimal('0')
          a > b            ==> Decimal('1')
 
-      .. admonition:: flowdas
-
-         ``a.compare(b)`` 의 결과가 어떻게 되는지에 대한 예시입니다.
-
    .. method:: compare_signal(other, context=None)
 
       This operation is identical to the :meth:`compare` method, except that all
@@ -602,13 +516,6 @@ Decimal objects
       total order than the second, and ``Decimal('1')`` if the first operand is
       higher in the total order than the second operand.  See the specification
       for details of the total order.
-
-      .. admonition:: flowdas
-
-         전 순서에는 유효 숫자와 특수한 값에 대한 정의가 포함되지만, 일반적인 숫자 값의 대소 관계는
-         그대로 보존됩니다. 대략 이런 순서를 갖도록 정의됩니다.
-
-         ``-NaN -sNaN -Infinity -127 -1.00 -1 -0.000 -0 0 1.2300 1.23 1E+9 Infinity sNaN NaN``
 
       This operation is unaffected by context and is quiet: no flags are changed
       and no rounding is performed.  As an exception, the C version may raise
@@ -648,11 +555,6 @@ Decimal objects
 
          >>> Decimal('2.3').copy_sign(Decimal('-1.5'))
          Decimal('-2.3')
-
-      .. admonition:: flowdas
-
-         이 섹션에서는 인자나 피연산자를 언급할 때는, 서명에 나타나지는 않더라도 항상 self 를 포함해서
-         말하고 있습니다.
 
       This operation is unaffected by context and is quiet: no flags are changed
       and no rounding is performed.  As an exception, the C version may raise
@@ -729,14 +631,6 @@ Decimal objects
       Return :const:`True` if the argument is a *normal* finite number.  Return
       :const:`False` if the argument is zero, subnormal, infinite or a NaN.
 
-      .. admonition:: flowdas
-
-         0 이 아닌 유한 수 중에서 규범적인 형태의 지수가 Emin 이상인 것들을 정상수(normal number)라고
-         부르고, Emin 보다 작은 것들을 비정상수(subnormal number)라고 부릅니다. 비정상수는 유효숫자를
-         일부 희생하면서 여전히 계산 가능합니다. 이런 방식으로 다룰 수 있는 최소 지수는
-         :meth:`Context.Etiny` 입니다. Emin 근처에서 갑작스럽게 계산을 포기하기 보다, 정확도를
-         조금씩 잃어가는 것을 허용하고자 하는 것입니다. 이런 방식을 점진적인 언더플로우라고 합니다.
-
    .. method:: is_qnan()
 
       Return :const:`True` if the argument is a quiet NaN, and
@@ -779,10 +673,6 @@ Decimal objects
       ``Decimal('-Infinity')`` is returned and the :const:`DivisionByZero` flag
       is raised.  If the operand is an infinity then ``Decimal('Infinity')`` is
       returned.
-
-      .. admonition:: flowdas
-
-         피연산자의 부호를 무시하고 지수부를 취하는 연산입니다.
 
    .. method:: logical_and(other, context=None)
 
@@ -859,12 +749,6 @@ Decimal objects
       ``Decimal('0.321000e+2')`` both normalize to the equivalent value
       ``Decimal('32.1')``.
 
-      .. admonition:: flowdas
-
-         이 연산은 정규화라기 보다는, 숫자를 동등 비교가 유지되는 범위내에서 가장 단순한 형태로 환원시키는
-         것입니다. 실제로 Decimal 명세에서는 이 연산의 이름이 ``reduce`` 로 변경되었습니다. 하지만
-         이 변경의 더 큰 이유는, 이 연산이 정상수(normal number)와 아무 관련이 없다는 것입니다.
-
    .. method:: number_class(context=None)
 
       Return a string describing the *class* of the operand.  The returned value
@@ -888,12 +772,6 @@ Decimal objects
 
       >>> Decimal('1.41421356').quantize(Decimal('1.000'))
       Decimal('1.414')
-
-      .. admonition:: flowdas
-
-         이 연산은 계수부를 정수로 만들때의 지수부가 *exp* 의 지수부와 같도록 만듭니다. 이 결과
-         소수점 밑의 자릿수를 *exp* 와 일치하도록 자리 올림하게됩니다. 때문에 *exp* 를 자릿수를
-         표현하는 탬플릿 처럼 사용하면 됩니다.
 
       Unlike other operations, if the length of the coefficient after the
       quantize operation would be greater than precision, then an
@@ -988,10 +866,6 @@ Decimal objects
 
       For example, this converts ``Decimal('123E+1')`` to ``Decimal('1.23E+3')``.
 
-      .. admonition:: flowdas
-
-         문자열로 변환하기 때문에, ``Decimal('1.23E+3')`` 이 아니라 ``'1.23E+3'`` 을 반환합니다.
-
    .. method:: to_integral(rounding=None, context=None)
 
       Identical to the :meth:`to_integral_value` method.  The ``to_integral``
@@ -1022,14 +896,6 @@ and :meth:`logical_xor` methods expect their arguments to be *logical
 operands*.  A *logical operand* is a :class:`Decimal` instance whose
 exponent and sign are both zero, and whose digits are all either
 :const:`0` or :const:`1`.
-
-.. admonition:: flowdas
-
-   ``Decimal('11010')`` 은 논리적 피연산자이지만, ``Decimal('-11010')`` 는
-   부호가 있기 때문에, ``Decimal('12')`` 는 :const:`0` 과 :const:`1` 이외의
-   숫자가 들어있기 때문에 논리적 피연산자가 아닙니다. 논리적 연산은 각 자릿수별로 이루어집니다.
-   즉, ``Decimal('101').logical_or(Decimal('10'))`` 은 ``Decimal('111')``
-   이 됩니다.
 
 .. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1165,14 +1031,6 @@ In addition to the three supplied contexts, new contexts can be created with the
       >>> Context(prec=6, Emax=999, clamp=1).create_decimal('1.23e999')
       Decimal('1.23000E+999')
 
-   .. admonition:: flowdas
-
-      지수가 ``Emax - prec + 1``, 즉 994 로 줄어든다는 뜻입니다. 이 지수에 맞추기 위해
-      세 개의 0을 추가했습니다::
-
-          >>> Decimal('1.23000E+999').as_tuple()
-          DecimalTuple(sign=0, digits=(1, 2, 3, 0, 0, 0), exponent=994)
-
    A *clamp* value of :const:`1` allows compatibility with the
    fixed-width decimal interchange formats specified in IEEE 754.
 
@@ -1225,17 +1083,6 @@ In addition to the three supplied contexts, new contexts can be created with the
          >>> Decimal('3.4445') + Decimal(0) + Decimal('1.0023')
          Decimal('4.44')
 
-      .. admonition:: flowdas
-
-         정밀도가 3인 컨텍스트에서 유효숫자가 5자리인 상수들로 산술을 하고 있습니다. 첫 번째 산술은
-         ``Decimal('4.4468')`` 을 유효숫자 3개로 자리 올림해서 ``Decimal('4.45')`` 가
-         얻어집니다. 하지만 두 번째 산술은 ``Decimal('3.4445') + Decimal(0)`` 이 먼저
-         ``Decimal('3.4445')`` 를 주고 이 값은 다시 ``Decimal('3.44')`` 로 자리 올림됩니다.
-         이 값이 다시 ``Decimal('1.0023')`` 와 더해지면 ```Decimal('4.4423')```` 을 거쳐
-         ``Decimal('4.44')`` 로 자리 올림됩니다. 중간 자리 올림 때문에 ``Decimal(0)`` 을 더하는
-         것 만으로 두 결과가 달라집니다. 일관된 결과를 얻으려면 상수들을 :meth:`~.create_decimal`
-         로 미리 변환해서 사용하라는 뜻입니다.
-
       This method implements the to-number operation of the IBM specification.
       If the argument is a string, no leading or trailing whitespace or
       underscores are permitted.
@@ -1276,11 +1123,6 @@ In addition to the three supplied contexts, new contexts can be created with the
    context methods for calculating within a specific context.  The methods are
    similar to those for the :class:`Decimal` class and are only briefly
    recounted here.
-
-   .. admonition:: flowdas
-
-      여기에 나오는 설명은 대단히 축약된 것입니다. 사용하기 전에 대응하는 :class:`Decimal` 메서드의
-      설명을 확인하세요.
 
    .. method:: abs(x)
 
@@ -1345,10 +1187,6 @@ In addition to the three supplied contexts, new contexts can be created with the
    .. method:: divmod(x, y)
 
       Divides two numbers and returns the integer part of the result.
-
-      .. admonition:: flowdas
-
-         잘못 설명되어 있습니다. 내장 :func:`divmod` 처럼 몫과 나머지를 튜플로 돌려줍니다.
 
 
    .. method:: exp(x)
@@ -1522,11 +1360,6 @@ In addition to the three supplied contexts, new contexts can be created with the
          The C module computes :meth:`power` in terms of the correctly-rounded
          :meth:`exp` and :meth:`ln` functions. The result is well-defined but
          only "almost always correctly-rounded".
-
-      .. admonition:: flowdas
-
-         C 버전은 ``x**y`` 를 ``exp(y * ln(x))`` 의 형태로 계산한다는 뜻입니다. 이 과정에서
-         중간 자리 올림이 발생할 수 있는데, 언제나 올바르게 자리 올림된다는 보장은 없다는 뜻입니다.
 
       With three arguments, compute ``(x**y) % modulo``.  For the three argument
       form, the following restrictions on the arguments hold:
@@ -1750,13 +1583,6 @@ condition.
       x ** (non-integer)
       x ** Infinity
 
-   .. admonition:: flowdas
-
-      정수가 아닌 값이나 무한대로 거듭제곱하는 경우는 ``x`` 가 음수일 때만 해당됩니다. 정수가
-      아닌 값으로 음수를 거듭제곱하면 복소수가 되고, 무한대로 ``-1`` 보다 작거나 같은 음수를
-      거듭제곱하면 부호가 결정되지 않기 때문입니다. ``-1`` 보다 큰 음수를 무한대로 거듭제곱하면
-      ``0`` 이지만, 이 경우도 :class:`InvalidOperation` 신호를 줍니다.
-
 
 .. class:: Overflow
 
@@ -1866,11 +1692,6 @@ properties of addition:
    >>> u * (v+w)
    Decimal('0.0060000')
 
-.. admonition:: flowdas
-
-   Seminumerical Algorithms 는 Knuth 의 The Art of Computer Programming 시리즈의
-   2권입니다. 번역본도 나와 있습니다.
-
 The :mod:`decimal` module makes it possible to restore the identities by
 expanding the precision sufficiently to avoid loss of significance:
 
@@ -1905,15 +1726,6 @@ can result from rounding beyond the limits of the largest representable number.
 The infinities are signed (affine) and can be used in arithmetic operations
 where they get treated as very large, indeterminate numbers.  For instance,
 adding a constant to infinity gives another infinite result.
-
-.. admonition:: flowdas
-
-   수 체계에서 무한대를 표현하는 두 가지 방법이 있습니다. 하나는 사영 무한(projective infinity)이라는
-   것으로, 무한대를 부호가 없는 (+가 아니라 아예 부호라는 것이 없는) 것으로 보고 아주 큰 수와 아주 작은 수
-   모두 하나의 무한대로 표현합니다. 이에 반해 아핀 무한(affine innfinity)이라는 것은 무한대를 부호가
-   있는 값으로 보고, 아주 큰 수와 아주 작은 수를 두 개의 무한대 (:const:`-Infinity`,
-   :const:`Infinity`) 로 따로 표현합니다. :mod:`decimal` 모듈이 따르고 있는 명세는 아핀 무한을
-   사용합니다.
 
 Some operations are indeterminate and return :const:`NaN`, or if the
 :exc:`InvalidOperation` signal is trapped, raise an exception.  For example,
@@ -2251,10 +2063,6 @@ value unchanged:
 
     >>> remove_exponent(Decimal('5E+3'))
     Decimal('5000')
-
-.. admonition:: flowdas
-
-   ``remove_exponent`` 가 언제나 지수 표기법을 사용하지 않는 것은 아닙니다.
 
 Q. Is there a way to convert a regular float to a :class:`Decimal`?
 

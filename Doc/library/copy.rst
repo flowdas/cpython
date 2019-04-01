@@ -8,10 +8,6 @@
 
 --------------
 
-.. admonition:: flowdas
-
-   이 페이지는 `KaHee, Yu <https://github.com/kahee>`_ 님의 번역입니다.
-
 Assignment statements in Python do not copy objects, they create bindings
 between a target and an object. For collections that are mutable or contain
 mutable items, a copy is sometimes needed so one can change one copy without
