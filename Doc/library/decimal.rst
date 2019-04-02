@@ -1124,6 +1124,7 @@ In addition to the three supplied contexts, new contexts can be created with the
    similar to those for the :class:`Decimal` class and are only briefly
    recounted here.
 
+
    .. method:: abs(x)
 
       Returns the absolute value of *x*.

@@ -58,17 +58,20 @@ parameter expect a WSGI-compliant dictionary to be supplied; please see
    is received via SSL.  So, this function returns "https" if such a value is
    found, and "http" otherwise.
 
+
 .. function:: request_uri(environ, include_query=True)
 
    Return the full request URI, optionally including the query string, using the
    algorithm found in the "URL Reconstruction" section of :pep:`3333`.  If
    *include_query* is false, the query string is not included in the resulting URI.
 
+
 .. function:: application_uri(environ)
 
    Similar to :func:`request_uri`, except that the ``PATH_INFO`` and
    ``QUERY_STRING`` variables are ignored.  The result is the base URI of the
    application object addressed by the request.
+
 
 .. function:: shift_path_info(environ)
 
@@ -143,6 +146,7 @@ also provides these miscellaneous utilities:
 
    Return true if 'header_name' is an HTTP/1.1 "Hop-by-Hop" header, as defined by
    :rfc:`2616`.
+
 
 .. class:: FileWrapper(filelike, blksize=8192)
 

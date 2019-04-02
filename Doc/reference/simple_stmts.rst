@@ -232,7 +232,6 @@ Assignment of an object to a single target is recursively defined as follows.
   from the length of the assigned sequence, thus changing the length of the
   target sequence, if the target sequence allows it.
 
-
 .. impl-detail::
 
    In the current implementation, the syntax for targets is taken to be the same
@@ -409,6 +408,7 @@ as part of the stack trace.
 
 Assignments to :const:`__debug__` are illegal.  The value for the built-in variable
 is determined when the interpreter starts.
+
 
 .. _pass:
 

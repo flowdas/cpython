@@ -119,6 +119,7 @@ This example uses the iterator form::
 Module functions and constants
 ------------------------------
 
+
 .. data:: version
 
    The version number of this module, as a string. This is not the version of
@@ -919,6 +920,7 @@ to give your class a method ``__conform__(self, protocol)`` which must return
 the converted value. The parameter *protocol* will be :class:`PrepareProtocol`.
 
 .. literalinclude:: ../includes/sqlite3/adapter_point_1.py
+
 
 Registering an adapter callable
 """""""""""""""""""""""""""""""

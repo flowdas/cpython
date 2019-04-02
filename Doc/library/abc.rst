@@ -335,6 +335,7 @@ The :mod:`abc` module also provides the following functions:
 
    .. versionadded:: 3.4
 
+
 .. rubric:: Footnotes
 
 .. [#] C++ programmers should note that Python's virtual base class

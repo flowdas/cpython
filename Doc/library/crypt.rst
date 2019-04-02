@@ -65,6 +65,7 @@ are available on all platforms):
    The traditional method with a 2 character salt and 13 characters of
    hash.  This is the weakest method.
 
+
 Module Attributes
 -----------------
 

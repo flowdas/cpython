@@ -179,6 +179,7 @@ latter case the module's dictionary is used).  By default, when in the
 :mod:`builtins`; when in any other module, ``__builtins__`` is an
 alias for the dictionary of the :mod:`builtins` module itself.
 
+
 .. _dynamic-features:
 
 Interaction with dynamic features

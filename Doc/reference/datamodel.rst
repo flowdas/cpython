@@ -79,7 +79,6 @@ are still reachable.
    Do not depend on immediate finalization of objects when they become
    unreachable (so you should always close files explicitly).
 
-
 Note that the use of the implementation's tracing or debugging facilities may
 keep objects alive that would normally be collectable. Also note that catching
 an exception with a ':keyword:`try`...\ :keyword:`except`' statement may keep
@@ -113,6 +112,7 @@ with the value one, depending on the implementation, but after ``c = []; d =
 []``, ``c`` and ``d`` are guaranteed to refer to two different, unique, newly
 created empty lists. (Note that ``c = d = []`` assigns the same object to both
 ``c`` and ``d``.)
+
 
 .. _types:
 
@@ -162,6 +162,7 @@ NotImplemented
    See
    :ref:`implementing-the-arithmetic-operations`
    for more details.
+
 
 Ellipsis
    .. index::
@@ -1503,6 +1504,7 @@ access (use of, assignment to, or deletion of ``x.name``) for class instances.
    :meth:`__getattribute__` method below for a way to actually get total control
    over attribute access.
 
+
 .. method:: object.__getattribute__(self, name)
 
    Called unconditionally to implement attribute accesses for instances of the
@@ -1611,6 +1613,7 @@ descriptor must be in either the owner's class dictionary or in the class
 dictionary for one of its parents).  In the examples below, "the attribute"
 refers to the attribute whose name is the key of the property in the owner
 class' :attr:`~object.__dict__`.
+
 
 .. method:: object.__get__(self, instance, owner)
 
@@ -2668,6 +2671,7 @@ An example of an asynchronous iterable object::
    Starting with Python 3.7, ``__aiter__`` must return an
    asynchronous iterator object.  Returning anything else
    will result in a :exc:`TypeError` error.
+
 
 .. _async-context-managers:
 

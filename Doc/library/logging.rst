@@ -66,6 +66,7 @@ per-module basis using the recommended construction
 ``logging.getLogger(__name__)``.  That's because in a module, ``__name__``
 is the module's name in the Python package namespace.
 
+
 .. class:: Logger
 
    .. attribute:: Logger.propagate
@@ -594,7 +595,6 @@ The useful mapping keys in a :class:`LogRecord` are given in the section on
       :func:`traceback.print_stack`, but with the last newline removed) as a
       string. This default implementation just returns the input value.
 
-
 .. _filter:
 
 Filter Objects
@@ -723,6 +723,7 @@ wire).
    as they don't overwrite each other's attributes or unintentionally
    overwrite the standard attributes listed above, there should be no
    surprises.
+
 
 .. _logrecord-attributes:
 

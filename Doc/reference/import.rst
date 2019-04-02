@@ -400,7 +400,6 @@ Note the following details:
    loaders.  These were previously performed by the
    :meth:`importlib.abc.Loader.load_module` method.
 
-
 Loaders
 -------
 
@@ -437,7 +436,6 @@ import machinery will create the new module itself.
    The :meth:`~importlib.abc.Loader.load_module` method was replaced by
    :meth:`~importlib.abc.Loader.exec_module` and the import
    machinery assumed all the boilerplate responsibilities of loading.
-
 
    For compatibility with existing loaders, the import machinery will use
    the ``load_module()`` method of loaders if it exists and the loader does

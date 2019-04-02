@@ -209,6 +209,7 @@ Non-blocking mode is supported through :meth:`~socket.setblocking`.  A
 generalization of this based on timeouts is supported through
 :meth:`~socket.settimeout`.
 
+
 Module contents
 ---------------
 

@@ -40,6 +40,7 @@ syntax (e.g., between statements in compound statements). A logical line is
 constructed from one or more *physical lines* by following the explicit or
 implicit *line joining* rules.
 
+
 .. _physical-lines:
 
 Physical lines
@@ -56,6 +57,7 @@ as an implicit terminator for the final physical line.
 When embedding Python, source code strings should be passed to Python APIs using
 the standard C conventions for newline characters (the ``\n`` character,
 representing ASCII LF, is the line terminator).
+
 
 .. _comments:
 
@@ -104,6 +106,7 @@ encoding is used for all lexical analysis, including string literals, comments
 and identifiers.
 
 .. XXX there should be a list of supported encodings.
+
 
 .. _explicit-joining:
 
@@ -351,7 +354,6 @@ exactly as written here:
 .. index::
    single: _, identifiers
    single: __, identifiers
-
 .. _id-classes:
 
 Reserved classes of identifiers
@@ -604,6 +606,7 @@ backslashes).  Specifically, *a raw literal cannot end in a single backslash*
 that a single backslash followed by a newline is interpreted as those two
 characters as part of the literal, *not* as a line continuation.
 
+
 .. _string-concatenation:
 
 String literal concatenation
@@ -750,6 +753,7 @@ include expressions.
 
 See also :pep:`498` for the proposal that added formatted string literals,
 and :meth:`str.format`, which uses a related format string mechanism.
+
 
 .. _numbers:
 

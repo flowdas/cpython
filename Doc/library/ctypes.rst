@@ -12,6 +12,7 @@
 data types, and allows calling functions in DLLs or shared libraries.  It can be
 used to wrap these libraries in pure Python.
 
+
 .. _ctypes-ctypes-tutorial:
 
 ctypes tutorial
