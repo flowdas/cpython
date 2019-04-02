@@ -214,7 +214,7 @@ processes:
           q = Queue()
           p = Process(target=f, args=(q,))
           p.start()
-          print(q.get())    # "[42, None, 'hello']" 를 인쇄합니다
+          print(q.get())    # prints "[42, None, 'hello']"
           p.join()
 
    Queues are thread and process safe.
@@ -234,7 +234,7 @@ processes:
           parent_conn, child_conn = Pipe()
           p = Process(target=f, args=(child_conn,))
           p.start()
-          print(parent_conn.recv())   # "[42, None, 'hello']" 를 인쇄합니다
+          print(parent_conn.recv())   # prints "[42, None, 'hello']"
           p.join()
 
    The two connection objects returned by :func:`Pipe` represent the two ends of
@@ -379,39 +379,39 @@ For example::
        return x*x
 
    if __name__ == '__main__':
-       # 4개의 작업자 프로세스를 시작합니다
+       # start 4 worker processes
        with Pool(processes=4) as pool:
 
-           # "[0, 1, 4,..., 81]" 를 인쇄합니다
+           # print "[0, 1, 4,..., 81]"
            print(pool.map(f, range(10)))
 
-           # 같은 숫자를 임의의 순서로 인쇄합니다
+           # print same numbers in arbitrary order
            for i in pool.imap_unordered(f, range(10)):
                print(i)
 
-           # "f(20)" 을 비동기적으로 평가합니다
-           res = pool.apply_async(f, (20,))      # *오직* 하나의 프로세스에서 실행합니다
-           print(res.get(timeout=1))             # "400" 을 인쇄합니다
+           # evaluate "f(20)" asynchronously
+           res = pool.apply_async(f, (20,))      # runs in *only* one process
+           print(res.get(timeout=1))             # prints "400"
 
-           # "os.getpid()" 를 비동기적으로 평가합니다
-           res = pool.apply_async(os.getpid, ()) # *오직* 하나의 프로세스에서 실행합니다
-           print(res.get(timeout=1))             # 그 프로세스의 PID 를 인쇄합니다
+           # evaluate "os.getpid()" asynchronously
+           res = pool.apply_async(os.getpid, ()) # runs in *only* one process
+           print(res.get(timeout=1))             # prints the PID of that process
 
-           # 여러개의 평가를 비동기적으로 수행하면 더 많은 프로세스를 쓸 *수* 있습니다
+           # launching multiple evaluations asynchronously *may* use more processes
            multiple_results = [pool.apply_async(os.getpid, ()) for i in range(4)]
            print([res.get(timeout=1) for res in multiple_results])
 
-           # 한 작업자를 10초간 잠자게 합니다
+           # make a single worker sleep for 10 secs
            res = pool.apply_async(time.sleep, (10,))
            try:
                print(res.get(timeout=1))
            except TimeoutError:
-               print("인내심이 부족해서 multiprocessing.TimeoutError 를 얻었습니다")
+               print("We lacked patience and got a multiprocessing.TimeoutError")
 
-           print("잠시 동안, 풀을 다른 작업에 사용할 수 있습니다")
+           print("For the moment, the pool remains available for more work")
 
-       # 'with'-블록을 빠져나가면 풀이 중단됩니다
-       print("이제 풀이 닫혔고 더는 사용할 수 없습니다")
+       # exiting the 'with'-block has stopped the pool
+       print("Now the pool is closed and no longer available")
 
 Note that the methods of a pool should only ever be used by the
 process which created it.
@@ -1808,7 +1808,7 @@ their parent process exits.  The manager classes are defined in the
     >>> Global = manager.Namespace()
     >>> Global.x = 10
     >>> Global.y = 'hello'
-    >>> Global._z = 12.3    # 이 것은 프락시의 어트리뷰트입니다
+    >>> Global._z = 12.3    # this is an attribute of the proxy
     >>> print(Global)
     Namespace(x=10, y='hello')
 
@@ -1836,8 +1836,8 @@ callables with the manager class.  For example::
    if __name__ == '__main__':
        with MyManager() as manager:
            maths = manager.Maths()
-           print(maths.add(4, 3))         # 7을 인쇄합니다
-           print(maths.mul(7, 8))         # 56을 인쇄합니다
+           print(maths.add(4, 3))         # prints 7
+           print(maths.mul(7, 8))         # prints 56
 
 
 Using a remote manager
@@ -1941,7 +1941,7 @@ lists, dicts, and other :ref:`multiprocessing-proxy_objects`:
 
    >>> a = manager.list()
    >>> b = manager.list()
-   >>> a.append(b)         # a 의 지시 대상은 이제 b 의 지시 대상을 포함합니다
+   >>> a.append(b)         # referent of a now contains referent of b
    >>> print(a, b)
    [<ListProxy object, typeid 'list' at ...>] []
    >>> b.append('hello')
@@ -1969,15 +1969,15 @@ contained within are modified.  However, storing a value in a container proxy
 the manager and so to effectively modify such an item, one could re-assign the
 modified value to the container proxy::
 
-   # 리스트 프락시를 만들고 가변 객체 (딕셔너리)를 넣습니다
+   # create a list proxy and append a mutable object (a dictionary)
    lproxy = manager.list()
    lproxy.append({})
-   # 이제 딕셔너리를 수정합니다
+   # now mutate the dictionary
    d = lproxy[0]
    d['a'] = 1
    d['b'] = 2
-   # 이 시점에는, d 에 가한 변경이 아직 동기화되지 않습니다, 하지만
-   # 딕셔너리를 갱신함으로써, 프락시에게 변경을 알릴 수 있습니다
+   # at this point, the changes to d are not yet synced, but by
+   # updating the dictionary, the proxy is notified of the change
    lproxy[0] = d
 
 This approach is perhaps less convenient than employing nested
@@ -2033,9 +2033,9 @@ demonstrates a level of control over the synchronization.
          >>> l = manager.list(range(10))
          >>> l._callmethod('__len__')
          10
-         >>> l._callmethod('__getitem__', (slice(2, 7),)) # l[2:7] 과 마찬가지
+         >>> l._callmethod('__getitem__', (slice(2, 7),)) # equivalent to l[2:7]
          [2, 3, 4, 5, 6]
-         >>> l._callmethod('__getitem__', (20,))          # l[20] 과 마찬가지
+         >>> l._callmethod('__getitem__', (20,))          # equivalent to l[20]
          Traceback (most recent call last):
          ...
          IndexError: list index out of range
@@ -2262,19 +2262,19 @@ The following example demonstrates the use of a pool::
        return x*x
 
    if __name__ == '__main__':
-       with Pool(processes=4) as pool:         # 4개의 작업자 프로세스를 시작합니다
-           result = pool.apply_async(f, (10,)) # 하나의 프로세스에서 비동기적으로 "f(10)" 를 평가합니다
-           print(result.get(timeout=1))        # 여러분의 컴퓨터가 *아주* 느리지 않다면 "100" 을 인쇄합니다
+       with Pool(processes=4) as pool:         # start 4 worker processes
+           result = pool.apply_async(f, (10,)) # evaluate "f(10)" asynchronously in a single process
+           print(result.get(timeout=1))        # prints "100" unless your computer is *very* slow
 
-           print(pool.map(f, range(10)))       # "[0, 1, 4,..., 81]" 를 인쇄합니다
+           print(pool.map(f, range(10)))       # prints "[0, 1, 4,..., 81]"
 
            it = pool.imap(f, range(10))
-           print(next(it))                     # "0" 을 인쇄합니다
-           print(next(it))                     # "1" 을 인쇄합니다
-           print(it.next(timeout=1))           # 여러분의 컴퓨터가 *아주* 느리지 않다면 "4" 를 인쇄합니다
+           print(next(it))                     # prints "0"
+           print(next(it))                     # prints "1"
+           print(it.next(timeout=1))           # prints "4" unless your computer is *very* slow
 
            result = pool.apply_async(time.sleep, (10,))
-           print(result.get(timeout=1))        # multiprocessing.TimeoutError 를 일으킵니다
+           print(result.get(timeout=1))        # raises multiprocessing.TimeoutError
 
 
 .. _multiprocessing-listeners-clients:
@@ -2436,7 +2436,7 @@ the client::
    from multiprocessing.connection import Listener
    from array import array
 
-   address = ('localhost', 6000)     # family 는 'AF_INET' 로 추정됩니다
+   address = ('localhost', 6000)     # family is deduced to be 'AF_INET'
 
    with Listener(address, authkey=b'secret password') as listener:
        with listener.accept() as conn:
@@ -2485,9 +2485,10 @@ wait for messages from multiple processes at once::
            readers.append(r)
            p = Process(target=foo, args=(w,))
            p.start()
-           # 이제 파이프의 쓰기 가능한 끝을 닫아서 p가 그 쓸 수 있는 핸들을 소유한 유일한
-           # 프로세스가 되도록합니다. 이렇게하면 p가 쓰기 가능한 끝의 핸들을 닫을 때, 읽기
-           # 가능한 끝의 wait() 가 즉시 준비가 되었다고 보고합니다.
+           # We close the writable end of the pipe now to be sure that
+           # p is the only process which owns a handle for it.  This
+           # ensures that when p closes its handle for the writable end,
+           # wait() will promptly report the readable end as being ready.
            w.close()
 
        while readers:
@@ -2696,7 +2697,7 @@ Joining processes that use queues
             queue = Queue()
             p = Process(target=f, args=(queue,))
             p.start()
-            p.join()                    # 교착 상태를 만듭니다
+            p.join()                    # this deadlocks
             obj = queue.get()
 
     A fix here would be to swap the last two lines (or simply remove the
@@ -2721,7 +2722,7 @@ Explicitly pass resources to child processes
         from multiprocessing import Process, Lock
 
         def f():
-            ... "lock" 을 사용해서 뭔가 합니다 ...
+            ... do something using "lock" ...
 
         if __name__ == '__main__':
             lock = Lock()
@@ -2733,7 +2734,7 @@ Explicitly pass resources to child processes
         from multiprocessing import Process, Lock
 
         def f(l):
-            ... "l" 을 사용해서 뭔가 합니다 ...
+            ... do something using "l" ...
 
         if __name__ == '__main__':
             lock = Lock()

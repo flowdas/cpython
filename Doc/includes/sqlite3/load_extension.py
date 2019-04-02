@@ -2,19 +2,19 @@ import sqlite3
 
 con = sqlite3.connect(":memory:")
 
-# 확장 로드를 활성화합니다
+# enable extension loading
 con.enable_load_extension(True)
 
-# 전체 텍스트 검색 확장을 로드합니다
+# Load the fulltext search extension
 con.execute("select load_extension('./fts3.so')")
 
-# 대신 API 호출을 사용하여 확장을 로드할 수도 있습니다:
+# alternatively you can load the extension using an API call:
 # con.load_extension("./fts3.so")
 
-# 확장 로드를 다시 비활성화합니다
+# disable extension loading again
 con.enable_load_extension(False)
 
-# SQLite 위키의 예제
+# example from SQLite wiki
 con.execute("create virtual table recipe using fts3(name, ingredients)")
 con.executescript("""
     insert into recipe (name, ingredients) values ('broccoli stew', 'broccoli peppers cheese tomatoes');

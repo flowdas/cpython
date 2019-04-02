@@ -25,16 +25,16 @@ module's name (as a string) is available as the value of the global variable
 ``__name__``.  For instance, use your favorite text editor to create a file
 called :file:`fibo.py` in the current directory with the following contents::
 
-   # 피보나치 수 모듈
+   # Fibonacci numbers module
 
-   def fib(n):    # n 보다 작은 피보나치 수열을 씁니다
+   def fib(n):    # write Fibonacci series up to n
        a, b = 0, 1
        while a < n:
            print(a, end=' ')
            a, b = b, a+b
        print()
 
-   def fib2(n):   # n 보다 작은 피보나치 수열을 돌려줍니다
+   def fib2(n):   # return Fibonacci series up to n
        result = []
        a, b = 0, 1
        while a < n:
@@ -398,9 +398,9 @@ your package (expressed in terms of a hierarchical filesystem):
 
 .. code-block:: text
 
-   sound/                          최상위 패키지
-         __init__.py               sound 패키지 초기화
-         formats/                  파일 형식 변환을 위한 서브 패키지
+   sound/                          Top-level package
+         __init__.py               Initialize the sound package
+         formats/                  Subpackage for file format conversions
                  __init__.py
                  wavread.py
                  wavwrite.py
@@ -409,13 +409,13 @@ your package (expressed in terms of a hierarchical filesystem):
                  auread.py
                  auwrite.py
                  ...
-         effects/                  음향 효과를 위한 서브 패키지
+         effects/                  Subpackage for sound effects
                  __init__.py
                  echo.py
                  surround.py
                  reverse.py
                  ...
-         filters/                  필터를 위한 서브 패키지
+         filters/                  Subpackage for filters
                  __init__.py
                  equalizer.py
                  vocoder.py

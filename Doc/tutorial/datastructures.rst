@@ -106,7 +106,7 @@ An example that uses most of the list methods::
     0
     >>> fruits.index('banana')
     3
-    >>> fruits.index('banana', 4)  # 위치 4에서부터 다음 banana 를 찾습니다
+    >>> fruits.index('banana', 4)  # Find next banana starting a position 4
     6
     >>> fruits.reverse()
     >>> fruits
@@ -174,13 +174,13 @@ have fast appends and pops from both ends.  For example::
 
    >>> from collections import deque
    >>> queue = deque(["Eric", "John", "Michael"])
-   >>> queue.append("Terry")           # Terry 도착
-   >>> queue.append("Graham")          # Graham 도착
-   >>> queue.popleft()                 # 처음 도착한 사람이 이제 떠납니다
+   >>> queue.append("Terry")           # Terry arrives
+   >>> queue.append("Graham")          # Graham arrives
+   >>> queue.popleft()                 # The first to arrive now leaves
    'Eric'
-   >>> queue.popleft()                 # 두번째 도착한 사람이 이제 떠납니다
+   >>> queue.popleft()                 # The second to arrive now leaves
    'John'
-   >>> queue                           # 도착한 순서대로 남아있는 큐
+   >>> queue                           # Remaining queue in order of arrival
    deque(['Michael', 'Terry', 'Graham'])
 
 
@@ -243,29 +243,29 @@ If the expression is a tuple (e.g. the ``(x, y)`` in the previous example),
 it must be parenthesized. ::
 
    >>> vec = [-4, -2, 0, 2, 4]
-   >>> # 값을 두배로 하여 새 리스트를 만듭니다
+   >>> # create a new list with the values doubled
    >>> [x*2 for x in vec]
    [-8, -4, 0, 4, 8]
-   >>> # 음수를 제외하도록 리스트를 필터링합니다
+   >>> # filter the list to exclude negative numbers
    >>> [x for x in vec if x >= 0]
    [0, 2, 4]
-   >>> # 모든 요소에 함수를 적용합니다
+   >>> # apply a function to all the elements
    >>> [abs(x) for x in vec]
    [4, 2, 0, 2, 4]
-   >>> # 각 요소에 메서드를 호출합니다
+   >>> # call a method on each element
    >>> freshfruit = ['  banana', '  loganberry ', 'passion fruit  ']
    >>> [weapon.strip() for weapon in freshfruit]
    ['banana', 'loganberry', 'passion fruit']
-   >>> # (숫자, 제곱) 과 같은 2-튜플의 리스트를 만듭니다
+   >>> # create a list of 2-tuples like (number, square)
    >>> [(x, x**2) for x in range(6)]
    [(0, 0), (1, 1), (2, 4), (3, 9), (4, 16), (5, 25)]
-   >>> # 튜플은 괄호로 묶어야합니다, 그렇지 않으면 에러가 발생합니다
+   >>> # the tuple must be parenthesized, otherwise an error is raised
    >>> [x, x**2 for x in range(6)]
      File "<stdin>", line 1, in <module>
        [x, x**2 for x in range(6)]
                   ^
    SyntaxError: invalid syntax
-   >>> # 두 개의 'for' 를 갖는 리스트 컴프리헨션으로 리스트를 평평하게 만듭니다
+   >>> # flatten a list using a listcomp with two 'for'
    >>> vec = [[1,2,3], [4,5,6], [7,8,9]]
    >>> [num for elem in vec for num in elem]
    [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -311,7 +311,7 @@ which, in turn, is the same as::
 
    >>> transposed = []
    >>> for i in range(4):
-   ...     # 다음 3줄은 중첩된 리스트 컴프리헨션을 구현합니다
+   ...     # the following 3 lines implement the nested listcomp
    ...     transposed_row = []
    ...     for row in matrix:
    ...         transposed_row.append(row[i])
@@ -376,16 +376,16 @@ A tuple consists of a number of values separated by commas, for instance::
    12345
    >>> t
    (12345, 54321, 'hello!')
-   >>> # 튜플은 중첩될 수 있습니다:
+   >>> # Tuples may be nested:
    ... u = t, (1, 2, 3, 4, 5)
    >>> u
    ((12345, 54321, 'hello!'), (1, 2, 3, 4, 5))
-   >>> # 튜플은 불변입니다:
+   >>> # Tuples are immutable:
    ... t[0] = 88888
    Traceback (most recent call last):
      File "<stdin>", line 1, in <module>
    TypeError: 'tuple' object does not support item assignment
-   >>> # 하지만 가변 객체를 포함할 수 있습니다:
+   >>> # but they can contain mutable objects:
    ... v = ([1, 2, 3], [3, 2, 1])
    >>> v
    ([1, 2, 3], [3, 2, 1])
@@ -413,7 +413,7 @@ following a value with a comma (it is not sufficient to enclose a single value
 in parentheses). Ugly, but effective.  For example::
 
    >>> empty = ()
-   >>> singleton = 'hello',    # <-- 마지막 쉼표에 주의하세요
+   >>> singleton = 'hello',    # <-- note trailing comma
    >>> len(empty)
    0
    >>> len(singleton)
@@ -451,26 +451,26 @@ empty dictionary, a data structure that we discuss in the next section.
 Here is a brief demonstration::
 
    >>> basket = {'apple', 'orange', 'apple', 'pear', 'orange', 'banana'}
-   >>> print(basket)                      # 중복이 제거되었음을 보여줍니다
+   >>> print(basket)                      # show that duplicates have been removed
    {'orange', 'banana', 'pear', 'apple'}
-   >>> 'orange' in basket                 # 빠른 멤버십 검사
+   >>> 'orange' in basket                 # fast membership testing
    True
    >>> 'crabgrass' in basket
    False
 
-   >>> # 두 단어의 고유한 글자들로 집합 연산 시연
+   >>> # Demonstrate set operations on unique letters from two words
    ...
    >>> a = set('abracadabra')
    >>> b = set('alacazam')
-   >>> a                                  # a 의 고유한 글자들
+   >>> a                                  # unique letters in a
    {'a', 'r', 'b', 'c', 'd'}
-   >>> a - b                              # a 에 있으나 b 에 없는 글자들
+   >>> a - b                              # letters in a but not in b
    {'r', 'd', 'b'}
-   >>> a | b                              # a 나 b, 혹은 양쪽 모두에 있는 글자들
+   >>> a | b                              # letters in a or b or both
    {'a', 'c', 'r', 'd', 'b', 'm', 'z', 'l'}
-   >>> a & b                              # a 와 b 모두에 있는 글자들
+   >>> a & b                              # letters in both a and b
    {'a', 'c'}
-   >>> a ^ b                              # a 나 b 에 있지만 양쪽 모두에 있지는 않은 글자들
+   >>> a ^ b                              # letters in a or b but not both
    {'r', 'd', 'b', 'm', 'z', 'l'}
 
 Similarly to :ref:`list comprehensions <tut-listcomps>`, set comprehensions

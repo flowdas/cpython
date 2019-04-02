@@ -263,7 +263,7 @@ diffs. For comparing directories and files, see also, the :mod:`filecmp` module.
 
       >>> diff = ndiff('one\ntwo\nthree\n'.splitlines(keepends=True),
       ...              'ore\ntree\nemu\n'.splitlines(keepends=True))
-      >>> diff = list(diff) # 생성된 델타를 리스트로 구체화합니다
+      >>> diff = list(diff) # materialize the generated delta into a list
       >>> print(''.join(restore(diff, 1)), end="")
       one
       two

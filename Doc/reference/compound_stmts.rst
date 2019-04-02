@@ -180,9 +180,9 @@ those made in the suite of the for-loop::
 
    for i in range(10):
        print(i)
-       i = 5             # 이렇게 해도 범위내의 다음 인덱스로
-                         # 덮어쓰기 때문에 for-루프에
-                         # 영향을 주지 않습니다
+       i = 5             # this will not affect the for-loop
+                         # because i will be overwritten with the next
+                         # index in the range
 
 
 .. index::

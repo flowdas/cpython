@@ -1,4 +1,4 @@
-# 실험을 위한 최소 SQLite 셸
+# A minimal SQLite shell for experiments
 
 import sqlite3
 

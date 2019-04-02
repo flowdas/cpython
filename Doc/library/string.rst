@@ -212,9 +212,9 @@ The grammar for a replacement field is as follows:
       arg_name: [`identifier` | `digit`+]
       attribute_name: `identifier`
       element_index: `digit`+ | `index_string`
-      index_string: <"]" 를 제외한 모든 소스 문자> +
+      index_string: <any source character except "]"> +
       conversion: "r" | "s" | "a"
-      format_spec: <다음 섹션에서 설명됩니다>
+      format_spec: <described in the next section>
 
 In less formal terms, the replacement field can start with a *field_name* that specifies
 the object whose value is to be formatted and inserted
@@ -246,12 +246,12 @@ does an index lookup using :func:`__getitem__`.
 
 Some simple format string examples::
 
-   "First, thou shalt count to {0}"  # 첫번째 위치 인자를 참조합니다
-   "Bring me a {}"                   # 묵시적으로 첫번째 위치 인자를 참조합니다
-   "From {} to {}"                   # "From {0} to {1}" 과 같습니다
-   "My quest is {name}"              # 키워드 인자 'name' 을 참조합니다
-   "Weight in tons {0.weight}"       # 첫번째 위치 인자의 'weight' 어트리뷰트
-   "Units destroyed: {players[0]}"   # 키워드 인자 'players' 의 첫번째 요소.
+   "First, thou shalt count to {0}"  # References first positional argument
+   "Bring me a {}"                   # Implicitly references the first positional argument
+   "From {} to {}"                   # Same as "From {0} to {1}"
+   "My quest is {name}"              # References keyword argument 'name'
+   "Weight in tons {0.weight}"       # 'weight' attribute of first positional arg
+   "Units destroyed: {players[0]}"   # First element of keyword argument 'players'.
 
 The *conversion* field causes a type coercion before formatting.  Normally, the
 job of formatting a value is done by the :meth:`__format__` method of the value
@@ -266,9 +266,9 @@ on the value, ``'!r'`` which calls :func:`repr` and ``'!a'`` which calls
 
 Some examples::
 
-   "Harold's a clever {0!s}"        # 먼저 인자에 str() 을 호출합니다
-   "Bring out the holy {name!r}"    # 먼저 인자에 repr() 을 호출합니다
-   "More {!a}"                      # 먼저 인자에 ascii() 를 호출합니다
+   "Harold's a clever {0!s}"        # Calls str() on the argument first
+   "Bring out the holy {name!r}"    # Calls repr() on the argument first
+   "More {!a}"                      # Calls ascii() on the argument first
 
 The *format_spec* field contains a specification of how the value should be
 presented, including such details as field width, alignment, padding, decimal
@@ -311,7 +311,7 @@ The general form of a *standard format specifier* is:
 
 .. productionlist:: sf
    format_spec: [[`fill`]`align`][`sign`][#][0][`width`][`grouping_option`][.`precision`][`type`]
-   fill: <모든 문자>
+   fill: <any character>
    align: "<" | ">" | "=" | "^"
    sign: "+" | "-" | " "
    width: `digit`+
@@ -537,6 +537,7 @@ The available presentation types for floating point and decimal values are:
    |         | modifiers.                                               |
    +---------+----------------------------------------------------------+
 
+
 .. _formatexamples:
 
 Format examples
@@ -556,13 +557,13 @@ Accessing arguments by position::
 
    >>> '{0}, {1}, {2}'.format('a', 'b', 'c')
    'a, b, c'
-   >>> '{}, {}, {}'.format('a', 'b', 'c')  # 3.1+ 에서만
+   >>> '{}, {}, {}'.format('a', 'b', 'c')  # 3.1+ only
    'a, b, c'
    >>> '{2}, {1}, {0}'.format('a', 'b', 'c')
    'c, b, a'
-   >>> '{2}, {1}, {0}'.format(*'abc')      # 인자 시퀀스를 언패킹
+   >>> '{2}, {1}, {0}'.format(*'abc')      # unpacking argument sequence
    'c, b, a'
-   >>> '{0}{1}{0}'.format('abra', 'cad')   # 인자의 인덱스는 반복할 수 있습니다
+   >>> '{0}{1}{0}'.format('abra', 'cad')   # arguments' indices can be repeated
    'abracadabra'
 
 Accessing arguments by name::
@@ -596,8 +597,8 @@ Accessing arguments' items::
 
 Replacing ``%s`` and ``%r``::
 
-   >>> "repr() 은 따옴표를 표시하지만: {!r}; str() 은 그렇지 않습니다: {!s}".format('test1', 'test2')
-   "repr() 은 따옴표를 표시하지만: 'test1'; str() 은 그렇지 않습니다: test2"
+   >>> "repr() shows quotes: {!r}; str() doesn't: {!s}".format('test1', 'test2')
+   "repr() shows quotes: 'test1'; str() doesn't: test2"
 
 Aligning the text and specifying a width::
 
@@ -607,24 +608,24 @@ Aligning the text and specifying a width::
    '                 right aligned'
    >>> '{:^30}'.format('centered')
    '           centered           '
-   >>> '{:*^30}'.format('centered')  # 채움 문자로 '*' 를 사용합니다
+   >>> '{:*^30}'.format('centered')  # use '*' as a fill char
    '***********centered***********'
 
 Replacing ``%+f``, ``%-f``, and ``% f`` and specifying a sign::
 
-   >>> '{:+f}; {:+f}'.format(3.14, -3.14)  # 항상 표시합니다
+   >>> '{:+f}; {:+f}'.format(3.14, -3.14)  # show it always
    '+3.140000; -3.140000'
-   >>> '{: f}; {: f}'.format(3.14, -3.14)  # 양수는 스페이스를 표시합니다
+   >>> '{: f}; {: f}'.format(3.14, -3.14)  # show a space for positive numbers
    ' 3.140000; -3.140000'
-   >>> '{:-f}; {:-f}'.format(3.14, -3.14)  # 음수만 표시합니다 -- '{:f}; {:f}' 과 같습니다
+   >>> '{:-f}; {:-f}'.format(3.14, -3.14)  # show only the minus -- same as '{:f}; {:f}'
    '3.140000; -3.140000'
 
 Replacing ``%x`` and ``%o`` and converting the value to different bases::
 
-   >>> # format 은 이진수도 지원합니다
+   >>> # format also supports binary numbers
    >>> "int: {0:d};  hex: {0:x};  oct: {0:o};  bin: {0:b}".format(42)
    'int: 42;  hex: 2a;  oct: 52;  bin: 101010'
-   >>> # 접두어 0x, 0o, 0b 표시:
+   >>> # with 0x, 0o, or 0b as prefix:
    >>> "int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}".format(42)
    'int: 42;  hex: 0x2a;  oct: 0o52;  bin: 0b101010'
 

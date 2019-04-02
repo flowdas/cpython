@@ -906,7 +906,7 @@ functions.
    not undo customizations already applied by other code. For example::
 
       class MyLogger(logging.getLoggerClass()):
-          # ... 여기에서 동작을 재정의 합니다
+          # ... override behaviour here
 
 
 .. function:: getLogRecordFactory()

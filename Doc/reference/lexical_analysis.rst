@@ -123,7 +123,7 @@ character.  For example::
 
    if 1900 < year < 2100 and 1 <= month <= 12 \
       and 1 <= day <= 31 and 0 <= hour < 24 \
-      and 0 <= minute < 60 and 0 <= second < 60:   # 유효한 날짜처럼 보입니다
+      and 0 <= minute < 60 and 0 <= second < 60:   # Looks like a valid date
            return 1
 
 A line ending in a backslash cannot carry a comment.  A backslash does not
@@ -141,10 +141,10 @@ Implicit line joining
 Expressions in parentheses, square brackets or curly braces can be split over
 more than one physical line without using backslashes. For example::
 
-   month_names = ['Januari', 'Februari', 'Maart',      # 이것들은
-                  'April',   'Mei',      'Juni',       # 일년을 이루는
-                  'Juli',    'Augustus', 'September',  # 달들의
-                  'Oktober', 'November', 'December']   # 네덜란드 이름입니다
+   month_names = ['Januari', 'Februari', 'Maart',      # These are the
+                  'April',   'Mei',      'Juni',       # Dutch names
+                  'Juli',    'Augustus', 'September',  # for the months
+                  'Oktober', 'November', 'December']   # of the year
 
 Implicitly continued lines can carry comments.  The indentation of the
 continuation lines is not important.  Blank continuation lines are allowed.
@@ -221,7 +221,7 @@ Here is an example of a correctly (though confusingly) indented piece of Python
 code::
 
    def perm(l):
-           # l 의 모든 순열의 리스트를 계산합니다
+           # Compute the list of all permutations of l
        if len(l) <= 1:
                      return [l]
        r = []
@@ -234,13 +234,13 @@ code::
 
 The following example shows various indentation errors::
 
-    def perm(l):                       # 에러: 첫 줄을 들여쓰기 했습니다
-   for i in range(len(l)):             # 에러: 들여쓰지 않았습니다
+    def perm(l):                       # error: first line indented
+   for i in range(len(l)):             # error: not indented
        s = l[:i] + l[i+1:]
-           p = perm(l[:i] + l[i+1:])   # 에러: 예기치 않은 들여쓰기
+           p = perm(l[:i] + l[i+1:])   # error: unexpected indent
            for x in p:
                    r.append(l[i:i+1] + x)
-               return r                # 에러: 일관성 없는 내어쓰기
+               return r                # error: inconsistent dedent
 
 (Actually, the first three errors are detected by the parser; only the last
 error is found by the lexical analyzer --- the indentation of ``return r`` does
@@ -619,8 +619,8 @@ as their concatenation.  Thus, ``"hello" 'world'`` is equivalent to
 needed, to split long strings conveniently across long lines, or even to add
 comments to parts of strings, for example::
 
-   re.compile("[A-Za-z_]"       # 영문자 또는 밑줄
-              "[A-Za-z0-9_]*"   # 영문자, 숫자 또는 밑줄
+   re.compile("[A-Za-z_]"       # letter or underscore
+              "[A-Za-z0-9_]*"   # letter, digit or underscore
              )
 
 Note that this feature is defined at the syntactical level, but implemented at
@@ -707,31 +707,31 @@ Some examples of formatted string literals::
    >>> name = "Fred"
    >>> f"He said his name is {name!r}."
    "He said his name is 'Fred'."
-   >>> f"He said his name is {repr(name)}."  # repr() 은 !r 과 같습니다
+   >>> f"He said his name is {repr(name)}."  # repr() is equivalent to !r
    "He said his name is 'Fred'."
    >>> width = 10
    >>> precision = 4
    >>> value = decimal.Decimal("12.34567")
-   >>> f"result: {value:{width}.{precision}}"  # 중첩된 필드
+   >>> f"result: {value:{width}.{precision}}"  # nested fields
    'result:      12.35'
    >>> today = datetime(year=2017, month=1, day=27)
-   >>> f"{today:%B %d, %Y}"  # 날짜 포맷 지정자 사용
+   >>> f"{today:%B %d, %Y}"  # using date format specifier
    'January 27, 2017'
    >>> number = 1024
-   >>> f"{number:#0x}"  # 정수 포맷 지정자 사용
+   >>> f"{number:#0x}"  # using integer format specifier
    '0x400'
 
 A consequence of sharing the same syntax as regular string literals is
 that characters in the replacement fields must not conflict with the
 quoting used in the outer formatted string literal::
 
-   f"abc {a["x"]} def"    # 에러: 바깥 문자열 리터럴이 너무 일찍 종료되었습니다
-   f"abc {a['x']} def"    # 해결 방법: 다른 따옴표를 사용하세요
+   f"abc {a["x"]} def"    # error: outer string literal ended prematurely
+   f"abc {a['x']} def"    # workaround: use different quoting
 
 Backslashes are not allowed in format expressions and will raise
 an error::
 
-   f"newline: {ord('\n')}"  # SyntaxError 를 일으킵니다
+   f"newline: {ord('\n')}"  # raises SyntaxError
 
 To include a value in which a backslash escape is required, create
 a temporary variable.

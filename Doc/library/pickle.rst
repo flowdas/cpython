@@ -726,7 +726,7 @@ reading resumes from the last location. The :meth:`__setstate__` and
 :meth:`__getstate__` methods are used to implement this behavior. ::
 
    class TextReader:
-       """텍스트 파일의 줄을 인쇄하고 번호를 매깁니다."""
+       """Print and number lines in a text file."""
 
        def __init__(self, filename):
            self.filename = filename
@@ -743,23 +743,23 @@ reading resumes from the last location. The :meth:`__setstate__` and
            return "%i: %s" % (self.lineno, line)
 
        def __getstate__(self):
-           # 우리의 모든 인스턴스 어트리뷰트를 포함하는 self.__dict__ 에서 객체의
-           # 상태를 복사합니다. 원래 상태를 수정하지 않으려면 항상 dict.copy()
-           # 메서드를 사용하십시오.
+           # Copy the object's state from self.__dict__ which contains
+           # all our instance attributes. Always use the dict.copy()
+           # method to avoid modifying the original state.
            state = self.__dict__.copy()
-           # 피클 가능하지 않은 항목을 제거합니다.
+           # Remove the unpicklable entries.
            del state['file']
            return state
 
        def __setstate__(self, state):
-           # 인스턴스 어트리뷰트(즉, filename 과 lineno)를 복원합니다.
+           # Restore instance attributes (i.e., filename and lineno).
            self.__dict__.update(state)
-           # 이전에 열린 파일의 상태를 복원합니다. 그렇게 하려면, 다시 열어서 행 수를 복원할
-           # 때까지 읽어야 합니다.
+           # Restore the previously opened file's state. To do so, we need to
+           # reopen it and read from it until the line count is restored.
            file = open(self.filename)
            for _ in range(self.lineno):
                file.readline()
-           # 마지막으로, 파일을 저장합니다.
+           # Finally, save the file.
            self.file = file
 
 
@@ -821,15 +821,15 @@ Here is an example of an unpickler allowing only few safe classes from the
    class RestrictedUnpickler(pickle.Unpickler):
 
        def find_class(self, module, name):
-           # builtins의 안전한 클래스만 허용합니다.
+           # Only allow safe classes from builtins.
            if module == "builtins" and name in safe_builtins:
                return getattr(builtins, name)
-           # 다른 모든 것을 금지합니다.
+           # Forbid everything else.
            raise pickle.UnpicklingError("global '%s.%s' is forbidden" %
                                         (module, name))
 
    def restricted_loads(s):
-       """pickle.loads()와 유사한 도움 함수."""
+       """Helper function analogous to pickle.loads()."""
        return RestrictedUnpickler(io.BytesIO(s)).load()
 
 A sample usage of our unpickler working has intended::
@@ -874,7 +874,7 @@ For the simplest code, use the :func:`dump` and :func:`load` functions. ::
 
    import pickle
 
-   # pickle이 지원하는 임의의 객체 모음.
+   # An arbitrary collection of objects supported by pickle.
    data = {
        'a': [1, 2.0, 3, 4+6j],
        'b': ("character string", b"byte string"),
@@ -882,7 +882,7 @@ For the simplest code, use the :func:`dump` and :func:`load` functions. ::
    }
 
    with open('data.pickle', 'wb') as f:
-       # 사용 가능한 가장 높은 프로토콜을 사용하여 'data' 딕셔너리를 피클 합니다.
+       # Pickle the 'data' dictionary using the highest protocol available.
        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 
 
@@ -891,7 +891,8 @@ The following example reads the resulting pickled data. ::
    import pickle
 
    with open('data.pickle', 'rb') as f:
-       # 사용된 프로토콜 버전이 자동으로 감지되므로, 지정할 필요가 없습니다.
+       # The protocol version used is detected automatically, so we do not
+       # have to specify it.
        data = pickle.load(f)
 
 

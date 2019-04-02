@@ -207,7 +207,7 @@ Scheduling callbacks
    Most :mod:`asyncio` scheduling functions don't allow passing
    keyword arguments.  To do that, use :func:`functools.partial`::
 
-      # "print("Hello", flush=True)" 를 스케줄합니다
+      # will schedule "print("Hello", flush=True)"
       loop.call_soon(
           functools.partial(print, "Hello", flush=True))
 
@@ -1004,33 +1004,34 @@ Executing code in thread or process pools
       import concurrent.futures
 
       def blocking_io():
-          # 파일 연산(가령 로깅)은 이벤트 루프를 블록할 수 있습니다:
-          # 스레드 풀에서 실행하십시오.
+          # File operations (such as logging) can block the
+          # event loop: run them in a thread pool.
           with open('/dev/urandom', 'rb') as f:
               return f.read(100)
 
       def cpu_bound():
-          # CPU 병목 작업은 이벤트 루프를 블록합니다:
-          # 일반적으로 프로세스 풀에서 실행하는 것이 좋습니다.
+          # CPU-bound operations will block the event loop:
+          # in general it is preferable to run them in a
+          # process pool.
           return sum(i * i for i in range(10 ** 7))
 
       async def main():
           loop = asyncio.get_running_loop()
 
-          ## 선택지:
+          ## Options:
 
-          # 1. 기본 루프의 실행기에서 실행:
+          # 1. Run in the default loop's executor:
           result = await loop.run_in_executor(
               None, blocking_io)
           print('default thread pool', result)
 
-          # 2. 사용자 정의 스레드 풀에서 실행:
+          # 2. Run in a custom thread pool:
           with concurrent.futures.ThreadPoolExecutor() as pool:
               result = await loop.run_in_executor(
                   pool, blocking_io)
               print('custom thread pool', result)
 
-          # 3. 사용자 정의 프로세스 풀에서 실행:
+          # 3. Run in a custom process pool:
           with concurrent.futures.ProcessPoolExecutor() as pool:
               result = await loop.run_in_executor(
                   pool, cpu_bound)
@@ -1308,9 +1309,9 @@ Do not instantiate the class directly.
       srv = await loop.create_server(...)
 
       async with srv:
-          # 코드
+          # some code
 
-      # 이 지점에서, srv 는 닫혔고 더는 새 연결을 받아들이지 않습니다.
+      # At this point, srv is closed and no longer accepts new connections.
 
 
    .. versionchanged:: 3.7
@@ -1362,8 +1363,8 @@ Do not instantiate the class directly.
       Example::
 
           async def client_connected(reader, writer):
-              # reader/writer 스트림으로 클라이언트와
-              # 통신합니다. 예를 들어:
+              # Communicate with the client with
+              # reader/writer streams.  For example:
               await reader.readline()
 
           async def main(host, port):
@@ -1485,10 +1486,10 @@ event loop::
 
     loop = asyncio.get_event_loop()
 
-    # hello_world() 호출을 스케쥴합니다
+    # Schedule a call to hello_world()
     loop.call_soon(hello_world, loop)
 
-    # 블로킹 호출이 loop.stop() 에 의해 중단됩니다
+    # Blocking call interrupted by loop.stop()
     try:
         loop.run_forever()
     finally:
@@ -1521,11 +1522,11 @@ after 5 seconds, and then stops the event loop::
 
     loop = asyncio.get_event_loop()
 
-    # 첫번째 display_date() 호출을 스케쥴합니다
+    # Schedule the first call to display_date()
     end_time = loop.time() + 5.0
     loop.call_soon(display_date, end_time, loop)
 
-    # 블로킹 호출이 loop.stop() 에 의해 중단됩니다
+    # Blocking call interrupted by loop.stop()
     try:
         loop.run_forever()
     finally:
@@ -1548,7 +1549,7 @@ Wait until a file descriptor received some data using the
     import asyncio
     from socket import socketpair
 
-    # 연결된 파일 기술자 쌍을 만듭니다
+    # Create a pair of connected file descriptors
     rsock, wsock = socketpair()
 
     loop = asyncio.get_event_loop()
@@ -1557,23 +1558,23 @@ Wait until a file descriptor received some data using the
         data = rsock.recv(100)
         print("Received:", data.decode())
 
-        # 할 일을 끝냈습니다: 파일 기술자를 등록 취소합니다
+        # We are done: unregister the file descriptor
         loop.remove_reader(rsock)
 
-        # 이벤트 루프를 중지합니다
+        # Stop the event loop
         loop.stop()
 
-    # 읽기 이벤트를 위해 파일 기술자를 등록합니다
+    # Register the file descriptor for read event
     loop.add_reader(rsock, reader)
 
-    # 네트웍으로 부터의 데이터 수신을 흉내냅니다
+    # Simulate the reception of data from the network
     loop.call_soon(wsock.send, 'abc'.encode())
 
     try:
-        # 이벤트 루프를 실행합니다
+        # Run the event loop
         loop.run_forever()
     finally:
-        # 할 일을 끝냈습니다, 소켓과 이벤트 루프를 닫습니다
+        # We are done. Close sockets and the event loop.
         rsock.close()
         wsock.close()
         loop.close()

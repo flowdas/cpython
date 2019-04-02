@@ -105,24 +105,24 @@ To map anonymous memory, -1 should be passed as the fileno along with the length
 
       import mmap
 
-      # 간단한 예제 파일을 작성합니다
+      # write a simple example file
       with open("hello.txt", "wb") as f:
           f.write(b"Hello Python!\n")
 
       with open("hello.txt", "r+b") as f:
-          # 파일을 메모리 맵 합니다, 크기 0은 전체 파일을 뜻합니다.
+          # memory-map the file, size 0 means whole file
           mm = mmap.mmap(f.fileno(), 0)
-          # 표준 파일 메서드로 내용을 읽습니다
-          print(mm.readline())  # b"Hello Python!\n" 를 인쇄합니다
-          # 슬라이스 표기법으로 내용을 읽습니다
-          print(mm[:5])  # b"Hello" 를 인쇄합니다
-          # 슬라이스 표기법을 사용하여 내용을 갱신합니다;
-          # 새 내용의 크기가 같아야 합니다
+          # read content via standard file methods
+          print(mm.readline())  # prints b"Hello Python!\n"
+          # read content via slice notation
+          print(mm[:5])  # prints b"Hello"
+          # update content using slice notation;
+          # note that new content must have same size
           mm[6:] = b" world!\n"
-          # ... 표준 파일 메서드로 다시 읽습니다
+          # ... and read again using standard file methods
           mm.seek(0)
-          print(mm.readline())  # b"Hello  world!\n" 를 인쇄합니다
-          # 맵을 닫습니다
+          print(mm.readline())  # prints b"Hello  world!\n"
+          # close the map
           mm.close()
 
 
@@ -149,7 +149,7 @@ To map anonymous memory, -1 should be passed as the fileno along with the length
 
       pid = os.fork()
 
-      if pid == 0:  # 자식 프로세스에서
+      if pid == 0:  # In a child process
           mm.seek(0)
           print(mm.readline())
 

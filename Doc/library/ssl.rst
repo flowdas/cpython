@@ -90,7 +90,7 @@ Client socket example with default context and IPv4/IPv6 dual stack::
 Client socket example with custom context and IPv4::
 
     hostname = 'www.python.org'
-    # PROTOCOL_TLS_CLIENT는 유효한 인증서 체인과 호스트 명을 요구합니다
+    # PROTOCOL_TLS_CLIENT requires valid cert chain and hostname
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     context.load_verify_locations('path/to/cabundle.pem')
 

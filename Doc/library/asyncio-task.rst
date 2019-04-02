@@ -88,7 +88,8 @@ To actually run a coroutine asyncio provides three main mechanisms:
 
           print(f"started at {time.strftime('%X')}")
 
-          # 두 태스크가 모두 완료할 때까지 기다립니다 (2초 정도 걸려야 합니다.)
+          # Wait until both tasks are completed (should take
+          # around 2 seconds.)
           await task1
           await task2
 
@@ -127,12 +128,13 @@ other coroutines::
         return 42
 
     async def main():
-        # 단지 "nested()"를 호출하면 아무 일도 일어나지 않습니다.
-        # 코루틴 객체가 생성되었지만 기다리지 않았습니다. 따라서 *전혀 실행되지 않습니다*.
+        # Nothing happens if we just call "nested()".
+        # A coroutine object is created but not awaited,
+        # so it *won't run at all*.
         nested()
 
-        # 이제 다른 식으로 해봅시다, 기다립니다:
-        print(await nested())  # "42"를 인쇄합니다.
+        # Let's do it differently now and await it:
+        print(await nested())  # will print "42".
 
     asyncio.run(main())
 
@@ -164,11 +166,12 @@ scheduled to run soon::
         return 42
 
     async def main():
-        # nested()가 곧 "main()"과 동시에 실행되도록 예약합니다.
+        # Schedule nested() to run soon concurrently
+        # with "main()".
         task = asyncio.create_task(nested())
 
-        # "task"는 이제 "nested()"를 취소하는 데 사용하거나,
-        # 단순히 완료할 때까지 기다릴 수 있습니다:
+        # "task" can now be used to cancel "nested()", or
+        # can simply be awaited to wait until it is complete:
         await task
 
     asyncio.run(main())
@@ -194,7 +197,7 @@ APIs, can be awaited::
     async def main():
         await function_that_returns_a_future_object()
 
-        # 이것도 유효합니다:
+        # this is also valid:
         await asyncio.gather(
             function_that_returns_a_future_object(),
             some_python_coroutine()
@@ -246,11 +249,11 @@ Creating Tasks
        async def coro():
            ...
 
-       # 파이썬 3.7+ 에서
+       # In Python 3.7+
        task = asyncio.create_task(coro())
        ...
 
-       # 이것은 모든 파이썬 버전에서 작동하지만 읽기 쉽지 않습니다
+       # This works in all Python versions but is less readable
        task = asyncio.ensure_future(coro())
        ...
 
@@ -340,7 +343,7 @@ Running Tasks Concurrently
           print(f"Task {name}: factorial({number}) = {f}")
 
       async def main():
-          # 3개의 호출을 *동시에* 예약합니다:
+          # Schedule three calls *concurrently*:
           await asyncio.gather(
               factorial("A", 2),
               factorial("B", 3),
@@ -349,7 +352,7 @@ Running Tasks Concurrently
 
       asyncio.run(main())
 
-      # 기대되는 출력:
+      # Expected output:
       #
       #     Task A: Compute factorial(2)...
       #     Task B: Compute factorial(2)...
@@ -436,12 +439,12 @@ Timeouts
    Example::
 
        async def eternity():
-           # 1시간 동안 잠잡니다
+           # Sleep for one hour
            await asyncio.sleep(3600)
            print('yay!')
 
        async def main():
-           # 최대 1초간 대기합니다
+           # Wait for at most 1 second
            try:
                await asyncio.wait_for(eternity(), timeout=1.0)
            except asyncio.TimeoutError:
@@ -449,7 +452,7 @@ Timeouts
 
        asyncio.run(main())
 
-       # 기대되는 출력:
+       # Expected output:
        #
        #     timeout!
 
@@ -528,7 +531,7 @@ Waiting Primitives
           done, pending = await asyncio.wait({coro})
 
           if coro in done:
-              # 이 분기는 절대 실행되지 않습니다!
+              # This branch will never be run!
 
       Here is how the above snippet can be fixed::
 
@@ -539,7 +542,7 @@ Waiting Primitives
           done, pending = await asyncio.wait({task})
 
           if task in done:
-              # 이제 모든 것이 예상대로 작동합니다.
+              # Everything will work as expected now.
 
       Passing coroutine objects to ``wait()`` directly is
       deprecated.
@@ -575,13 +578,13 @@ Scheduling From Other Threads
    This function is meant to be called from a different OS thread
    than the one where the event loop is running.  Example::
 
-     # 코루틴을 만듭니다
+     # Create a coroutine
      coro = asyncio.sleep(1, result=3)
 
-     # 주어진 루프로 코루틴을 제출합니다
+     # Submit the coroutine to a given loop
      future = asyncio.run_coroutine_threadsafe(coro, loop)
 
-     # 선택적 시간제한 인자로 결과를 기다립니다
+     # Wait for the result with an optional timeout argument
      assert future.result(timeout) == 3
 
    If an exception is raised in the coroutine, the returned Future
@@ -702,7 +705,7 @@ Task Object
               print('cancel_me(): before sleep')
 
               try:
-                  # 1시간 동안 기다립니다
+                  # Wait for 1 hour
                   await asyncio.sleep(3600)
               except asyncio.CancelledError:
                   print('cancel_me(): cancel sleep')
@@ -711,10 +714,10 @@ Task Object
                   print('cancel_me(): after sleep')
 
           async def main():
-              # "cancel_me" Task를 만듭니다
+              # Create a "cancel_me" Task
               task = asyncio.create_task(cancel_me())
 
-              # 1초 동안 기다립니다
+              # Wait for 1 second
               await asyncio.sleep(1)
 
               task.cancel()
@@ -725,7 +728,7 @@ Task Object
 
           asyncio.run(main())
 
-          # 기대되는 출력:
+          # Expected output:
           #
           #     cancel_me(): before sleep
           #     cancel_me(): cancel sleep

@@ -475,8 +475,8 @@ class`. In addition, it provides a few more methods:
     Equivalent to::
 
         def bit_length(self):
-            s = bin(self)       # 이진 표현:  bin(-37) --> '-0b100101'
-            s = s.lstrip('-0b') # 선행하는 0과 음수 기호를 제거합니다
+            s = bin(self)       # binary representation:  bin(-37) --> '-0b100101'
+            s = s.lstrip('-0b') # remove leading zeros and minus sign
             return len(s)       # len('100101') --> 6
 
     .. versionadded:: 3.1
@@ -687,22 +687,22 @@ number, :class:`float`, or :class:`complex`::
    import sys, math
 
    def hash_fraction(m, n):
-       """유리수 m / n 의 해시를 계산합니다.
+       """Compute the hash of a rational number m / n.
 
-       m과 n이 정수이고, n이 양수라고 가정합니다.
-       hash(fractions.Fraction(m, n)) 와 같습니다.
+       Assumes m and n are integers, with n positive.
+       Equivalent to hash(fractions.Fraction(m, n)).
 
        """
        P = sys.hash_info.modulus
-       # 공약수 P 를 제거합니다.  (m 과 n 이 이미 서로소면 불필요합니다.)
+       # Remove common factors of P.  (Unnecessary if m and n already coprime.)
        while m % P == n % P == 0:
            m, n = m // P, n // P
 
        if n % P == 0:
            hash_value = sys.hash_info.inf
        else:
-           # 페르마의 소정리: pow(n, P-1, P) 는 1, 그래서
-           # pow(n, P-2, P) 는 모듈로 P 의 역수를 줍니다.
+           # Fermat's Little Theorem: pow(n, P-1, P) is 1, so
+           # pow(n, P-2, P) gives the inverse of n modulo P.
            hash_value = (abs(m) % P) * pow(n, P - 2, P) % P
        if m < 0:
            hash_value = -hash_value
@@ -711,7 +711,7 @@ number, :class:`float`, or :class:`complex`::
        return hash_value
 
    def hash_float(x):
-       """float x 의 해시를 계산합니다."""
+       """Compute the hash of a float x."""
 
        if math.isnan(x):
            return sys.hash_info.nan
@@ -721,10 +721,10 @@ number, :class:`float`, or :class:`complex`::
            return hash_fraction(*x.as_integer_ratio())
 
    def hash_complex(z):
-       """복소수 z 의 해시를 계산합니다."""
+       """Compute the hash of a complex number z."""
 
        hash_value = hash_float(z.real) + sys.hash_info.imag * hash_float(z.imag)
-       # 부호있는 모듈로 2**sys.hash_info.width 환원을 합니다
+       # do a signed reduction modulo 2**sys.hash_info.width
        M = 2**(sys.hash_info.width - 1)
        hash_value = (hash_value & (M - 1)) - (hash_value & M)
        if hash_value == -1:
@@ -4347,26 +4347,26 @@ An example of dictionary view usage::
    >>> keys = dishes.keys()
    >>> values = dishes.values()
 
-   >>> # 이터레이션
+   >>> # iteration
    >>> n = 0
    >>> for val in values:
    ...     n += val
    >>> print(n)
    504
 
-   >>> # keys and values 는 같은 순서(삽입 순서)로 이터레이트합니다
+   >>> # keys and values are iterated over in the same order (insertion order)
    >>> list(keys)
    ['eggs', 'sausage', 'bacon', 'spam']
    >>> list(values)
    [2, 1, 1, 500]
 
-   >>> # 뷰 객체는 동적이고 딕셔너리의 변경을 반영합니다
+   >>> # view objects are dynamic and reflect dict changes
    >>> del dishes['eggs']
    >>> del dishes['sausage']
    >>> list(keys)
    ['bacon', 'spam']
 
-   >>> # 집합 연산
+   >>> # set operations
    >>> keys & {'eggs', 'bacon', 'salad'}
    {'bacon'}
    >>> keys ^ {'sausage', 'juice'}

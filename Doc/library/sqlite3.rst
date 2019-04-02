@@ -34,18 +34,18 @@ and call its :meth:`~Cursor.execute` method to perform SQL commands::
 
    c = conn.cursor()
 
-   # 테이블을 만듭니다
+   # Create table
    c.execute('''CREATE TABLE stocks
                 (date text, trans text, symbol text, qty real, price real)''')
 
-   # 데이터 행을 삽입합니다
+   # Insert a row of data
    c.execute("INSERT INTO stocks VALUES ('2006-01-05','BUY','RHAT',100,35.14)")
 
-   # 변경을 저장(commit)합니다
+   # Save (commit) the changes
    conn.commit()
 
-   # 작업이 끝나면 연결을 닫을 수도 있습니다.
-   # 모든 변경 사항이 커밋되었음을 확인하십시오. 그렇지 않으면 잃어버립니다.
+   # We can also close the connection if we are done with it.
+   # Just be sure any changes have been committed or they will be lost.
    conn.close()
 
 The data you've saved is persistent and is available in subsequent sessions::
@@ -65,16 +65,16 @@ second argument to the cursor's :meth:`~Cursor.execute` method.  (Other database
 modules may use a different placeholder, such as ``%s`` or ``:1``.) For
 example::
 
-   # 절대로 하지 마십시오 -- 안전하지 않습니다!
+   # Never do this -- insecure!
    symbol = 'RHAT'
    c.execute("SELECT * FROM stocks WHERE symbol = '%s'" % symbol)
 
-   # 대신 이렇게 하세요
+   # Do this instead
    t = ('RHAT',)
    c.execute('SELECT * FROM stocks WHERE symbol=?', t)
    print(c.fetchone())
 
-   # 한 번에 많은 레코드를 삽입하는 더 큰 예
+   # Larger example that inserts many records at a time
    purchases = [('2006-03-28', 'BUY', 'IBM', 1000, 45.00),
                 ('2006-04-05', 'BUY', 'MSFT', 1000, 72.00),
                 ('2006-04-06', 'SELL', 'IBM', 500, 53.00),
@@ -523,7 +523,7 @@ Connection Objects
 
       Example::
 
-         # existing_db.db 파일을 SQL 덤프 파일 dump.sql로 변환합니다
+         # Convert file existing_db.db to SQL dump file dump.sql
          import sqlite3
 
          con = sqlite3.connect('existing_db.db')

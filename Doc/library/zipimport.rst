@@ -161,7 +161,7 @@ Here is an example that imports a module from a ZIP archive - note that the
    $ ./python
    Python 2.3 (#1, Aug 1 2003, 19:54:32)
    >>> import sys
-   >>> sys.path.insert(0, 'example.zip')  # .zip 파일을 path 앞에 추가합니다
+   >>> sys.path.insert(0, 'example.zip')  # Add .zip file to front of path
    >>> import jwzthreading
    >>> jwzthreading.__file__
    'example.zip/jwzthreading.py'

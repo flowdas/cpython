@@ -735,7 +735,8 @@ received data, and close the connection::
 
 
     async def main():
-        # 저수준 API를 사용할 계획이므로 이벤트 루프에 대한 참조를 얻습니다.
+        # Get a reference to the event loop as we plan to use
+        # low-level APIs.
         loop = asyncio.get_running_loop()
 
         server = await loop.create_server(
@@ -784,7 +785,8 @@ data, and waits until the connection is closed::
 
 
     async def main():
-        # 저수준 API를 사용할 계획이므로 이벤트 루프에 대한 참조를 얻습니다.
+        # Get a reference to the event loop as we plan to use
+        # low-level APIs.
         loop = asyncio.get_running_loop()
 
         on_con_lost = loop.create_future()
@@ -794,7 +796,8 @@ data, and waits until the connection is closed::
             lambda: EchoClientProtocol(message, on_con_lost, loop),
             '127.0.0.1', 8888)
 
-        # 프로토콜이 연결이 끊어졌음을 알릴 때까지 기다리고 트랜스포트를 닫습니다.
+        # Wait until the protocol signals that the connection
+        # is lost and close the transport.
         try:
             await on_con_lost
         finally:
@@ -835,16 +838,18 @@ method, sends back received data::
     async def main():
         print("Starting UDP server")
 
-        # 저수준 API를 사용할 계획이므로 이벤트 루프에 대한 참조를 얻습니다.
+        # Get a reference to the event loop as we plan to use
+        # low-level APIs.
         loop = asyncio.get_running_loop()
 
-        # 모든 클라이언트 요청을 처리할 하나의 프로토콜 인스턴스가 만들어집니다.
+        # One protocol instance will be created to serve all
+        # client requests.
         transport, protocol = await loop.create_datagram_endpoint(
             lambda: EchoServerProtocol(),
             local_addr=('127.0.0.1', 9999))
 
         try:
-            await asyncio.sleep(3600)  # 1시간 동안 서비스합니다.
+            await asyncio.sleep(3600)  # Serve for 1 hour.
         finally:
             transport.close()
 
@@ -890,7 +895,8 @@ method, sends data and closes the transport when it receives the answer::
 
 
     async def main():
-        # 저수준 API를 사용할 계획이므로 이벤트 루프에 대한 참조를 얻습니다.
+        # Get a reference to the event loop as we plan to use
+        # low-level APIs.
         loop = asyncio.get_running_loop()
 
         message = "Hello World!"
@@ -931,27 +937,28 @@ Wait until a socket receives data using the
         def data_received(self, data):
             print("Received:", data.decode())
 
-            # 작업을 완료했습니다: 트랜스포트를 닫습니다;
-            # connection_lost()가 자동으로 호출됩니다.
+            # We are done: close the transport;
+            # connection_lost() will be called automatically.
             self.transport.close()
 
         def connection_lost(self, exc):
-            # 소켓이 닫혔습니다.
+            # The socket has been closed
             self.on_con_lost.set_result(True)
 
 
     async def main():
-        # 저수준 API를 사용할 계획이므로 이벤트 루프에 대한 참조를 얻습니다.
+        # Get a reference to the event loop as we plan to use
+        # low-level APIs.
         loop = asyncio.get_running_loop()
 
-        # 연결된 소켓 쌍을 만듭니다
+        # Create a pair of connected sockets
         rsock, wsock = socket.socketpair()
 
-        # 데이터를 기다릴 소켓을 등록합니다.
+        # Register the socket to wait for data.
         transport, protocol = await loop.create_connection(
             lambda: MyProtocol(loop), sock=rsock)
 
-        # 네트워크로부터의 데이터 수신을 흉내 냅니다.
+        # Simulate the reception of data from the network.
         loop.call_soon(wsock.send, 'abc'.encode())
 
         try:
@@ -997,26 +1004,29 @@ The subprocess is created by th :meth:`loop.subprocess_exec` method::
             self.exit_future.set_result(True)
 
     async def get_date():
-        # 저수준 API를 사용할 계획이므로 이벤트 루프에 대한 참조를 얻습니다.
+        # Get a reference to the event loop as we plan to use
+        # low-level APIs.
         loop = asyncio.get_running_loop()
 
         code = 'import datetime; print(datetime.datetime.now())'
         exit_future = asyncio.Future(loop=loop)
 
-        # DateProtocol이 제어하는 서브 프로세스를 만듭니다;
-        # 표준 출력을 파이프로 리디렉트합니다.
+        # Create the subprocess controlled by DateProtocol;
+        # redirect the standard output into a pipe.
         transport, protocol = await loop.subprocess_exec(
             lambda: DateProtocol(exit_future),
             sys.executable, '-c', code,
             stdin=None, stderr=None)
 
-        # 프로토콜의 process_exited() 메서드를 사용하여 서브 프로세스 종료를 기다립니다.
+        # Wait for the subprocess exit using the process_exited()
+        # method of the protocol.
         await exit_future
 
-        # stdout 파이프를 닫습니다.
+        # Close the stdout pipe.
         transport.close()
 
-        # 프로토콜의 pipe_data_received() 메서드로 수집된 출력을 읽습니다.
+        # Read the output which was collected by the
+        # pipe_data_received() method of the protocol.
         data = bytes(protocol.output)
         return data.decode('ascii').rstrip()
 

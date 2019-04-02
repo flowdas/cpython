@@ -3,11 +3,12 @@ import sqlite3
 con = sqlite3.connect(":memory:")
 con.execute("create table person (id integer primary key, firstname varchar unique)")
 
-# 성공적입니다, con.commit()이 자동으로 나중에 호출됩니다
+# Successful, con.commit() is called automatically afterwards
 with con:
     con.execute("insert into person(firstname) values (?)", ("Joe",))
 
-# with 블록이 예외로 끝난 후에 con.rollback()이 호출됩니다, 예외는 여전히 발생하고, 잡아야 합니다
+# con.rollback() is called after the with block finishes with an exception, the
+# exception is still raised and must be caught
 try:
     with con:
         con.execute("insert into person(firstname) values (?)", ("Joe",))

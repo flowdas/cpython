@@ -152,44 +152,44 @@ concurrent tasks::
 
    async def worker(name, queue):
        while True:
-           # 큐에서 "작업 항목"을 가져옵니다.
+           # Get a "work item" out of the queue.
            sleep_for = await queue.get()
 
-           # "sleep_for" 초 동안 잡니다.
+           # Sleep for the "sleep_for" seconds.
            await asyncio.sleep(sleep_for)
 
-           # 큐에 "작업 항목"이 처리되었음을 알립니다.
+           # Notify the queue that the "work item" has been processed.
            queue.task_done()
 
            print(f'{name} has slept for {sleep_for:.2f} seconds')
 
 
    async def main():
-       # "작업 부하"를 저장하는 데 사용할 큐를 만듭니다.
+       # Create a queue that we will use to store our "workload".
        queue = asyncio.Queue()
 
-       # 무작위 대기 시간을 만들어서 큐에 넣습니다.
+       # Generate random timings and put them into the queue.
        total_sleep_time = 0
        for _ in range(20):
            sleep_for = random.uniform(0.05, 1.0)
            total_sleep_time += sleep_for
            queue.put_nowait(sleep_for)
 
-       # 큐를 동시에 처리할 세 개의 worker 태스크를 만듭니다.
+       # Create three worker tasks to process the queue concurrently.
        tasks = []
        for i in range(3):
            task = asyncio.create_task(worker(f'worker-{i}', queue))
            tasks.append(task)
 
-       # 큐가 완전히 처리될 때까지 기다립니다.
+       # Wait until the queue is fully processed.
        started_at = time.monotonic()
        await queue.join()
        total_slept_for = time.monotonic() - started_at
 
-       # worker 태스크를 취소합니다.
+       # Cancel our worker tasks.
        for task in tasks:
            task.cancel()
-       # 모든 worker 태스크가 취소될 때까지 기다립니다.
+       # Wait until all worker tasks are cancelled.
        await asyncio.gather(*tasks, return_exceptions=True)
 
        print('====')

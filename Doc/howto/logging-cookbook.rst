@@ -25,20 +25,20 @@ child will pass up to the parent.  Here is a main module::
     import logging
     import auxiliary_module
 
-    # 'spam_application' 으로 로거 생성
+    # create logger with 'spam_application'
     logger = logging.getLogger('spam_application')
     logger.setLevel(logging.DEBUG)
-    # 디버그 메시지도 기록하는 파일 처리기 생성
+    # create file handler which logs even debug messages
     fh = logging.FileHandler('spam.log')
     fh.setLevel(logging.DEBUG)
-    # 더 높은 수준의 콘솔 처리기 생성
+    # create console handler with a higher log level
     ch = logging.StreamHandler()
     ch.setLevel(logging.ERROR)
-    # 포매터를 만들고 처리기에 추가
+    # create formatter and add it to the handlers
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     fh.setFormatter(formatter)
     ch.setFormatter(formatter)
-    # 처리기를 로거에 추가
+    # add the handlers to the logger
     logger.addHandler(fh)
     logger.addHandler(ch)
 
@@ -56,7 +56,7 @@ Here is the auxiliary module::
 
     import logging
 
-    # 로거 생성
+    # create logger
     module_logger = logging.getLogger('spam_application.auxiliary')
 
     class Auxiliary:
@@ -169,21 +169,21 @@ previous simple module-based configuration example::
 
     logger = logging.getLogger('simple_example')
     logger.setLevel(logging.DEBUG)
-    # 디버그 메시지도 기록하는 파일 처리기 생성
+    # create file handler which logs even debug messages
     fh = logging.FileHandler('spam.log')
     fh.setLevel(logging.DEBUG)
-    # 더 높은 수준의 콘솔 처리기 생성
+    # create console handler with a higher log level
     ch = logging.StreamHandler()
     ch.setLevel(logging.ERROR)
-    # 포매터를 만들고 처리기에 추가
+    # create formatter and add it to the handlers
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     ch.setFormatter(formatter)
     fh.setFormatter(formatter)
-    # 처리기를 로거에 추가
+    # add the handlers to logger
     logger.addHandler(ch)
     logger.addHandler(fh)
 
-    # '응용 프로그램' 코드
+    # 'application' code
     logger.debug('debug message')
     logger.info('info message')
     logger.warning('warn message')
@@ -214,26 +214,27 @@ messages should not. Here's how you can achieve this::
 
    import logging
 
-   # 파일 로깅 설정 - 자세한 내용은 이전 섹션을 참조하세요
+   # set up logging to file - see previous section for more details
    logging.basicConfig(level=logging.DEBUG,
                        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                        datefmt='%m-%d %H:%M',
                        filename='/temp/myapp.log',
                        filemode='w')
-   # sys.stderr에 INFO 메시지 이상을 기록하는 처리기를 정의합니다
+   # define a Handler which writes INFO messages or higher to the sys.stderr
    console = logging.StreamHandler()
    console.setLevel(logging.INFO)
-   # 콘솔용으로 더 간단한 포맷을 설정합니다
+   # set a format which is simpler for console use
    formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-   # 처리기가 이 포맷을 사용하도록 알립니다
+   # tell the handler to use this format
    console.setFormatter(formatter)
-   # 루트 로거에 처리기를 추가합니다
+   # add the handler to the root logger
    logging.getLogger('').addHandler(console)
 
-   # 이제 루트 로거나 다른 로거에 로그할 수 있습니다. 먼저 루트 ...
+   # Now, we can log to the root logger, or any other logger. First the root...
    logging.info('Jackdaws love my big sphinx of quartz.')
 
-   # 이제 응용 프로그램의 영역을 나타내는 몇 가지 다른 로거를 정의합니다:
+   # Now, define a couple of other loggers which might represent areas in your
+   # application:
 
    logger1 = logging.getLogger('myapp.area1')
    logger2 = logging.getLogger('myapp.area2')
@@ -279,18 +280,18 @@ Here is an example of a module using the logging configuration server::
     import time
     import os
 
-    # 초기 구성 파일을 읽습니다
+    # read initial config file
     logging.config.fileConfig('logging.conf')
 
-    # 포트 9999에 리스너를 만들고 시작시킵니다
+    # create and start listener on port 9999
     t = logging.config.listen(9999)
     t.start()
 
     logger = logging.getLogger('simpleExample')
 
     try:
-        # Ctrl+C 를 누를 때까지, 새로운 구성의 차이점을 확인하기위해
-        # 로깅 호출을 반복합니다
+        # loop through logging calls to see the difference
+        # new configurations make, until Ctrl+C is pressed
         while True:
             logger.debug('debug message')
             logger.info('info message')
@@ -299,7 +300,7 @@ Here is an example of a module using the logging configuration server::
             logger.critical('critical message')
             time.sleep(5)
     except KeyboardInterrupt:
-        # 청소합니다
+        # cleanup
         logging.config.stopListening()
         t.join()
 
@@ -368,7 +369,7 @@ classes, which would eat up one thread per handler for no particular benefit.
 
 An example of using these two classes follows (imports omitted)::
 
-    que = queue.Queue(-1)  # 크기 제한이 없습니다
+    que = queue.Queue(-1)  # no limit on size
     queue_handler = QueueHandler(que)
     handler = logging.StreamHandler()
     listener = QueueListener(que, handler)
@@ -377,8 +378,10 @@ An example of using these two classes follows (imports omitted)::
     formatter = logging.Formatter('%(threadName)s: %(message)s')
     handler.setFormatter(formatter)
     listener.start()
-    # 로그 출력은 내부 큐를 살피는 내부 스레드가 아닌 이벤트를 만든 스레드(메인 스레드)를
-    # 표시합니다. 이것이 여러분이 원하는 것입니다.
+    # The log output will display the thread which generated
+    # the event (the main thread) rather than the internal
+    # thread which monitors the internal queue. This is what
+    # you want to happen.
     root.warning('Look out!')
     listener.stop()
 
@@ -413,14 +416,15 @@ the receiving end. A simple way of doing this is attaching a
    rootLogger.setLevel(logging.DEBUG)
    socketHandler = logging.handlers.SocketHandler('localhost',
                        logging.handlers.DEFAULT_TCP_LOGGING_PORT)
-   # 포매터는 신경 쓰지 마세요. 소켓 처리기는 이벤트를 포맷되지
-   # 않은 피클로 전송합니다
+   # don't bother with a formatter, since a socket handler sends the event as
+   # an unformatted pickle
    rootLogger.addHandler(socketHandler)
 
-   # 이제 루트 로거나 다른 로거에 로그할 수 있습니다. 먼저 루트 ...
+   # Now, we can log to the root logger, or any other logger. First the root...
    logging.info('Jackdaws love my big sphinx of quartz.')
 
-   # 이제 응용 프로그램의 영역을 나타내는 몇 가지 다른 로거를 정의합니다:
+   # Now, define a couple of other loggers which might represent areas in your
+   # application:
 
    logger1 = logging.getLogger('myapp.area1')
    logger2 = logging.getLogger('myapp.area2')
@@ -441,15 +445,17 @@ module. Here is a basic working example::
 
 
    class LogRecordStreamHandler(socketserver.StreamRequestHandler):
-       """스트리밍 로깅 요청을 위한 처리기.
+       """Handler for a streaming logging request.
 
-       기본적으로 로컬에서 구성된 로깅 정책을 사용하여 레코드를 기록합니다.
+       This basically logs the record using whatever logging policy is
+       configured locally.
        """
 
        def handle(self):
            """
-           여러 요청을 처리합니다 - 각 요청은 4 바이트 길이 다음에 피클 형식의
-           LogRecord로 구성됩니다. 로컬에서 구성된 정책에 따라 레코드를 로깅합니다.
+           Handle multiple requests - each expected to be a 4-byte length,
+           followed by the LogRecord in pickle format. Logs the record
+           according to whatever policy is configured locally.
            """
            while True:
                chunk = self.connection.recv(4)
@@ -467,21 +473,22 @@ module. Here is a basic working example::
            return pickle.loads(data)
 
        def handleLogRecord(self, record):
-           # 이름이 지정되면, 레코드에서 암시된 이름 대신 지정한 이름의
-           # 로거를 사용합니다.
+           # if a name is specified, we use the named logger rather than the one
+           # implied by the record.
            if self.server.logname is not None:
                name = self.server.logname
            else:
                name = record.name
            logger = logging.getLogger(name)
-           # 주의: 모든 레코드가 기록됩니다. Logger.handle은 일반적으로
-           # 로거 수준 필터링 후에 호출되기 때문입니다. 필터링을 원한다면, 사이클
-           # 낭비와 네트워크 대역폭을 절약하기 위해 클라이언트 측에서 처리하십시오!
+           # N.B. EVERY record gets logged. This is because Logger.handle
+           # is normally called AFTER logger-level filtering. If you want
+           # to do filtering, do it at the client end to save wasting
+           # cycles and network bandwidth!
            logger.handle(record)
 
    class LogRecordSocketReceiver(socketserver.ThreadingTCPServer):
        """
-       테스트에 적합한 간단한 TCP 소켓 기반 로그 수신기.
+       Simple TCP socket-based logging receiver suitable for testing.
        """
 
        allow_reuse_address = True
@@ -574,8 +581,8 @@ information in the delegated call. Here's a snippet from the code of
 
     def debug(self, msg, *args, **kwargs):
         """
-        이 어댑터 인스턴스의 문맥 정보를 추가 한 후,
-        하부 로거에 debug 호출을 위임합니다.
+        Delegate a debug call to the underlying logger, after adding
+        contextual information from this adapter instance.
         """
         msg, kwargs = self.process(msg, kwargs)
         self.logger.debug(msg, *args, **kwargs)
@@ -599,8 +606,8 @@ you just need to subclass :class:`LoggerAdapter` and override
 
     class CustomAdapter(logging.LoggerAdapter):
         """
-        이 예제 어댑터는 전달된 딕셔너리류 객체에 'connid'키가 있을 것으로 기대하며,
-        꺽쇠괄호로 둘러싼 값을 로그 메시지의 앞에 붙입니다.
+        This example adapter expects the passed in dict-like object to have a
+        'connid' key, whose value in brackets is prepended to the log message.
         """
         def process(self, msg, kwargs):
             return '[%s] %s' % (self.extra['connid'], msg), kwargs
@@ -646,10 +653,10 @@ script::
 
     class ContextFilter(logging.Filter):
         """
-        문맥 정보를 로그에 주입하는 필터입니다.
+        This is a filter which injects contextual information into the log.
 
-        실제 문맥 정보를 사용하는 대신, 이 시연에서는 무작위
-        데이터만 사용합니다.
+        Rather than use actual contextual information, we just use random
+        data in this demo.
         """
 
         USERS = ['jim', 'fred', 'sheila']
@@ -736,25 +743,27 @@ analogous) it does allow for completely different logging configurations for
 the listener and the other processes in your application, and can be used as
 the basis for code meeting your own specific requirements::
 
-    # 여러분의 코드에서도 이 임포트가 필요할겁니다
+    # You'll need these imports in your own code
     import logging
     import logging.handlers
     import multiprocessing
 
-    # 다음 두 줄의 임포트는 이 시연만을 위한 것입니다
+    # Next two import lines for this demo only
     from random import choice, random
     import time
 
     #
-    # 리스너 및 작업자에 대한 로깅 구성을 정의하고 싶기 때문에, 리스너 및 작업자 프로세스 함수는 해당 프로세스에 대한
-    # 로깅을 구성하기위한 콜러블 configurer 매개 변수를 받아들입니다.
-    # 이 함수들은 통신을 위해 사용하는 queue 도 받습니다.
+    # Because you'll want to define the logging configurations for listener and workers, the
+    # listener and worker process functions take a configurer parameter which is a callable
+    # for configuring logging for that process. These functions are also passed the queue,
+    # which they use for communication.
     #
-    # 실제로는 리스너를 원하는대로 구성 할 수 있지만, 이 간단한 예제에서는 리스너가 수신 된 레코드에 수준 또는
-    # 필터 논리를 적용하지 않습니다. 실제로 필터링 될 이벤트를 프로세스간에 보내지 않기 위해, 이런 논리는 작업자
-    # 프로세스에 적용하고 싶을겁니다.
+    # In practice, you can configure the listener however you want, but note that in this
+    # simple example, the listener does not apply level or filter logic to received records.
+    # In practice, you would probably want to do this logic in the worker processes, to avoid
+    # sending events which would be filtered out between processes.
     #
-    # 결과를 쉽게 볼 수 있도록 회전 된 파일의 크기를 작게 만듭니다.
+    # The size of the rotated files is made small so you can see the results easily.
     def listener_configurer():
         root = logging.getLogger()
         h = logging.handlers.RotatingFileHandler('mptest.log', 'a', 300, 10)
@@ -762,23 +771,24 @@ the basis for code meeting your own specific requirements::
         h.setFormatter(f)
         root.addHandler(h)
 
-    # 리스너 프로세스 최상위 루프입니다: 큐에서 로그 이벤트(LogRecords)를 기다리고 처리합니다.
-    # LogRecord로 None을 얻으면 종료합니다.
+    # This is the listener process top-level loop: wait for logging events
+    # (LogRecords)on the queue and handle them, quit when you get a None for a
+    # LogRecord.
     def listener_process(queue, configurer):
         configurer()
         while True:
             try:
                 record = queue.get()
-                if record is None:  # 리스너에서 종료 신호로 이 것을 보냅니다.
+                if record is None:  # We send this as a sentinel to tell the listener to quit.
                     break
                 logger = logging.getLogger(record.name)
-                logger.handle(record)  # 수준 또는 필터 논리가 적용되지 않습니다 - 그대로 보냅니다!
+                logger.handle(record)  # No level or filter logic applied - just do it!
             except Exception:
                 import sys, traceback
                 print('Whoops! Problem:', file=sys.stderr)
                 traceback.print_exc(file=sys.stderr)
 
-    # 이 시연에서 무작위로 선택하는 데 사용되는 배열
+    # Arrays used for random selections in this demo
 
     LEVELS = [logging.DEBUG, logging.INFO, logging.WARNING,
               logging.ERROR, logging.CRITICAL]
@@ -791,18 +801,19 @@ the basis for code meeting your own specific requirements::
         'Random message #3',
     ]
 
-    # 작업자 구성은 작업자 프로세스가 실행의 처음에 수행됩니다.
-    # 윈도우에서는 포크 개념에 의존 할 수 없기 때문에,
-    각 프로세스는 시작할 때 로깅 구성 코드를 실행합니다.
+    # The worker configuration is done at the start of the worker process run.
+    # Note that on Windows you can't rely on fork semantics, so each process
+    # will run the logging configuration code when it starts.
     def worker_configurer(queue):
-        h = logging.handlers.QueueHandler(queue)  # 하나의 처리기만 필요합니다
+        h = logging.handlers.QueueHandler(queue)  # Just the one handler needed
         root = logging.getLogger()
         root.addHandler(h)
-        # 시연을 위해, 모든 메시지를 보냅니다; 다른 수준이나 필터 논리는 적용되지 않습니다.
+        # send all messages, for demo; no other level or filter logic applied.
         root.setLevel(logging.DEBUG)
 
-    # 작업자 프로세스 최상위 루프입니다. 종료하기 전에 임의의 지연이 삽입되는 10개의 이벤트만 로그합니다.
-    # 인쇄 메시지는 여러분에게 무엇인가하고 있다는 것을 알리기 위함입니다!
+    # This is the worker process top-level loop, which just logs ten events with
+    # random intervening delays before terminating.
+    # The print messages are just so you know it's doing something!
     def worker_process(queue, configurer):
         configurer(queue)
         name = multiprocessing.current_process().name
@@ -815,8 +826,9 @@ the basis for code meeting your own specific requirements::
             logger.log(level, message)
         print('Worker finished: %s' % name)
 
-    # 여기가 시연이 조정되는 곳입니다. 큐를 만들고, 리스너를 만들고 시작시키고, 10개의 작업자를 만들고
-    # 시작시킨 후에 종료할 때까지 기다리고, 리스너가 종료하도록 큐에 None 을 보냅니다.
+    # Here's where the demo gets orchestrated. Create the queue, create and start
+    # the listener, create ten workers and start them, wait for them to finish,
+    # then send a None to the queue to tell the listener to finish.
     def main():
         queue = multiprocessing.Queue(-1)
         listener = multiprocessing.Process(target=listener_process,
@@ -923,11 +935,11 @@ separate thread::
         logging.config.dictConfig(d)
         lp = threading.Thread(target=logger_thread, args=(q,))
         lp.start()
-        # 이 시점에서, 메인 프로세스는 자체적으로 유용한 작업을 수행 할 수 있습니다.
-        # 그 일이 끝나면, 작업자들이 종료할 때까지 기다릴 수 있습니다...
+        # At this point, the main process could do some useful work of its own
+        # Once it's done that, it can wait for the workers to terminate...
         for wp in workers:
             wp.join()
-        # 그리고 이제 로깅 스레드도 종료하도록 알립니다
+        # And now tell the logging thread to finish up, too
         q.put(None)
         lp.join()
 
@@ -955,21 +967,21 @@ logging package provides a :class:`~handlers.RotatingFileHandler`::
 
    LOG_FILENAME = 'logging_rotatingfile_example.out'
 
-   # 원하는 출력 수준으로 로거를 설정합니다
+   # Set up a specific logger with our desired output level
    my_logger = logging.getLogger('MyLogger')
    my_logger.setLevel(logging.DEBUG)
 
-   # 로그 메시지 처리기를 로거에 추가합니다
+   # Add the log message handler to the logger
    handler = logging.handlers.RotatingFileHandler(
                  LOG_FILENAME, maxBytes=20, backupCount=5)
 
    my_logger.addHandler(handler)
 
-   # 메시지를 로그합니다
+   # Log some messages
    for i in range(20):
        my_logger.debug('i = %d' % i)
 
-   # 만들어진 파일을 봅니다
+   # See what files are created
    logfiles = glob.glob('%s*' % LOG_FILENAME)
 
    for filename in logfiles:
@@ -1251,12 +1263,12 @@ You can use a :class:`QueueHandler` subclass to send messages to other kinds
 of queues, for example a ZeroMQ 'publish' socket. In the example below,the
 socket is created separately and passed to the handler (as its 'queue')::
 
-    import zmq   # ZeroMQ의 파이썬 바인딩인 pyzmq 를 사용합니다
-    import json  # 호환성있게 레코드를 직렬화하는데 사용
+    import zmq   # using pyzmq, the Python binding for ZeroMQ
+    import json  # for serializing records portably
 
     ctx = zmq.Context()
-    sock = zmq.Socket(ctx, zmq.PUB)  # 또는 zmq.PUSH 나 다른 적절한 값
-    sock.bind('tcp://*:5556')        # 또는 기타 다른 위치
+    sock = zmq.Socket(ctx, zmq.PUB)  # or zmq.PUSH, or other suitable value
+    sock.bind('tcp://*:5556')        # or wherever
 
     class ZeroMQSocketHandler(QueueHandler):
         def enqueue(self, record):
@@ -1293,7 +1305,7 @@ of queues, for example a ZeroMQ 'subscribe' socket. Here's an example::
         def __init__(self, uri, *handlers, **kwargs):
             self.ctx = kwargs.get('ctx') or zmq.Context()
             socket = zmq.Socket(self.ctx, zmq.SUB)
-            socket.setsockopt_string(zmq.SUBSCRIBE, '')  # 모든 것을 구독합니다
+            socket.setsockopt_string(zmq.SUBSCRIBE, '')  # subscribe to everything
             socket.connect(uri)
             super().__init__(socket, *handlers, **kwargs)
 
@@ -1439,31 +1451,37 @@ works::
 
     class MyHandler:
         """
-        이벤트 로깅을위한 간단한 처리기. 리스너 프로세스에서 실행되고, 수신된 레코드의 이름을 기반으로
-        로거에 이벤트를 전달합니다. 그러면 레코드는 로깅 시스템에 의해 해당 로거에 대해 구성된 처리기로
-        전달됩니다.
+        A simple handler for logging events. It runs in the listener process and
+        dispatches events to loggers based on the name in the received record,
+        which then get dispatched, by the logging system, to the handlers
+        configured for those loggers.
         """
         def handle(self, record):
             logger = logging.getLogger(record.name)
-            # 파일 및 콘솔에 로깅을 수행하는 것이 리스너임을 보여주기 위해 프로세스 이름을 변환합니다.
+            # The process name is transformed just to show that it's the listener
+            # doing the logging to files and console
             record.processName = '%s (for %s)' % (current_process().name, record.processName)
             logger.handle(record)
 
     def listener_process(q, stop_event, config):
         """
-        이것은 주 프로세스에서 수행 될 수 있지만, 설명을 위해 별도의 프로세스에서 수행합니다.
+        This could be done in the main process, but is just done in a separate
+        process for illustrative purposes.
 
-        지정된 구성에 따라 로깅을 초기화하고, 리스너를 시작하고 주 프로세스가 이벤트를 통해 완료를
-        알릴때까지 기다립니다. 그러고나면 리스너가 중지되고 프로세스가 종료됩니다.
+        This initialises logging according to the specified configuration,
+        starts the listener and waits for the main process to signal completion
+        via the event. The listener is then stopped, and the process exits.
         """
         logging.config.dictConfig(config)
         listener = logging.handlers.QueueListener(q, MyHandler())
         listener.start()
         if os.name == 'posix':
-            # POSIX에서, setup 로거는 부모 프로세스에서 구성되었지만, dictConfig
-            # 호출 후 사용 불가능하게 설정되어 있어야합니다.
-            # 윈도우에서는 fork가 사용되지 않기때문에, setup 로거가 자식 프로세스에는 없습니다.
-            # 그래서 새로 만들어질 것이고 메시지가 나타나게 됩니다 - 그래서 "if posix" 절이 필요합니다.
+            # On POSIX, the setup logger will have been configured in the
+            # parent process, but should have been disabled following the
+            # dictConfig call.
+            # On Windows, since fork isn't used, the setup logger won't
+            # exist in the child, so it would be created and the message
+            # would appear - hence the "if posix" clause.
             logger = logging.getLogger('setup')
             logger.critical('Should not appear, because of disabled logger ...')
         stop_event.wait()
@@ -1471,14 +1489,17 @@ works::
 
     def worker_process(config):
         """
-        설명을 위해 여러개를 만듭니다. 실제로는, 똑 같은 프로세스 대신에 다른 종류의
-        프로세스일 수 있습니다.
+        A number of these are spawned for the purpose of illustration. In
+        practice, they could be a heterogeneous bunch of processes rather than
+        ones which are identical to each other.
 
-        지정된 구성에 따라 로깅을 초기화하고 무작위로 선택된 로거에 임의의 수준으로 100 개의
-        메시지를 로그합니다.
+        This initialises logging according to the specified configuration,
+        and logs a hundred messages with random levels to randomly selected
+        loggers.
 
-        다른 프로세스가 실행될 수 있도록 작은 sleep이 추가됩니다. 이것이 꼭 필요한 것은
-        아니지만, 생략했을 때보다 여러 프로세스들의 출력을 조금 더 섞습니다.
+        A small sleep is added to allow other processes a chance to run. This
+        is not strictly needed, but it mixes the output from the different
+        processes a bit more than if it's left out.
         """
         logging.config.dictConfig(config)
         levels = [logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR,
@@ -1486,10 +1507,12 @@ works::
         loggers = ['foo', 'foo.bar', 'foo.bar.baz',
                    'spam', 'spam.ham', 'spam.ham.eggs']
         if os.name == 'posix':
-            # POSIX에서, setup 로거는 부모 프로세스에서 구성되었지만, dictConfig
-            # 호출 후 사용 불가능하게 설정되어 있어야합니다.
-            # 윈도우에서는 fork가 사용되지 않기때문에, setup 로거가 자식 프로세스에는 없습니다.
-            # 그래서 새로 만들어질 것이고 메시지가 나타나게 됩니다 - 그래서 "if posix" 절이 필요합니다.
+            # On POSIX, the setup logger will have been configured in the
+            # parent process, but should have been disabled following the
+            # dictConfig call.
+            # On Windows, since fork isn't used, the setup logger won't
+            # exist in the child, so it would be created and the message
+            # would appear - hence the "if posix" clause.
             logger = logging.getLogger('setup')
             logger.critical('Should not appear, because of disabled logger ...')
         for i in range(100):
@@ -1500,7 +1523,7 @@ works::
 
     def main():
         q = Queue()
-        # 주 프로세스는 콘솔에 인쇄하는 간단한 구성을 얻습니다.
+        # The main process gets a simple configuration which prints to the console.
         config_initial = {
             'version': 1,
             'formatters': {
@@ -1520,9 +1543,11 @@ works::
                 'handlers': ['console']
             },
         }
-        # 작업자 프로세스 구성은 루트 로거에 QueueHandler 를 첨부하는것 뿐인데, 모든 메시지를 큐로 보냅니다.
-        # 부모 프로세스의 "setup" 로거를 사용하지 않도록 기존 로거를 비활성화합니다. fork() 된 자식
-        # 프로세스에 그 로거가 존재할 것이기 때문에 POSIX에서 필요합니다.
+        # The worker process configuration is just a QueueHandler attached to the
+        # root logger, which allows all messages to be sent to the queue.
+        # We disable existing loggers to disable the "setup" logger used in the
+        # parent process. This is needed on POSIX because the logger will
+        # be there in the child following a fork().
         config_worker = {
             'version': 1,
             'disable_existing_loggers': True,
@@ -1537,9 +1562,12 @@ works::
                 'handlers': ['queue']
             },
         }
-        # 리스너 프로세스 구성은 이벤트를 원하는 어떤 처리기로도 보낼 수 있는 로깅 구성의 유연성을 보여줍니다.
-        # 부모 프로세스의 "setup" 로거를 사용하지 않도록 기존 로거를 비활성화합니다. fork() 된 자식
-        # 프로세스에 그 로거가 존재할 것이기 때문에 POSIX에서 필요합니다.
+        # The listener process configuration shows that the full flexibility of
+        # logging configuration is available to dispatch events to handlers however
+        # you want.
+        # We disable existing loggers to disable the "setup" logger used in the
+        # parent process. This is needed on POSIX because the logger will
+        # be there in the child following a fork().
         config_listener = {
             'version': 1,
             'disable_existing_loggers': True,
@@ -1589,7 +1617,8 @@ works::
                 'handlers': ['console', 'file', 'errors']
             },
         }
-        # 부모에서의 로깅이 정상적으로 작동하는 것을 보여주기 위해 몇 가지 초기 이벤트를 로그합니다.
+        # Log some initial events, just to show that logging in the parent works
+        # normally.
         logging.config.dictConfig(config_initial)
         logger = logging.getLogger('setup')
         logger.info('About to create workers ...')
@@ -1606,11 +1635,11 @@ works::
                      args=(q, stop_event, config_listener))
         lp.start()
         logger.info('Started listener')
-        # 우리는 이제 작업자들이 일을 끝낼때까지 기다립니다.
+        # We now hang around for the workers to finish their work.
         for wp in workers:
             wp.join()
-        # 작업자들이 모두 종료했습니다. 리스너도 이제 멈출 수 있습니다.
-        # 부모에서의 로깅은 정상적으로 작동합니다.
+        # Workers all done, listening can now stop.
+        # Logging in the parent still works normally.
         logger.info('Telling listener to stop ...')
         stop_event.set()
         lp.join()
@@ -1686,7 +1715,7 @@ which uses JSON to serialise the event in a machine-parseable manner::
         def __str__(self):
             return '%s >>> %s' % (self.message, json.dumps(self.kwargs))
 
-    _ = StructuredMessage   # 꼭 필요하지는 않지만, 가독성을 높입니다
+    _ = StructuredMessage   # optional, to improve readability
 
     logging.basicConfig(level=logging.INFO, format='%(message)s')
     logging.info(_('message 1', foo='bar', bar='baz', num=123, fnum=123.456))
@@ -1708,7 +1737,7 @@ as in the following complete example::
     import json
     import logging
 
-    # 다음은 스크립트가 2.x와 3.x에서 변경없이 실행되도록 합니다
+    # This next bit is to ensure the script runs unchanged on 2.x and 3.x
     try:
         unicode
     except NameError:
@@ -1731,7 +1760,7 @@ as in the following complete example::
             s = Encoder().encode(self.kwargs)
             return '%s >>> %s' % (self.message, s)
 
-    _ = StructuredMessage   # 꼭 필요하지는 않지만, 가독성을 높입니다
+    _ = StructuredMessage   # optional, to improve readability
 
     def main():
         logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -1784,12 +1813,14 @@ that a logging handler be created by calling this function::
         },
         'handlers': {
             'file':{
-                # 아래의 값들은 이 딕셔너리에서 pop 되고 처리기를 만들고 처리기의 수준과
-                # 포매터를 설정하는데 사용됩니다.
+                # The values below are popped from this dictionary and
+                # used to create the handler, set the handler's level and
+                # its formatter.
                 '()': owned_file_handler,
                 'level':'DEBUG',
                 'formatter': 'default',
-                # 아래의 값들은 처리기 생성자 콜러블에 키워드 인자로 전달됩니다.
+                # The values below are passed to the handler creator callable
+                # as keyword arguments.
                 'owner': ['pulse', 'pulse'],
                 'filename': 'chowntest.log',
                 'mode': 'w',
@@ -1825,12 +1856,14 @@ script, ``chowntest.py``::
         },
         'handlers': {
             'file':{
-                # 아래의 값들은 이 딕셔너리에서 pop 되고 처리기를 만들고 처리기의 수준과
-                # 포매터를 설정하는데 사용됩니다.
+                # The values below are popped from this dictionary and
+                # used to create the handler, set the handler's level and
+                # its formatter.
                 '()': owned_file_handler,
                 'level':'DEBUG',
                 'formatter': 'default',
-                # 아래의 값들은 처리기 생성자 콜러블에 키워드 인자로 전달됩니다.
+                # The values below are passed to the handler creator callable
+                # as keyword arguments.
                 'owner': ['pulse', 'pulse'],
                 'filename': 'chowntest.log',
                 'mode': 'w',
@@ -1935,7 +1968,6 @@ happens, and where you can substitute your alternate formatting; however, you
 should be careful to support all formatting styles and allow %-formatting as
 the default, to ensure interoperability with other code. Care should also be
 taken to call ``str(self.msg)``, just as the base implementation does.
-
 
 Refer to the reference documentation on :func:`setLogRecordFactory` and
 :class:`LogRecord` for more information.
@@ -2107,10 +2139,10 @@ class, as shown in the following example::
     class OneLineExceptionFormatter(logging.Formatter):
         def formatException(self, exc_info):
             """
-            한 줄에 인쇄되도록 예외를 포맷합니다.
+            Format an exception so that it prints on a single line.
             """
             result = super(OneLineExceptionFormatter, self).formatException(exc_info)
-            return repr(result)  # 또는 여러분이 원하는 어떤 방법으로든 한 줄로 포맷하세요
+            return repr(result)  # or format into one line however you want to
 
         def format(self, record):
             s = super(OneLineExceptionFormatter, self).format(record)
@@ -2174,18 +2206,18 @@ the approach, which assumes that the ``espeak`` TTS package is available::
     class TTSHandler(logging.Handler):
         def emit(self, record):
             msg = self.format(record)
-            # 영국 여성 음성으로 천천히 말합니다
+            # Speak slowly in a female English voice
             cmd = ['espeak', '-s150', '-ven+f3', msg]
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                  stderr=subprocess.STDOUT)
-            # 프로그램이 종료할 때까지 기다립니다
+            # wait for the program to finish
             p.communicate()
 
     def configure_logging():
         h = TTSHandler()
         root = logging.getLogger()
         root.addHandler(h)
-        # 기본 포매터는 메시지를 그대로 반환합니다
+        # the default formatter just returns the message
         root.setLevel(logging.DEBUG)
 
     def main():
@@ -2447,7 +2479,7 @@ scope of the context manager::
                 self.logger.removeHandler(self.handler)
             if self.handler and self.close:
                 self.handler.close()
-            # 묵시적으로 None 을 돌려줍니다 => 예외를 삼키지 않습니다
+            # implicit return of None => don't swallow exceptions
 
 If you specify a level value, the logger's level is set to that value in the
 scope of the with block covered by the context manager. If you specify a

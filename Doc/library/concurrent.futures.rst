@@ -107,12 +107,12 @@ the results of another :class:`Future`.  For example::
    import time
    def wait_on_b():
        time.sleep(5)
-       print(b.result())  # b 는 a 를 기다리기 때문에 완료되지 않습니다.
+       print(b.result())  # b will never complete because it is waiting on a.
        return 5
 
    def wait_on_a():
        time.sleep(5)
-       print(a.result())  # a 는 b 를 기다리기 때문에 완료되지 않습니다.
+       print(a.result())  # a will never complete because it is waiting on b.
        return 6
 
 
@@ -124,7 +124,8 @@ And::
 
    def wait_on_future():
        f = executor.submit(pow, 5, 2)
-       # 작업자 스레드가 하나뿐인데, wait_on_future 를 실행하고 있으므로 f 는 완료되지 않습니다.
+       # This will never complete because there is only one worker thread and
+       # it is executing this function.
        print(f.result())
 
    executor = ThreadPoolExecutor(max_workers=1)
@@ -174,15 +175,14 @@ ThreadPoolExecutor Example
            'http://www.bbc.co.uk/',
            'http://some-made-up-domain.com/']
 
-   # 페이지 하나를 가져오고 URL 과 내용을 보고합니다
+   # Retrieve a single page and report the URL and contents
    def load_url(url, timeout):
        with urllib.request.urlopen(url, timeout=timeout) as conn:
            return conn.read()
 
-   # with 문을 사용하여 스레드가 즉시 정리되도록 할 수 있습니다
+   # We can use a with statement to ensure threads are cleaned up promptly
    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
        # Start the load operations and mark each future with its URL
-       # 로드 작업을 시작하고 각 퓨처의 해당 URL을 기록합니다
        future_to_url = {executor.submit(load_url, url, 60): url for url in URLS}
        for future in concurrent.futures.as_completed(future_to_url):
            url = future_to_url[future]

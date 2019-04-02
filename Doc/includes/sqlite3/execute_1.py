@@ -7,10 +7,10 @@ cur.execute("create table people (name_last, age)")
 who = "Yeltsin"
 age = 72
 
-# qmark 스타일입니다:
+# This is the qmark style:
 cur.execute("insert into people values (?, ?)", (who, age))
 
-# named 스타일입니다:
+# And this is the named style:
 cur.execute("select * from people where name_last=:who and age=:age", {"who": who, "age": age})
 
 print(cur.fetchone())

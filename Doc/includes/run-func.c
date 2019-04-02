@@ -14,14 +14,14 @@ main(int argc, char *argv[])
 
     Py_Initialize();
     pName = PyUnicode_DecodeFSDefault(argv[1]);
-    /* pName의 에러 검사가 생략되었습니다 */
+    /* Error checking of pName left out */
 
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
 
     if (pModule != NULL) {
         pFunc = PyObject_GetAttrString(pModule, argv[2]);
-        /* pFunc는 새로운 참조입니다 */
+        /* pFunc is a new reference */
 
         if (pFunc && PyCallable_Check(pFunc)) {
             pArgs = PyTuple_New(argc - 3);
@@ -33,7 +33,7 @@ main(int argc, char *argv[])
                     fprintf(stderr, "Cannot convert argument\n");
                     return 1;
                 }
-                /* 여기에서 pValue 참조를 훔칩니다: */
+                /* pValue reference stolen here: */
                 PyTuple_SetItem(pArgs, i, pValue);
             }
             pValue = PyObject_CallObject(pFunc, pArgs);

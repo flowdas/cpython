@@ -330,16 +330,17 @@ function::
     async def get_date():
         code = 'import datetime; print(datetime.datetime.now())'
 
-        # 서브 프로세스를 만듭니다; 표준 출력을 파이프로 리디렉트합니다.
+        # Create the subprocess; redirect the standard output
+        # into a pipe.
         proc = await asyncio.create_subprocess_exec(
             sys.executable, '-c', code,
             stdout=asyncio.subprocess.PIPE)
 
-        # 한 줄의 출력을 읽습니다.
+        # Read one line of output.
         data = await proc.stdout.readline()
         line = data.decode('ascii').rstrip()
 
-        # 서브 프로세스 종료를 기다립니다.
+        # Wait for the subprocess exit.
         await proc.wait()
         return line
 

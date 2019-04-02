@@ -305,11 +305,11 @@ bytes objects are immutable)::
    >>> print(c_s.value)
    Hello World
    >>> c_s.value = "Hi, there"
-   >>> print(c_s)              # 메모리 위치가 변경되었습니다
+   >>> print(c_s)              # the memory location has changed
    c_wchar_p(139966783348904)
    >>> print(c_s.value)
    Hi, there
-   >>> print(s)                # 원래 객체는 변경되지 않습니다
+   >>> print(s)                # first object is unchanged
    Hello, World
    >>>
 
@@ -321,15 +321,15 @@ property; if you want to access it as NUL terminated string, use the ``value``
 property::
 
    >>> from ctypes import *
-   >>> p = create_string_buffer(3)            # 3바이트 버퍼를 만들고, NUL 바이트로 초기화합니다
+   >>> p = create_string_buffer(3)            # create a 3 byte buffer, initialized to NUL bytes
    >>> print(sizeof(p), repr(p.raw))
    3 b'\x00\x00\x00'
-   >>> p = create_string_buffer(b"Hello")     # NUL 종료 문자열을 포함하는 버퍼를 만듭니다
+   >>> p = create_string_buffer(b"Hello")     # create a buffer containing a NUL terminated string
    >>> print(sizeof(p), repr(p.raw))
    6 b'Hello\x00'
    >>> print(repr(p.value))
    b'Hello'
-   >>> p = create_string_buffer(b"Hello", 10) # 10바이트 버퍼를 만듭니다
+   >>> p = create_string_buffer(b"Hello", 10) # create a 10 byte buffer
    >>> print(sizeof(p), repr(p.raw))
    10 b'Hello\x00\x00\x00\x00\x00'
    >>> p.value = b"Hi"
@@ -1151,7 +1151,7 @@ Consider the following example::
    >>> rc = RECT(p1, p2)
    >>> print(rc.a.x, rc.a.y, rc.b.x, rc.b.y)
    1 2 3 4
-   >>> # 이제 두 포인터를 스왑합니다
+   >>> # now swap the two points
    >>> rc.a, rc.b = rc.b, rc.a
    >>> print(rc.a.x, rc.a.y, rc.b.x, rc.b.y)
    3 4 3 4

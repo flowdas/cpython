@@ -6,18 +6,18 @@ import operator
 
 class Foo:
     def f(self):
-        print('Foo.f() 를 호출했습니다')
+        print('you called Foo.f()')
     def g(self):
-        print('Foo.g() 를 호출했습니다')
+        print('you called Foo.g()')
     def _h(self):
-        print('Foo._h() 를 호출했습니다')
+        print('you called Foo._h()')
 
-# 간단한 제너레이터 함수
+# A simple generator function
 def baz():
     for i in range(10):
         yield i*i
 
-# 제너레이터 객체의 프락시 형
+# Proxy type for generator objects
 class GeneratorProxy(BaseProxy):
     _exposed_ = ['__next__']
     def __iter__(self):
@@ -25,7 +25,7 @@ class GeneratorProxy(BaseProxy):
     def __next__(self):
         return self._callmethod('__next__')
 
-# operator 모듈을 반환하는 함수
+# Function to return the operator module
 def get_operator_module():
     return operator
 
@@ -34,16 +34,16 @@ def get_operator_module():
 class MyManager(BaseManager):
     pass
 
-# Foo 클래스를 등록합니다; 프락시가 `f()` 와 `g()` 에 접근할 수 있게 합니다
+# register the Foo class; make `f()` and `g()` accessible via proxy
 MyManager.register('Foo1', Foo)
 
-# Foo 클래스를 등록합니다; 프락시가 `g()` 와 `_h()` 에 접근할 수 있게 합니다
+# register the Foo class; make `g()` and `_h()` accessible via proxy
 MyManager.register('Foo2', Foo, exposed=('g', '_h'))
 
-# 제너레이터 함수 baz 를 등록합니다; 프락시를 만드는데 `GeneratorProxy` 를 사용합니다
+# register the generator function baz; use `GeneratorProxy` to make proxies
 MyManager.register('baz', baz, proxytype=GeneratorProxy)
 
-# get_operator_module() 를 등록합니다; 프락시가 공개 함수에 접근할 수 있게 합니다
+# register get_operator_module(); make public functions accessible via proxy
 MyManager.register('operator', get_operator_module)
 
 ##

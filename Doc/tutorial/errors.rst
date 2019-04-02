@@ -199,11 +199,11 @@ raising it and add any attributes to it as desired. ::
    >>> try:
    ...     raise Exception('spam', 'eggs')
    ... except Exception as inst:
-   ...     print(type(inst))    # 예외 인스턴스
-   ...     print(inst.args)     # .args 에 저장된 인자들
-   ...     print(inst)          # __str__ 는 args 가 직접 인쇄될 수 있게합니다,
-   ...                          # 하지만 예외 서브 클래스가 재정의할 수 있습니다
-   ...     x, y = inst.args     # args 를 언팩합니다
+   ...     print(type(inst))    # the exception instance
+   ...     print(inst.args)     # arguments stored in .args
+   ...     print(inst)          # __str__ allows args to be printed directly,
+   ...                          # but may be overridden in exception subclasses
+   ...     x, y = inst.args     # unpack args
    ...     print('x =', x)
    ...     print('y =', y)
    ...
@@ -249,7 +249,7 @@ This must be either an exception instance or an exception class (a class that
 derives from :class:`Exception`).  If an exception class is passed, it will
 be implicitly instantiated by calling its constructor with no arguments::
 
-   raise ValueError  # 'raise ValueError()' 의 줄임 표현
+   raise ValueError  # shorthand for 'raise ValueError()'
 
 If you need to determine whether an exception was raised but don't intend to
 handle it, a simpler form of the :keyword:`raise` statement allows you to
@@ -284,15 +284,15 @@ to create a base class for exceptions defined by that module, and subclass that
 to create specific exception classes for different error conditions::
 
    class Error(Exception):
-       """이 모듈의 예외를 위한 베이스 클래스."""
+       """Base class for exceptions in this module."""
        pass
 
    class InputError(Error):
-       """입력 에러로 인해 발생하는 예외.
+       """Exception raised for errors in the input.
 
-       어트리뷰트:
-           expression -- 에러가 발생한 입력 표현식
-           message -- 에러의 설명
+       Attributes:
+           expression -- input expression in which the error occurred
+           message -- explanation of the error
        """
 
        def __init__(self, expression, message):
@@ -300,12 +300,13 @@ to create specific exception classes for different error conditions::
            self.message = message
 
    class TransitionError(Error):
-       """작업이 허용되지 않는 상태 전환을 시도할 때 발생합니다.
+       """Raised when an operation attempts a state transition that's not
+       allowed.
 
-       어트리뷰트:
-           previous -- 전환 시작시의 상태
-           next -- 시도된 새 상태
-           message -- 왜 해당 전환이 허락되지 않는지에 대한 설명
+       Attributes:
+           previous -- state at beginning of transition
+           next -- attempted new state
+           message -- explanation of why the specific transition is not allowed
        """
 
        def __init__(self, previous, next, message):

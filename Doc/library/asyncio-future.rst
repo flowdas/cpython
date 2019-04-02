@@ -148,7 +148,7 @@ Future Object
       :func:`functools.partial` can be used to pass parameters
       to the callback, e.g.::
 
-          # "fut"가 완료되면 'print("Future:", fut)'를 호출합니다.
+          # Call 'print("Future:", fut)' when "fut" is done.
           fut.add_done_callback(
               functools.partial(print, "Future:"))
 
@@ -198,29 +198,29 @@ asynchronous Task to set result for the Future, and waits until
 the Future has a result::
 
     async def set_after(fut, delay, value):
-        # *delay* 초 동안 잠잡니다.
+        # Sleep for *delay* seconds.
         await asyncio.sleep(delay)
 
-        # *fut* 퓨처의 결과로 *value* 를 설정합니다.
+        # Set *value* as a result of *fut* Future.
         fut.set_result(value)
 
     async def main():
-        # 현재 이벤트 루프를 얻습니다.
+        # Get the current event loop.
         loop = asyncio.get_running_loop()
 
-        # 새로운 Future 객체를 만듭니다.
+        # Create a new Future object.
         fut = loop.create_future()
 
-        # 병렬 태스크로 "set_after()" 코루틴을 실행합니다.
-        # 이벤트 루프에 대한 참조를 이미 가지고 있으므로, 여기서는 저수준 "loop.create_task()"
-        # API를 사용하고 있습니다.
-        # 그렇지 않으면 그저 "asyncio.create_task()" 를 사용할 수 있었습니다.
+        # Run "set_after()" coroutine in a parallel Task.
+        # We are using the low-level "loop.create_task()" API here because
+        # we already have a reference to the event loop at hand.
+        # Otherwise we could have just used "asyncio.create_task()".
         loop.create_task(
             set_after(fut, 1, '... world'))
 
         print('hello ...')
 
-        # *fut* 에 결과가 올 때까지 기다렸다가 (1초) 그것을 인쇄합니다.
+        # Wait until *fut* has a result (1 second) and print it.
         print(await fut)
 
     asyncio.run(main())

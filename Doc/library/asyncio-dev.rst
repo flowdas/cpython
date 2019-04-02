@@ -93,10 +93,10 @@ To schedule a coroutine object from a different OS thread, the
      async def coro_func():
           return await asyncio.sleep(1, 42)
 
-     # 나중에 다른 OS 스레드에서:
+     # Later in another OS thread:
 
      future = asyncio.run_coroutine_threadsafe(coro_func(), loop)
-     # 결과를 기다립니다:
+     # Wait for the result:
      result = future.result()
 
 To handle signals and to execute subprocesses, the event loop must be

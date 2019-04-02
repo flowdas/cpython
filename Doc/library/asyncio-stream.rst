@@ -406,7 +406,7 @@ Simple example querying HTTP headers of the URL passed on the command line::
             if line:
                 print(f'HTTP header> {line}')
 
-        # 바디를 무시하고, 소켓을 닫습니다
+        # Ignore the body, close the socket
         writer.close()
 
     url = sys.argv[1]
@@ -434,26 +434,27 @@ Coroutine waiting until a socket receives data using the
     import socket
 
     async def wait_for_data():
-        # 저수준 API에 액세스하기 위해 현재 이벤트 루프에 대한 참조를 가져옵니다.
+        # Get a reference to the current event loop because
+        # we want to access low-level APIs.
         loop = asyncio.get_running_loop()
 
-        # 연결된 소켓 쌍을 만듭니다.
+        # Create a pair of connected sockets.
         rsock, wsock = socket.socketpair()
 
-        # 데이터를 기다리는 열린 소켓을 등록합니다.
+        # Register the open socket to wait for data.
         reader, writer = await asyncio.open_connection(sock=rsock)
 
-        # 네트워크로부터의 데이터 수신을 시뮬레이션합니다
+        # Simulate the reception of data from the network
         loop.call_soon(wsock.send, 'abc'.encode())
 
-        # 데이터를 기다립니다
+        # Wait for data
         data = await reader.read(100)
 
-        # 데이터를 받았습니다, 할 일을 마쳤습니다: 소켓을 닫습니다.
+        # Got data, we are done: close the socket
         print("Received:", data.decode())
         writer.close()
 
-        # 두 번째 소켓을 닫습니다
+        # Close the second socket
         wsock.close()
 
     asyncio.run(wait_for_data())

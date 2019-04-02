@@ -103,8 +103,8 @@ A simple example
 A very simple example is::
 
    import logging
-   logging.warning('Watch out!')  # 콘솔에 메시지를 인쇄합니다
-   logging.info('I told you so')  # 아무것도 인쇄하지 않습니다
+   logging.warning('Watch out!')  # will print a message to the console
+   logging.info('I told you so')  # will not print anything
 
 If you type these lines into a script and run it, you'll see:
 
@@ -161,8 +161,9 @@ to get the value which you'll pass to :func:`basicConfig` via the *level*
 argument. You may want to error check any user input value, perhaps as in the
 following example::
 
-   # loglevel이 명령행 인자에서 얻은 문자열 값에 연결되어 있다고 가정합니다.
-   # 사용자가 --log=DEBUG 또는 --log=debug를 지정할 수 있도록 대문자로 변환합니다.
+   # assuming loglevel is bound to the string value obtained from the
+   # command line argument. Convert to upper case to allow the user to
+   # specify --log=DEBUG or --log=debug
    numeric_level = getattr(logging, loglevel.upper(), None)
    if not isinstance(numeric_level, int):
        raise ValueError('Invalid log level: %s' % loglevel)
@@ -589,24 +590,24 @@ logger, a console handler, and a simple formatter using Python code::
 
     import logging
 
-    # 로거를 만듭니다
+    # create logger
     logger = logging.getLogger('simple_example')
     logger.setLevel(logging.DEBUG)
 
-    # 콘솔 처리기를 만들고 수준을 DEBUG 로 설정합니다
+    # create console handler and set level to debug
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
 
-    # 포매터를 만듭니다
+    # create formatter
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    # 포매터를 ch 에 추가합니다
+    # add formatter to ch
     ch.setFormatter(formatter)
 
-    # ch 를 로거에 추가합니다
+    # add ch to logger
     logger.addHandler(ch)
 
-    # '응용 프로그램' 코드
+    # 'application' code
     logger.debug('debug message')
     logger.info('info message')
     logger.warning('warn message')
@@ -633,10 +634,10 @@ the names of the objects::
 
     logging.config.fileConfig('logging.conf')
 
-    # 로거를 만듭니다
+    # create logger
     logger = logging.getLogger('simpleExample')
 
-    # '응용 프로그램' 코드
+    # 'application' code
     logger.debug('debug message')
     logger.info('info message')
     logger.warning('warn message')

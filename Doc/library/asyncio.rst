@@ -17,7 +17,7 @@
            await asyncio.sleep(1)
            print('... World!')
 
-       # 파이썬 3.7+
+       # Python 3.7+
        asyncio.run(main())
 
 asyncio is a library to write **concurrent** code using

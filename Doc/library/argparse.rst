@@ -1392,17 +1392,17 @@ it exits and prints the error along with a usage message::
    >>> parser.add_argument('--foo', type=int)
    >>> parser.add_argument('bar', nargs='?')
 
-   >>> # 유효하지 않은 형
+   >>> # invalid type
    >>> parser.parse_args(['--foo', 'spam'])
    usage: PROG [-h] [--foo FOO] [bar]
    PROG: error: argument --foo: invalid int value: 'spam'
 
-   >>> # 유효하지 않은 옵션
+   >>> # invalid option
    >>> parser.parse_args(['--bar'])
    usage: PROG [-h] [--foo FOO] [bar]
    PROG: error: no such option: --bar
 
-   >>> # 잘못된 인자 수
+   >>> # wrong number of arguments
    >>> parser.parse_args(['spam', 'badger'])
    usage: PROG [-h] [--foo FOO] [bar]
    PROG: error: extra arguments found: badger
@@ -1423,11 +1423,11 @@ there are no options in the parser that look like negative numbers::
    >>> parser.add_argument('-x')
    >>> parser.add_argument('foo', nargs='?')
 
-   >>> # 음수 옵션이 없으므로, -1 은 위치 인자입니다
+   >>> # no negative number options, so -1 is a positional argument
    >>> parser.parse_args(['-x', '-1'])
    Namespace(foo=None, x='-1')
 
-   >>> # 음수 옵션이 없으므로, -1 과 -5 는 위치 인자입니다
+   >>> # no negative number options, so -1 and -5 are positional arguments
    >>> parser.parse_args(['-x', '-1', '-5'])
    Namespace(foo='-5', x='-1')
 
@@ -1435,16 +1435,16 @@ there are no options in the parser that look like negative numbers::
    >>> parser.add_argument('-1', dest='one')
    >>> parser.add_argument('foo', nargs='?')
 
-   >>> # 음수 옵션이 있으므로, -1 은 옵션입니다
+   >>> # negative number options present, so -1 is an option
    >>> parser.parse_args(['-1', 'X'])
    Namespace(foo=None, one='X')
 
-   >>> # 음수 옵션이 있으므로, -2 는 옵션입니다
+   >>> # negative number options present, so -2 is an option
    >>> parser.parse_args(['-2'])
    usage: PROG [-h] [-1 ONE] [foo]
    PROG: error: no such option: -2
 
-   >>> # 음수 옵션이 있으므로, 두 -1 모두 옵션입니다
+   >>> # negative number options present, so both -1s are options
    >>> parser.parse_args(['-1', '-1'])
    usage: PROG [-h] [-1 ONE] [foo]
    PROG: error: argument -1: expected one argument
@@ -1592,20 +1592,20 @@ Sub-commands
 
    Some example usage::
 
-     >>> # 최상위 파서를 만듭니다
+     >>> # create the top-level parser
      >>> parser = argparse.ArgumentParser(prog='PROG')
      >>> parser.add_argument('--foo', action='store_true', help='foo help')
      >>> subparsers = parser.add_subparsers(help='sub-command help')
      >>>
-     >>> # "a" 명령을 위한 파서를 만듭니다
+     >>> # create the parser for the "a" command
      >>> parser_a = subparsers.add_parser('a', help='a help')
      >>> parser_a.add_argument('bar', type=int, help='bar help')
      >>>
-     >>> # "b" 명령을 위한 파서를 만듭니다
+     >>> # create the parser for the "b" command
      >>> parser_b = subparsers.add_parser('b', help='b help')
      >>> parser_b.add_argument('--baz', choices='XYZ', help='baz help')
      >>>
-     >>> # 인자 리스트를 파싱합니다
+     >>> # parse some argument lists
      >>> parser.parse_args(['a', '12'])
      Namespace(bar=12, foo=False)
      >>> parser.parse_args(['--foo', 'b', '--baz', 'Z'])
@@ -1691,34 +1691,34 @@ Sub-commands
    that each subparser knows which Python function it should execute.  For
    example::
 
-     >>> # 부속 명령 함수들
+     >>> # sub-command functions
      >>> def foo(args):
      ...     print(args.x * args.y)
      ...
      >>> def bar(args):
      ...     print('((%s))' % args.z)
      ...
-     >>> # 최상위 파서를 만듭니다
+     >>> # create the top-level parser
      >>> parser = argparse.ArgumentParser()
      >>> subparsers = parser.add_subparsers()
      >>>
-     >>> # "foo" 명령을 위한 파서를 만듭니다
+     >>> # create the parser for the "foo" command
      >>> parser_foo = subparsers.add_parser('foo')
      >>> parser_foo.add_argument('-x', type=int, default=1)
      >>> parser_foo.add_argument('y', type=float)
      >>> parser_foo.set_defaults(func=foo)
      >>>
-     >>> # "bar" 명령을 위한 파서를 만듭니다
+     >>> # create the parser for the "bar" command
      >>> parser_bar = subparsers.add_parser('bar')
      >>> parser_bar.add_argument('z')
      >>> parser_bar.set_defaults(func=bar)
      >>>
-     >>> # 인자를 파싱하고 선택된 함수를 호출합니다
+     >>> # parse the args and call whatever function was selected
      >>> args = parser.parse_args('foo 1 -x 2'.split())
      >>> args.func(args)
      2.0
      >>>
-     >>> # 인자를 파싱하고 선택된 함수를 호출합니다
+     >>> # parse the args and call whatever function was selected
      >>> args = parser.parse_args('bar XYZYX'.split())
      >>> args.func(args)
      ((XYZYX))

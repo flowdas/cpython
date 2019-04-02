@@ -63,7 +63,7 @@ perform some operation on a file. ::
            fprintf(stderr, "Fatal error: cannot decode argv[0]\n");
            exit(1);
        }
-       Py_SetProgramName(program);  /* 선택적이지만 권장됩니다 */
+       Py_SetProgramName(program);  /* optional but recommended */
        Py_Initialize();
        PyRun_SimpleString("from time import time,ctime\n"
                           "print('Today is', ctime(time()))\n");
@@ -171,7 +171,7 @@ interesting part with respect to embedding Python starts with ::
 
    Py_Initialize();
    pName = PyUnicode_DecodeFSDefault(argv[1]);
-   /* pName의 에러 검사가 생략되었습니다 */
+   /* Error checking of pName left out */
    pModule = PyImport_Import(pName);
 
 After initializing the interpreter, the script is loaded using
@@ -180,7 +180,7 @@ which is constructed using the :c:func:`PyUnicode_FromString` data conversion
 routine. ::
 
    pFunc = PyObject_GetAttrString(pModule, argv[2]);
-   /* pFunc는 새로운 참조입니다 */
+   /* pFunc is a new reference */
 
    if (pFunc && PyCallable_Check(pFunc)) {
        ...
@@ -216,7 +216,7 @@ Python extension.  For example::
 
    static int numargs=0;
 
-   /* 응용 프로그램 명령 줄의 인자 수를 반환합니다 */
+   /* Return the number of arguments of the application command line */
    static PyObject*
    emb_numargs(PyObject *self, PyObject *args)
    {

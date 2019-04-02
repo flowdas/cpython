@@ -197,16 +197,17 @@ A simple example demonstrating the use of the programmatic interface::
    import sys
    import trace
 
-   # Trace 객체를 만들고, 무시할 대상과, 추적할지, 줄을 셀지 또는 둘 다 수행할지를 지정합니다.
+   # create a Trace object, telling it what to ignore, and whether to
+   # do tracing or line-counting or both.
    tracer = trace.Trace(
        ignoredirs=[sys.prefix, sys.exec_prefix],
        trace=0,
        count=1)
 
-   # 주어진 tracer를 사용해서 새 명령을 실행합니다
+   # run the new command using the given tracer
    tracer.run('main()')
 
-   # 보고서를 만들어, 현재 디렉터리에 출력을 넣습니다
+   # make a report, placing output in the current directory
    r = tracer.results()
    r.write_results(show_missing=True, coverdir=".")
 

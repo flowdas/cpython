@@ -87,11 +87,11 @@ Context Variables
           var = ContextVar('var')
 
           token = var.set('new value')
-          # 'var'를 사용하는 코드; var.get() 은 'new value'를 반환합니다.
+          # code that uses 'var'; var.get() returns 'new value'.
           var.reset(token)
 
-          # reset 호출 후에 var에는 값이 다시 없으므로, var.get() 은
-          # LookupError를 발생시킵니다.
+          # After the reset call the var has no value again, so
+          # var.get() would raise a LookupError.
 
 
 .. class:: contextvars.Token
@@ -159,25 +159,26 @@ Manual Context Management
         var.set('spam')
 
         def main():
-            # 'var' 는 'copy_context()' 와 'ctx.run(main)' 을
-            # 호출하기 전에 'spam' 으로 설정되었습니다. 그래서:
+            # 'var' was set to 'spam' before
+            # calling 'copy_context()' and 'ctx.run(main)', so:
             # var.get() == ctx[var] == 'spam'
 
             var.set('ham')
 
-            # 이제, 'var' 를 'ham' 으로 설정한 후에:
+            # Now, after setting 'var' to 'ham':
             # var.get() == ctx[var] == 'ham'
 
         ctx = copy_context()
 
-        # 'main' 함수가 'var' 에 적용한 모든 변경은 'ctx' 에 포함됩니다.
+        # Any changes that the 'main' function makes to 'var'
+        # will be contained in 'ctx'.
         ctx.run(main)
 
-        # 'main()' 함수는 'ctx' 컨텍스트에서 실행되었으므로,
-        # 'var' 에 대한 변경은 'ctx' 에 포함되어 있습니다:
+        # The 'main()' function was run in the 'ctx' context,
+        # so changes to 'var' are contained in it:
         # ctx[var] == 'ham'
 
-        # 그러나, 'ctx' 외부에서, 'var' 는 여전히 'spam' 으로 설정되어있습니다:
+        # However, outside of 'ctx', 'var' is still set to 'spam':
         # var.get() == 'spam'
 
       The method raises a :exc:`RuntimeError` when called on the same
@@ -244,8 +245,8 @@ client::
     client_addr_var = contextvars.ContextVar('client_addr')
 
     def render_goodbye():
-        # 현재 처리중인 클라이언트의 주소를 이 함수에 명시 적으로 전달하지 않고도
-        # 액세스 할 수 있습니다.
+        # The address of the currently handled client can be accessed
+        # without passing it explicitly to this function.
 
         client_addr = client_addr_var.get()
         return f'Good bye, client @ {client_addr}\n'.encode()
@@ -254,8 +255,8 @@ client::
         addr = writer.transport.get_extra_info('socket').getpeername()
         client_addr_var.set(addr)
 
-        # 우리가 호출하는 모든 코드에서 이제 'client_addr_var.get()' 을
-        # 호출하여 클라이언트의 주소를 가져올 수 있습니다.
+        # In any code that we call is now possible to get
+        # client's address by calling 'client_addr_var.get()'.
 
         while True:
             line = await reader.readline()
@@ -276,5 +277,5 @@ client::
 
     asyncio.run(main())
 
-    # 테스트하려면 텔넷을 사용할 수 있습니다:
+    # To test it you can use telnet:
     #     telnet 127.0.0.1 8081

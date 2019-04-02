@@ -56,9 +56,9 @@ Creating a Socket
 Roughly speaking, when you clicked on the link that brought you to this page,
 your browser did something like the following::
 
-   # INET, STREAMing 소켓을 만듭니다
+   # create an INET, STREAMing socket
    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-   # 이제 포트 80의 웹 서버에 연결합니다 - 일반적인 http 포트
+   # now connect to the web server on port 80 - the normal http port
    s.connect(("www.python.org", 80))
 
 When the ``connect`` completes, the socket ``s`` can be used to send
@@ -70,13 +70,11 @@ exchanges).
 What happens in the web server is a bit more complex. First, the web server
 creates a "server socket"::
 
-   # INET, STREAMing 소켓을 만듭니다
+   # create an INET, STREAMing socket
    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
    # bind the socket to a public host, and a well-known port
-   # 소켓을 공개 호스트와 잘 알려진 포트에 바인드 합니다
    serversocket.bind((socket.gethostname(), 80))
    # become a server socket
-   # 서버 소켓이 됩니다
    serversocket.listen(5)
 
 A couple things to notice: we used ``socket.gethostname()`` so that the socket
@@ -98,10 +96,10 @@ Now that we have a "server" socket, listening on port 80, we can enter the
 mainloop of the web server::
 
    while True:
-       # 외부로부터의 연결을 받아들입니다
+       # accept connections from outside
        (clientsocket, address) = serversocket.accept()
-       # 이제 clientsocket으로 뭔가 합니다
-       # 이 경우, 스레딩 서버인 것처럼 취급합니다
+       # now do something with the clientsocket
+       # in this case, we'll pretend this is a threaded server
        ct = client_thread(clientsocket)
        ct.run()
 
@@ -183,8 +181,8 @@ Assuming you don't want to end the connection, the simplest solution is a fixed
 length message::
 
    class MySocket:
-       """시연용 클래스
-         - 효율성이 아니라 명확성을 위해 코드 되었습니다
+       """demonstration class only
+         - coded for clarity, not efficiency
        """
 
        def __init__(self, sock=None):

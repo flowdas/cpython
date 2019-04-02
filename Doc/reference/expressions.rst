@@ -418,10 +418,10 @@ expression in a function's body causes that function to be a generator,
 and using it in an :keyword:`async def` function's body causes that
 coroutine function to be an asynchronous generator. For example::
 
-    def gen():  # 제너레이터 함수를 정의합니다
+    def gen():  # defines a generator function
         yield 123
 
-    async def agen(): # 비동기 제너레이터 함수를 정의합니다
+    async def agen(): # defines an asynchronous generator function
         yield 123
 
 Due to their side effects on the containing scope, ``yield`` expressions
@@ -1457,9 +1457,9 @@ built-in types.
     >>> nan is nan
     True
     >>> nan == nan
-    False                 <-- 정의된 NaN 의 비 반사적인 동작
+    False                 <-- the defined non-reflexive behavior of NaN
     >>> [nan] == [nan]
-    True                  <-- 리스트는 반사성을 강제하고 아이덴티티를 먼저 검사합니다
+    True                  <-- list enforces reflexivity and tests identity first
 
   Lexicographical comparison between built-in collections works as follows:
 

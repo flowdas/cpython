@@ -1295,11 +1295,11 @@ to sockets.
       import socket, array
 
       def recv_fds(sock, msglen, maxfds):
-          fds = array.array("i")   # int의 배열
+          fds = array.array("i")   # Array of ints
           msg, ancdata, flags, addr = sock.recvmsg(msglen, socket.CMSG_LEN(maxfds * fds.itemsize))
           for cmsg_level, cmsg_type, cmsg_data in ancdata:
               if (cmsg_level == socket.SOL_SOCKET and cmsg_type == socket.SCM_RIGHTS):
-                  # 마지막에 잘린 정수를 무시하면서, 데이터를 추가합니다.
+                  # Append data, ignoring any truncated integers at the end.
                   fds.fromstring(cmsg_data[:len(cmsg_data) - (len(cmsg_data) % fds.itemsize)])
           return msg, list(fds)
 
@@ -1663,11 +1663,11 @@ the socket it is listening on but on the new socket returned by
 
 The first two examples support IPv4 only. ::
 
-   # 메아리 서버 프로그램
+   # Echo server program
    import socket
 
-   HOST = ''                 # 사용 가능한 모든 인터페이스를 의미하는 기호적인 이름
-   PORT = 50007              # 임의의 비특권 포트
+   HOST = ''                 # Symbolic name meaning all available interfaces
+   PORT = 50007              # Arbitrary non-privileged port
    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
        s.bind((HOST, PORT))
        s.listen(1)
@@ -1681,11 +1681,11 @@ The first two examples support IPv4 only. ::
 
 ::
 
-   # 메아리 클라이언트 프로그램
+   # Echo client program
    import socket
 
-   HOST = 'daring.cwi.nl'    # 원격 호스트
-   PORT = 50007              # 서버가 사용하는 것과 같은 포트
+   HOST = 'daring.cwi.nl'    # The remote host
+   PORT = 50007              # The same port as used by the server
    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
        s.connect((HOST, PORT))
        s.sendall(b'Hello, world')
@@ -1699,12 +1699,12 @@ precedence and the server may not accept IPv4 traffic. The client side will try
 to connect to the all addresses returned as a result of the name resolution, and
 sends traffic to the first one connected successfully. ::
 
-   # 메아리 서버 프로그램
+   # Echo server program
    import socket
    import sys
 
-   HOST = None               # 사용 가능한 모든 인터페이스를 의미하는 기호적인 이름
-   PORT = 50007              # 임의의 비특권 포트
+   HOST = None               # Symbolic name meaning all available interfaces
+   PORT = 50007              # Arbitrary non-privileged port
    s = None
    for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC,
                                  socket.SOCK_STREAM, 0, socket.AI_PASSIVE):
@@ -1735,12 +1735,12 @@ sends traffic to the first one connected successfully. ::
 
 ::
 
-   # 메아리 클라이언트 프로그램
+   # Echo client program
    import socket
    import sys
 
-   HOST = 'daring.cwi.nl'    # 원격 호스트
-   PORT = 50007              # 서버가 사용하는 것과 같은 포트
+   HOST = 'daring.cwi.nl'    # The remote host
+   PORT = 50007              # The same port as used by the server
    s = None
    for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM):
        af, socktype, proto, canonname, sa = res
@@ -1771,23 +1771,23 @@ the interface::
 
    import socket
 
-   # 공개 네트워크 인터페이스
+   # the public network interface
    HOST = socket.gethostbyname(socket.gethostname())
 
-   # 원시(raw) 소켓을 만들고, 공개 인터페이스에 바인드합니다
+   # create a raw socket and bind it to the public interface
    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
    s.bind((HOST, 0))
 
-   # IP 헤더를 포함합니다
+   # Include IP headers
    s.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
 
-   # 모든 꾸러미를 받습니다
+   # receive all packages
    s.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
 
-   # 꾸러미를 받습니다
+   # receive a package
    print(s.recvfrom(65565))
 
-   # 무차별 모드를 비활성화합니다
+   # disabled promiscuous mode
    s.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
 
 The next example shows how to use the socket interface to communicate to a CAN
@@ -1806,7 +1806,7 @@ This last example might require special privileges::
    import struct
 
 
-   # CAN 프레임 패킹/언 패킹 (<linux/can.h>의 'struct can_frame'을 참조하십시오)
+   # CAN frame packing/unpacking (see 'struct can_frame' in <linux/can.h>)
 
    can_frame_fmt = "=IB3x8s"
    can_frame_size = struct.calcsize(can_frame_fmt)
@@ -1821,7 +1821,7 @@ This last example might require special privileges::
        return (can_id, can_dlc, data[:can_dlc])
 
 
-   # 원시(raw) 소켓을 만들고 'vcan0' 인터페이스에 바인드합니다
+   # create a raw socket and bind it to the 'vcan0' interface
    s = socket.socket(socket.AF_CAN, socket.SOCK_RAW, socket.CAN_RAW)
    s.bind(('vcan0',))
 

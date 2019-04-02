@@ -202,7 +202,7 @@ You can experiment with the iteration interface manually:
     >>> it = iter(L)
     >>> it  #doctest: +ELLIPSIS
     <...iterator object at ...>
-    >>> it.__next__()  # next(it) 와 같습니다
+    >>> it.__next__()  # same as next(it)
     1
     >>> next(it)
     2
@@ -310,7 +310,7 @@ method until there are no more lines in the file.  This means you can read each
 line of a file like this::
 
     for line in file:
-        # 각 줄마다 뭔가 합니다
+        # do something for each line
         ...
 
 Sets can take their contents from an iterable and let you iterate over the set's
@@ -338,10 +338,10 @@ all the whitespace from a stream of strings with the following code::
 
     line_list = ['  line 1\n', 'line 2  \n', ...]
 
-    # 제너레이터 표현식 -- 이터레이터를 돌려줍니다
+    # Generator expression -- returns iterator
     stripped_iter = (line.strip() for line in line_list)
 
-    # 리스트 컴프리헨션 -- 리스트를 돌려줍니다
+    # List comprehension -- returns list
     stripped_list = [line.strip() for line in line_list]
 
 You can select only certain elements by adding an ``"if"`` condition::
@@ -393,16 +393,17 @@ equivalent to the following Python code::
 
     for expr1 in sequence1:
         if not (condition1):
-            continue   # 이 요소를 건너뜁니다
+            continue   # Skip this element
         for expr2 in sequence2:
             if not (condition2):
-                continue   # 이 요소를 건너뜁니다
+                continue   # Skip this element
             ...
             for exprN in sequenceN:
                 if not (conditionN):
-                    continue   # 이 요소를 건너뜁니다
+                    continue   # Skip this element
 
-                # expression 의 값을 출력합니다.
+                # Output the value of
+                # the expression.
 
 This means that when there are multiple ``for...in`` clauses but no ``if``
 clauses, the length of the resulting output will be equal to the product of the
@@ -420,9 +421,9 @@ To avoid introducing an ambiguity into Python's grammar, if ``expression`` is
 creating a tuple, it must be surrounded with parentheses.  The first list
 comprehension below is a syntax error, while the second one is correct::
 
-    # 문법 에러
+    # Syntax error
     [x, y for x in seq1 for y in seq2]
-    # 올바릅니다
+    # Correct
     [(x, y) for x in seq1 for y in seq2]
 
 
@@ -499,7 +500,7 @@ The test suite included with Python's library,
 a number of more interesting examples.  Here's one generator that implements an
 in-order traversal of a tree using generators recursively. ::
 
-    # 트리 노드를 중위(in-order) 순회 순으로 생성하는 재귀적 제너레이터
+    # A recursive generator that generates Tree leaves in in-order.
     def inorder(t):
         if t:
             for x in inorder(t.left):
@@ -677,7 +678,7 @@ result.  The *key* and *reverse* arguments are passed through to the
 constructed list's :meth:`~list.sort` method. ::
 
     >>> import random
-    >>> # [0, 10000) 사이에서 8개의 난수를 만듭니다
+    >>> # Generate 8 random numbers between [0, 10000)
     >>> rand_list = random.sample(range(10000), 8)
     >>> rand_list  #doctest: +SKIP
     [769, 7953, 9828, 6431, 8442, 9878, 6213, 2207]
@@ -1008,7 +1009,7 @@ Here's a small but realistic example::
     import functools
 
     def log(message, subsystem):
-        """'message' 의 내용을 주어진 subsystem 으로 출력합니다."""
+        """Write the contents of 'message' to the specified subsystem."""
         print('%s: %s' % (subsystem, message))
         ...
 
@@ -1055,10 +1056,10 @@ For many uses of :func:`functools.reduce`, though, it can be clearer to just
 write the obvious :keyword:`for` loop::
 
    import functools
-   # 다음 문장 대신에:
+   # Instead of:
    product = functools.reduce(operator.mul, [1, 2, 3], 1)
 
-   # 이렇게 쓸 수 있습니다:
+   # You can write:
    product = 1
    for i in [1, 2, 3]:
        product *= i

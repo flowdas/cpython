@@ -119,8 +119,8 @@ parameter expect a WSGI-compliant dictionary to be supplied; please see
       from wsgiref.util import setup_testing_defaults
       from wsgiref.simple_server import make_server
 
-      # 상대적으로 간단한 WSGI 응용 프로그램. setup_testing_defaults로 갱신된 후에 환경
-      # 딕셔너리를 인쇄할 것입니다.
+      # A relatively simple WSGI application. It's going to print out the
+      # environment dictionary after being updated by setup_testing_defaults
       def simple_app(environ, start_response):
           setup_testing_defaults(environ)
 
@@ -166,7 +166,7 @@ also provides these miscellaneous utilities:
       from io import StringIO
       from wsgiref.util import FileWrapper
 
-      # 파일류 객체로 StringIO 버퍼를 사용하고 있습니다
+      # We're using a StringIO-buffer for as the file-like object
       filelike = StringIO("This is an example file-like object"*10)
       wrapper = FileWrapper(filelike, blksize=5)
 
@@ -288,10 +288,10 @@ request.  (E.g., using the :func:`shift_path_info` function from
       with make_server('', 8000, demo_app) as httpd:
           print("Serving HTTP on port 8000...")
 
-          # 프로세스를 죽일 때까지 요청에 응답합니다
+          # Respond to requests until process is killed
           httpd.serve_forever()
 
-          # 대안: 하나의 요청을 처리한 다음 종료합니다
+          # Alternative: serve one request, then exit
           httpd.handle_request()
 
 
@@ -418,16 +418,18 @@ Paste" library.
       from wsgiref.validate import validator
       from wsgiref.simple_server import make_server
 
-      # 의도적으로 표준을 준수하지 않는 콜러블 객체이므로, 적합성 검사기가 중단됩니다
+      # Our callable object which is intentionally not compliant to the
+      # standard, so the validator is going to break
       def simple_app(environ, start_response):
           status = '200 OK'  # HTTP Status
           headers = [('Content-type', 'text/plain')]  # HTTP Headers
           start_response(status, headers)
 
-          # 이것은 중단하게 되는데, 목록을 반환해야 하기 때문입니다, 적합성 검사기가 알려줄 것입니다
+          # This is going to break because we need to return a list, and
+          # the validator is going to inform us
           return b"Hello World"
 
-      # 이것은 적합성 검사기로 감싼 응용 프로그램입니다
+      # This is the application wrapped in a validator
       validator_app = validator(simple_app)
 
       with make_server('', 8000, validator_app) as httpd:
@@ -758,20 +760,22 @@ This is a working "Hello World" WSGI application::
 
    from wsgiref.simple_server import make_server
 
-   # 모든 WSGI 응용 프로그램은 응용 프로그램 객체를 가져야 합니다 - 두 개의 인자를 받아들이는
-   # 콜러블. 이를 위해, 함수를 사용하려고 합니다 (함수로 제한되지는 않습니다, 예를 들어 클래스를
-   # 사용할 수 있습니다). 함수에 전달되는 첫 번째 인자는 CGI 스타일 환경 변수를 포함하는
-   # 딕셔너리이고, 두 번째 변수는 콜러블 객체입니다 (PEP 333을 참조하세요).
+   # Every WSGI application must have an application object - a callable
+   # object that accepts two arguments. For that purpose, we're going to
+   # use a function (note that you're not limited to a function, you can
+   # use a class for example). The first argument passed to the function
+   # is a dictionary containing CGI-style environment variables and the
+   # second variable is the callable object (see PEP 333).
    def hello_world_app(environ, start_response):
        status = '200 OK'  # HTTP Status
        headers = [('Content-type', 'text/plain; charset=utf-8')]  # HTTP Headers
        start_response(status, headers)
 
-       # 반환된 객체가 인쇄될 것입니다.
+       # The returned object is going to be printed
        return [b"Hello World"]
 
    with make_server('', 8000, hello_world_app) as httpd:
        print("Serving on port 8000...")
 
-       # 프로세스를 죽일 때까지 서빙합니다
+       # Serve until process is killed
        httpd.serve_forever()

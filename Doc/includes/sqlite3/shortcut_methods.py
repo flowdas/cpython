@@ -7,13 +7,13 @@ persons = [
 
 con = sqlite3.connect(":memory:")
 
-# 테이블을 만듭니다
+# Create the table
 con.execute("create table person(firstname, lastname)")
 
-# 테이블을 채웁니다
+# Fill the table
 con.executemany("insert into person(firstname, lastname) values (?, ?)", persons)
 
-# 테이블의 내용을 인쇄합니다
+# Print the table contents
 for row in con.execute("select firstname, lastname from person"):
     print(row)
 

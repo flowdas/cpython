@@ -337,23 +337,23 @@ of what happens during the loading portion of import::
 
     module = None
     if spec.loader is not None and hasattr(spec.loader, 'create_module'):
-        # 'exec_module'도 loader에 정의되어 있다고 가정합니다.
+        # It is assumed 'exec_module' will also be defined on the loader.
         module = spec.loader.create_module(spec)
     if module is None:
         module = ModuleType(spec.name)
-    # 임포트 관련 모듈 어트리뷰트들은 여기에서 설정됩니다:
+    # The import-related module attributes get set here:
     _init_module_attrs(spec, module)
 
     if spec.loader is None:
         if spec.submodule_search_locations is not None:
-            # 이름 공간 패키지
+            # namespace package
             sys.modules[spec.name] = module
         else:
-            # 지원되지 않습니다
+            # unsupported
             raise ImportError
     elif not hasattr(spec.loader, 'exec_module'):
         module = spec.loader.load_module(spec.name)
-        # 없으면 __loader__ 와 __package__ 를 설정합니다.
+        # Set __loader__ and __package__ if missing.
     else:
         sys.modules[spec.name] = module
         try:

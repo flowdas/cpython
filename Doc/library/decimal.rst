@@ -134,7 +134,7 @@ precision, rounding, or enabled traps::
            capitals=1, clamp=0, flags=[], traps=[Overflow, DivisionByZero,
            InvalidOperation])
 
-   >>> getcontext().prec = 7       # 새 정밀도를 설정합니다
+   >>> getcontext().prec = 7       # Set a new precision
 
 Decimal instances can be constructed from integers, strings, floats, or tuples.
 Construction from an integer or a float performs an exact conversion of the
@@ -488,7 +488,7 @@ Decimal objects
       Decimal instance, and if either operand is a NaN then the result is a
       NaN::
 
-         a 나 b 가 NaN     ==> Decimal('NaN')
+         a or b is a NaN  ==> Decimal('NaN')
          a < b            ==> Decimal('-1')
          a == b           ==> Decimal('0')
          a > b            ==> Decimal('1')
@@ -938,9 +938,9 @@ function to temporarily change the active context.
       from decimal import localcontext
 
       with localcontext() as ctx:
-          ctx.prec = 42   # 높은 정밀도 계산을 수행합니다
+          ctx.prec = 42   # Perform a high precision calculation
           s = calculate_something()
-      s = +s  # 최종 결과를 기본 정밀도로 되돌립니다
+      s = +s  # Round the final result back to the default precision
 
 New contexts can also be created using the :class:`Context` constructor
 described below. In addition, the module provides three pre-made contexts:
@@ -1677,7 +1677,7 @@ properties of addition:
 
 .. doctest:: newcontext
 
-   # Seminumerical Algorithms, 4.2.2 절에서 인용한 예제.
+   # Examples from Seminumerical Algorithms, Section 4.2.2.
    >>> from decimal import Decimal, getcontext
    >>> getcontext().prec = 8
 
@@ -1792,14 +1792,14 @@ application, directly modify the *DefaultContext* object. This should be done
 *before* any threads are started so that there won't be a race condition between
 threads calling :func:`getcontext`. For example::
 
-   # 시작될 모든 스레드에 대해 응용 프로그램 전체 기본값을 설정합니다
+   # Set applicationwide defaults for all threads about to be launched
    DefaultContext.prec = 12
    DefaultContext.rounding = ROUND_DOWN
    DefaultContext.traps = ExtendedContext.traps.copy()
    DefaultContext.traps[InvalidOperation] = 1
    setcontext(DefaultContext)
 
-   # 그런 다음, 스레드를 시작할 수 있습니다
+   # Afterwards, the threads can be started
    t1.start()
    t2.start()
    t3.start()
@@ -1818,16 +1818,16 @@ to work with the :class:`Decimal` class::
 
    def moneyfmt(value, places=2, curr='', sep=',', dp='.',
                 pos='', neg='-', trailneg=''):
-       """Decimal을 화폐 형식 문자열로 변환합니다.
+       """Convert Decimal to a money formatted string.
 
-       places:  필수적, 소수점 뒤로 필요한 자릿수
-       curr:    선택적, 부호 앞에 오는 통화 기호 (비어있어도 됩니다)
-       sep:     선택적, 자리수 구분자 (콤마, 마침표, 스페이스, 또는 빈문자열)
-       dp:      소수점 (콤마나 마침표)
-                places 가 0 일 때만 빈문자열로 지정하세요
-       pos:     선택적, 양수를 위한 부호: '+', 스페이스 또는 빈문자열
-       neg:     선택적, 음수를 위한 부호: '-', '(', 스페이스 또는 빈문자열
-       trailneg:선택적, 후행 음수 표시:  '-', ')', 스페이스 또는 빈문자열
+       places:  required number of places after the decimal point
+       curr:    optional currency symbol before the sign (may be blank)
+       sep:     optional grouping separator (comma, period, space, or blank)
+       dp:      decimal point indicator (comma or period)
+                only specify as blank when places is zero
+       pos:     optional sign for positive numbers: '+', space or blank
+       neg:     optional sign for negative numbers: '-', '(', space or blank
+       trailneg:optional trailing minus indicator:  '-', ')', space or blank
 
        >>> d = Decimal('-1234567.8901')
        >>> moneyfmt(d, curr='$')
@@ -1867,14 +1867,14 @@ to work with the :class:`Decimal` class::
        return ''.join(reversed(result))
 
    def pi():
-       """현재 정밀도로 Pi 를 계산합니다.
+       """Compute Pi to the current precision.
 
        >>> print(pi())
        3.141592653589793238462643383
 
        """
-       getcontext().prec += 2  # 중단 단계를 위한 추가의 유효숫자
-       three = Decimal(3)      # 일반 float 에 사용하려면 "three=3.0" 로 치환하세요
+       getcontext().prec += 2  # extra digits for intermediate steps
+       three = Decimal(3)      # substitute "three=3.0" for regular floats
        lasts, t, s, n, na, d, da = 0, three, 3, 1, 0, 0, 24
        while s != lasts:
            lasts = s
@@ -1883,10 +1883,10 @@ to work with the :class:`Decimal` class::
            t = (t * n) / d
            s += t
        getcontext().prec -= 2
-       return +s               # 단항 플러스 연산자는 새 정밀도를 적용합니다
+       return +s               # unary plus applies the new precision
 
    def exp(x):
-       """e 의 x 제곱을 반환합니다.  결과 형은 입력 형과 일치합니다.
+       """Return e raised to the power of x.  Result type matches input type.
 
        >>> print(exp(Decimal(1)))
        2.718281828459045235360287471
@@ -1910,10 +1910,10 @@ to work with the :class:`Decimal` class::
        return +s
 
    def cos(x):
-       """라디안으로 측정된 x 의 코사인(cosine)을 반환합니다.
+       """Return the cosine of x as measured in radians.
 
-       테일러 전개 근사법은 x 가 작음 값을 때 잘 작동합니다.
-       큰 값의 경우, 먼저 x = x % (2 * pi) 를 계산하세요.
+       The Taylor series approximation works best for a small value of x.
+       For larger values, first compute x = x % (2 * pi).
 
        >>> print(cos(Decimal('0.5')))
        0.8775825618903727161162815826
@@ -1936,10 +1936,10 @@ to work with the :class:`Decimal` class::
        return +s
 
    def sin(x):
-       """라디안으로 측정된 x 의 사인(sine)을 반환합니다.
+       """Return the sine of x as measured in radians.
 
-       테일러 전개 근사법은 x 가 작음 값을 때 잘 작동합니다.
-       큰 값의 경우, 먼저 x = x % (2 * pi) 를 계산하세요.
+       The Taylor series approximation works best for a small value of x.
+       For larger values, first compute x = x % (2 * pi).
 
        >>> print(sin(Decimal('0.5')))
        0.4794255386042030002732879352
@@ -1986,13 +1986,13 @@ and need to be validated.  What methods should be used?
 A. The :meth:`quantize` method rounds to a fixed number of decimal places. If
 the :const:`Inexact` trap is set, it is also useful for validation:
 
-   >>> TWOPLACES = Decimal(10) ** -2       # Decimal('0.01') 과 같습니다
+   >>> TWOPLACES = Decimal(10) ** -2       # same as Decimal('0.01')
 
-   >>> # 두 자리로 자리 올림합니다
+   >>> # Round to two places
    >>> Decimal('3.214').quantize(TWOPLACES)
    Decimal('3.21')
 
-   >>> # 숫자가 두 자리를 넘지 않는지 확인합니다
+   >>> # Validate that a number does not exceed two places
    >>> Decimal('3.21').quantize(TWOPLACES, context=Context(traps=[Inexact]))
    Decimal('3.21')
 
@@ -2009,17 +2009,17 @@ will automatically preserve fixed point.  Others operations, like division and
 non-integer multiplication, will change the number of decimal places and need to
 be followed-up with a :meth:`quantize` step:
 
-    >>> a = Decimal('102.72')           # 초기 고정 소수점 값
+    >>> a = Decimal('102.72')           # Initial fixed-point values
     >>> b = Decimal('3.17')
-    >>> a + b                           # 덧셈은 고정 소수점을 보존합니다
+    >>> a + b                           # Addition preserves fixed-point
     Decimal('105.89')
     >>> a - b
     Decimal('99.55')
-    >>> a * 42                          # 정수로 곱하는 것도 마찬가지입니다
+    >>> a * 42                          # So does integer multiplication
     Decimal('4314.24')
-    >>> (a * b).quantize(TWOPLACES)     # 정수가 아닌 수로 곱할 때는 quantize 해야만 합니다
+    >>> (a * b).quantize(TWOPLACES)     # Must quantize non-integer multiplication
     Decimal('325.62')
-    >>> (b / a).quantize(TWOPLACES)     # 나눗셈도 quantize 해야 합니다
+    >>> (b / a).quantize(TWOPLACES)     # And quantize division
     Decimal('0.03')
 
 In developing fixed-point applications, it is convenient to define functions
@@ -2030,7 +2030,7 @@ to handle the :meth:`quantize` step:
     >>> def div(x, y, fp=TWOPLACES):
     ...     return (x / y).quantize(fp)
 
-    >>> mul(a, b)                       # 자동적으로 고정 소수점을 보존합니다
+    >>> mul(a, b)                       # Automatically preserve fixed-point
     Decimal('325.62')
     >>> div(b, a)
     Decimal('0.03')
@@ -2107,7 +2107,7 @@ using the unary plus operation:
 .. doctest:: newcontext
 
    >>> getcontext().prec = 3
-   >>> +Decimal('1.23456789')      # 단항 플러스는 자리 올림을 일으킵니다
+   >>> +Decimal('1.23456789')      # unary plus triggers rounding
    Decimal('1.23')
 
 Alternatively, inputs can be rounded upon creation using the

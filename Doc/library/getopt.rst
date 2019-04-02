@@ -123,8 +123,8 @@ In a script, typical usage is something like this::
        try:
            opts, args = getopt.getopt(sys.argv[1:], "ho:v", ["help", "output="])
        except getopt.GetoptError as err:
-           # 도움말 정보를 출력하고 종료합니다:
-           print(err)  # "option -a not recognized" 같은 것을 출력합니다
+           # print help information and exit:
+           print(err)  # will print something like "option -a not recognized"
            usage()
            sys.exit(2)
        output = None
@@ -154,8 +154,8 @@ and more informative help and error messages by using the :mod:`argparse` module
        parser.add_argument('-o', '--output')
        parser.add_argument('-v', dest='verbose', action='store_true')
        args = parser.parse_args()
-       # ... args.output으로 뭔가를 합니다 ...
-       # ... args.verbose로 뭔가를 합니다 ...
+       # ... do something with args.output ...
+       # ... do something with args.verbose ..
 
 .. seealso::
 

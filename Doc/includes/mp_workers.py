@@ -4,7 +4,7 @@ import random
 from multiprocessing import Process, Queue, current_process, freeze_support
 
 #
-# 작업자 프로세스가 실행하는 함수
+# Function run by worker processes
 #
 
 def worker(input, output):
@@ -13,7 +13,7 @@ def worker(input, output):
         output.put(result)
 
 #
-# 결과를 계산하는데 사용되는 함수
+# Function used to calculate result
 #
 
 def calculate(func, args):
@@ -22,7 +22,7 @@ def calculate(func, args):
         (current_process().name, func.__name__, args, result)
 
 #
-# 작업이 참조하는 함수
+# Functions referenced by tasks
 #
 
 def mul(a, b):
@@ -42,32 +42,32 @@ def test():
     TASKS1 = [(mul, (i, 7)) for i in range(20)]
     TASKS2 = [(plus, (i, 8)) for i in range(10)]
 
-    # 큐를 만듭니다
+    # Create queues
     task_queue = Queue()
     done_queue = Queue()
 
-    # 작업을 제출합니다
+    # Submit tasks
     for task in TASKS1:
         task_queue.put(task)
 
-    # 작업자 프로세스를 시작합니다
+    # Start worker processes
     for i in range(NUMBER_OF_PROCESSES):
         Process(target=worker, args=(task_queue, done_queue)).start()
 
-    # 결과를 갖고와서 인쇄합니다
-    print('순서없는 결과:')
+    # Get and print results
+    print('Unordered results:')
     for i in range(len(TASKS1)):
         print('\t', done_queue.get())
 
-    # `put()` 을 사용해서 작업을 추가합니다
+    # Add more tasks using `put()`
     for task in TASKS2:
         task_queue.put(task)
 
-    # 결과를 더 갖고와서 인쇄합니다
+    # Get and print some more results
     for i in range(len(TASKS2)):
         print('\t', done_queue.get())
 
-    # 자식 프로세스에게 정지하라고 알립니다
+    # Tell child processes to stop
     for i in range(NUMBER_OF_PROCESSES):
         task_queue.put('STOP')
 

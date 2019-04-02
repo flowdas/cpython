@@ -178,9 +178,9 @@ Assignment of an object to a single target is recursively defined as follows.
   assignment::
 
      class Cls:
-         x = 3             # 클래스 변수
+         x = 3             # class variable
      inst = Cls()
-     inst.x = inst.x + 1   # inst.x 에 4 를 쓰고 Cls.x 는 3 으로 남겨둡니다
+     inst.x = inst.x + 1   # writes inst.x as 4 leaving Cls.x as 3
 
   This description does not necessarily apply to descriptor attributes, such as
   properties created with :func:`property`.
@@ -246,7 +246,7 @@ the following program prints ``[0, 2]``::
 
    x = [0, 1]
    i = 0
-   i, x[i] = 1, 2         # i 가 갱신된 다음에, x[i] 가 갱신됩니다
+   i, x[i] = 1, 2         # i is updated, then x[i] is updated
    print(x)
 
 
@@ -427,9 +427,9 @@ The :keyword:`!pass` statement
 It is useful as a placeholder when a statement is required syntactically, but no
 code needs to be executed, for example::
 
-   def f(arg): pass    # (아직은) 아무것도 하지 않는 함수
+   def f(arg): pass    # a function that does nothing (yet)
 
-   class C: pass       # (아직은) 메서드가 없는 클래스
+   class C: pass       # a class with no methods (yet)
 
 
 .. _del:
@@ -787,11 +787,11 @@ The :keyword:`from` form uses a slightly more complex process:
 
 Examples::
 
-   import foo                 # foo 가 임포트되고 지역적으로 연결됩니다
-   import foo.bar.baz         # foo.bar.baz 가 임포트되고, foo 가 지역적으로 연결됩니다
-   import foo.bar.baz as fbb  # foo.bar.baz 가 임포트되고 fbb 로 연결됩니다
-   from foo.bar import baz    # foo.bar.baz 가 임포트되고 baz 로 연결됩니다
-   from foo import attr       # foo 가 임포트되고 foo.attr 이 attr 로 연결됩니다
+   import foo                 # foo imported and bound locally
+   import foo.bar.baz         # foo.bar.baz imported, foo bound locally
+   import foo.bar.baz as fbb  # foo.bar.baz imported and bound as fbb
+   from foo.bar import baz    # foo.bar.baz imported and bound as baz
+   from foo import attr       # foo imported and foo.attr bound as attr
 
 .. index:: single: * (asterisk); import statement
 

@@ -17,7 +17,7 @@ extensions = ['sphinx.ext.coverage', 'sphinx.ext.doctest',
               'pyspecific', 'c_annotations', 'escape4chm']
 
 # General substitutions.
-project = '파이썬'
+project = 'Python'
 copyright = '2001-%s, Python Software Foundation' % time.strftime('%Y')
 
 # We look for the Include/patchlevel.h file in the current Python source tree
@@ -58,8 +58,7 @@ html_theme_path = ['tools']
 html_theme_options = {'collapsiblesidebar': True}
 
 # Short title used e.g. for <title> HTML tags.
-html_short_title = '%s 설명서' % release
-html_title = '%s 설명서 주석판' % project
+html_short_title = '%s Documentation' % release
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -94,7 +93,6 @@ htmlhelp_basename = 'python' + release.replace('.', '')
 # Split the index
 html_split_index = True
 
-html_copy_source = False
 
 # Options for LaTeX output
 # ------------------------
