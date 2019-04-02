@@ -136,8 +136,3 @@ Scheduler Objects
    Read-only attribute returning a list of upcoming events in the order they
    will be run.  Each event is shown as a :term:`named tuple` with the
    following fields:  time, priority, action, argument, kwargs.
-
-   .. admonition:: flowdas
-
-      이 어트리뷰트는 프로퍼티로 구현되는데, 시간 복잡도는 O(nlog n) 입니다. 아주 비싼 연산이므로
-      자주 사용하는 용도로는 적합하지 않습니다.
